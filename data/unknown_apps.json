@@ -1,0 +1,14 @@
+[
+  {
+    "package_name": "com.newapp1.app",
+    "app_name": "新应用1"
+  },
+  {
+    "package_name": "com.newapp2.app",
+    "app_name": "新应用2"
+  },
+  {
+    "package_name": "com.unknOWN.app123",
+    "app_name": "未知应用"
+  }
+]

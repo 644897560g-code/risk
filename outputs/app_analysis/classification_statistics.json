@@ -1,0 +1,27 @@
+{
+  "total_classified": 11850,
+  "category_distribution": {
+    "utility": 3838,
+    "social_entertainment": 3810,
+    "other": 1383,
+    "productivity": 770,
+    "gambling": 561,
+    "religious": 265,
+    "cash_loan": 262,
+    "banking": 232,
+    "shopping": 224,
+    "transportation": 170,
+    "fintech_lending": 116,
+    "ewallet": 89,
+    "food_delivery": 34,
+    "fake_gps": 29,
+    "clone_app": 28,
+    "app_store": 26,
+    "installment": 13
+  },
+  "high_risk_categories": {
+    "fintech_lending": 116,
+    "cash_loan": 262,
+    "gambling": 561
+  }
+}

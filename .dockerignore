@@ -1,0 +1,17 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.env
+*.log
+node_modules
+.DS_Store
+.idea
+.vscode
+*.egg-info
+dist
+build
+nohup.out
+/tmp

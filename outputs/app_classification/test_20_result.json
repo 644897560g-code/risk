@@ -1,0 +1,105 @@
+{
+  "classifications": {
+    "id.co.hypermart.hicard": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "印尼Hypermart零售会员应用"
+    },
+    "com.plusphone.android": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "未知通讯/工具类应用"
+    },
+    "com.hotplay.petexplosion": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "休闲宠物类手机游戏"
+    },
+    "com.programato.binarweb": {
+      "category": "productivity",
+      "confidence": "low",
+      "reason": "编程教育/学习工具应用"
+    },
+    "com.skydot.docxreader.docx.docxviewer.document.doc.office.viewer.reader.word": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "文档阅读/Office办公工具"
+    },
+    "com.hg.cupcakebaking.cakemaker.bakinggames.icecreamcake": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "休闲烘焙模拟类游戏"
+    },
+    "com.netflix.NGP.FootballManagerMobile": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Netflix平台足球经理游戏"
+    },
+    "com.py.cloneapp.huawei": {
+      "category": "clone_app",
+      "confidence": "high",
+      "reason": "应用双开/克隆工具，高风险"
+    },
+    "jp.ne.ibis.ibispaintx.app": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "知名绘画创作工具应用"
+    },
+    "com.google.android.apps.paidtasks": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "谷歌问卷调查/奖励工具"
+    },
+    "com.stream.drakorindoawet": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "韩剧视频流媒体娱乐应用"
+    },
+    "com.muamalatdin": {
+      "category": "religious",
+      "confidence": "medium",
+      "reason": "伊斯兰宗教文化/生活应用"
+    },
+    "com.htt.alpha.shooter.fps": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "第一人称射击类手机游戏"
+    },
+    "com.jkfantasy.gpsmapcamera": {
+      "category": "fake_gps",
+      "confidence": "medium",
+      "reason": "虚拟定位/位置伪造辅助工具"
+    },
+    "com.whatsapp": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "印尼主流社交通信应用"
+    },
+    "com.flex.rupiah.trusta.flexrupiah": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "印尼现金贷/小额贷款应用"
+    },
+    "com.ss.android.ugc.trill": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "短视频社交平台TikTok"
+    },
+    "com.facebook.katana": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "主流社交媒体Facebook应用"
+    },
+    "id.dana": {
+      "category": "ewallet",
+      "confidence": "high",
+      "reason": "印尼主流电子钱包DANA"
+    },
+    "com.shopee.id": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "印尼主流电商购物平台"
+    }
+  },
+  "raw_response": "```json\n{\n  \"classifications\": {\n    \"id.co.hypermart.hicard\": {\n      \"category\": \"shopping\",\n      \"confidence\": \"high\",\n      \"reason\": \"印尼Hypermart零售会员应用\"\n    },\n    \"com.plusphone.android\": {\n      \"category\": \"utility\",\n      \"confidence\": \"low\",\n      \"reason\": \"未知通讯/工具类应用\"\n    },\n    \"com.hotplay.petexplosion\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"休闲宠物类手机游戏\"\n    },\n    \"com.programato.binarweb\": {\n      \"category\": \"productivity\",\n      \"confidence\": \"low\",\n      \"reason\": \"编程教育/学习工具应用\"\n    },\n    \"com.skydot.docxreader.docx.docxviewer.document.doc.office.viewer.reader.word\": {\n      \"category\": \"productivity\",\n      \"confidence\": \"high\",\n      \"reason\": \"文档阅读/Office办公工具\"\n    },\n    \"com.hg.cupcakebaking.cakemaker.bakinggames.icecreamcake\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"休闲烘焙模拟类游戏\"\n    },\n    \"com.netflix.NGP.FootballManagerMobile\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"Netflix平台足球经理游戏\"\n    },\n    \"com.py.cloneapp.huawei\": {\n      \"category\": \"clone_app\",\n      \"confidence\": \"high\",\n      \"reason\": \"应用双开/克隆工具，高风险\"\n    },\n    \"jp.ne.ibis.ibispaintx.app\": {\n      \"category\": \"productivity\",\n      \"confidence\": \"high\",\n      \"reason\": \"知名绘画创作工具应用\"\n    },\n    \"com.google.android.apps.paidtasks\": {\n      \"category\": \"utility\",\n      \"confidence\": \"medium\",\n      \"reason\": \"谷歌问卷调查/奖励工具\"\n    },\n    \"com.stream.drakorindoawet\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"韩剧视频流媒体娱乐应用\"\n    },\n    \"com.muamalatdin\": {\n      \"category\": \"religious\",\n      \"confidence\": \"medium\",\n      \"reason\": \"伊斯兰宗教文化/生活应用\"\n    },\n    \"com.htt.alpha.shooter.fps\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"第一人称射击类手机游戏\"\n    },\n    \"com.jkfantasy.gpsmapcamera\": {\n      \"category\": \"fake_gps\",\n      \"confidence\": \"medium\",\n      \"reason\": \"虚拟定位/位置伪造辅助工具\"\n    },\n    \"com.whatsapp\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"印尼主流社交通信应用\"\n    },\n    \"com.flex.rupiah.trusta.flexrupiah\": {\n      \"category\": \"cash_loan\",\n      \"confidence\": \"high\",\n      \"reason\": \"印尼现金贷/小额贷款应用\"\n    },\n    \"com.ss.android.ugc.trill\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"短视频社交平台TikTok\"\n    },\n    \"com.facebook.katana\": {\n      \"category\": \"social_entertainment\",\n      \"confidence\": \"high\",\n      \"reason\": \"主流社交媒体Facebook应用\"\n    },\n    \"id.dana\": {\n      \"category\": \"ewallet\",\n      \"confidence\": \"high\",\n      \"reason\": \"印尼主流电子钱包DANA\"\n    },\n    \"com.shopee.id\": {\n      \"category\": \"shopping\",\n      \"confidence\": \"high\",\n      \"reason\": \"印尼主流电商购物平台\"\n    }\n  }\n}\n```"
+}

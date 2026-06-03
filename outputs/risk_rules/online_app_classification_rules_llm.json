@@ -1,0 +1,3181 @@
+{
+  "meta": {
+    "total_apps": 11850,
+    "total_categories": 16,
+    "excluded_categories": [
+      "other"
+    ],
+    "learning_date": "2026-04-26",
+    "learning_method": "LLM_rule_learning_qwen3.6-plus",
+    "sample_policy": "使用全部样本（不采样）",
+    "pattern_description": "正则模式包含中文描述（description_cn字段）"
+  },
+  "high_risk_categories": [
+    "gambling",
+    "cash_loan",
+    "fintech_lending",
+    "fake_gps",
+    "clone_app",
+    "app_store"
+  ],
+  "rules": {
+    "shopping": {
+      "category": "shopping",
+      "total_samples": 224,
+      "keywords": {
+        "indonesian": [
+          "toko",
+          "beli",
+          "jual",
+          "grosir",
+          "lelang",
+          "warung",
+          "apotik",
+          "apotek",
+          "klik",
+          "mitra",
+          "poin",
+          "kartu",
+          "member",
+          "etalase",
+          "dagangan",
+          "niaga",
+          "superindo",
+          "alfamart",
+          "indomaret",
+          "blibli",
+          "tokopedia",
+          "shopee",
+          "lazada",
+          "bukalapak",
+          "zalora",
+          "matahari",
+          "erafone",
+          "informa",
+          "k24klik",
+          "sayurbox",
+          "pasarkuota",
+          "pasar",
+          "grosi",
+          "katalog"
+        ],
+        "english": [
+          "shop",
+          "store",
+          "mart",
+          "mall",
+          "market",
+          "ecommerce",
+          "commerce",
+          "retail",
+          "trade",
+          "auction",
+          "seller",
+          "merchant",
+          "loyalty",
+          "rewards",
+          "catalogue",
+          "voucher",
+          "gift",
+          "wholesale",
+          "b2b",
+          "b2c",
+          "mitra",
+          "agent",
+          "fms",
+          "pda",
+          "lite",
+          "order",
+          "cart",
+          "checkout",
+          "dealer",
+          "coupon",
+          "qpon",
+          "ecomm",
+          "bid",
+          "bidder"
+        ],
+        "description": "这些词直接对应零售、电商、批发、拍卖、会员积分、卖家工具等购物核心场景。印尼语词汇如'toko'(店)、'beli'(买)、'jual'(卖)、'grosir'(批发)、'lelang'(拍卖)、'klik'(点击/在线)、'pasar'(市场)具有极强的本地电商特征。英语词根覆盖全球通用电商、零售、物流及B2B/B2C模式，区分度极高。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(shop|store|mart|mall|market|ecommerce|commerce|retail|trade|b2b|b2c|wholesale|grosir|toko|beli|jual|klik|mitra|seller|merchant|agent|fms|pda|lite|cart|checkout|dealer|ecomm|bid|bidder).*$",
+          "description_cn": "匹配包含核心电商/零售/批发/卖家工具/拍卖竞价关键词的包名。覆盖绝大多数C端购物、B2B批发、商家管理后台及物流PDA工具。",
+          "confidence": 0.95,
+          "examples": [
+            "com.shopee.id",
+            "com.tokopedia.tkpd",
+            "com.indogrosir.sd1.spi",
+            "com.tiktokshop.seller",
+            "com.shopee.spx.pda"
+          ]
+        },
+        {
+          "regex": "^.*\\.(loyalty|rewards|poin|member|card|gift|voucher|catalogue|ekatalog|etalase|coupon|qpon).*$",
+          "description_cn": "匹配会员积分、礼品卡、优惠券、电子目录等衍生购物场景。此类应用虽非直接下单，但属于零售生态的忠诚度管理与促销闭环。",
+          "confidence": 0.9,
+          "examples": [
+            "com.avian.loyalty",
+            "id.co.giftcard.holdr",
+            "id.dash.voucher.pling",
+            "yimm.e_catalogue",
+            "com.moonhint.ramayanapoinapp"
+          ]
+        },
+        {
+          "regex": "^.*\\.(shopee|tokopedia|bukalapak|lazada|blibli|zalora|alfamart|indomaret|familymart|circlek|lottemart|hypermart|superindo|matahari|erafone|informa|k24klik|sayurbox|pasarkuota|amazon|ebay|aliexpress|jd|taobao|coupang|wish|vova|11st|elevenst|kth|kshop|skmnc|gramedia|melawai|tunjunganplaza|pakuwon|summareconmall|lippomalls|aeon|pacificplace|styles|tangcity|gwk|moonhint|lpoint|getplus|holdr|prestasiretail|urbancoloyaltyapp|icemobile|albertheij|plants|broccolicart|brayamart|citramart|warungdigital|biggu|shopsavvy|onlineshoppinghub|on9store|elys|protius|zhiliaoapp|realmestore|mova|shopintar|mjs|astro|shopback|alibaba|airbnb|travelio|santika|archipelago|reddoorz|pegipegi|agoda|traveloka|loket|tiket|kudo|sinyee|babybus|astra|pinhome|btn|rumah123|caready|pasbid|smartbid|oto|moladin|kawanlama|ptmarketplaceio|jualxbeli|snapsell|snapcart).*$",
+          "description_cn": "匹配已知头部零售/电商/旅行预订/房产租赁品牌包名。品牌词具有唯一性，可直接高置信度判定为购物或相关交易生态应用。",
+          "confidence": 0.98,
+          "examples": [
+            "com.shopee.my",
+            "com.lazada.android",
+            "com.bukalapak.android",
+            "com.amazon.mShop.android.shopping",
+            "com.traveloka.tera"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Shopee",
+          "description": "东南亚头部综合电商平台，覆盖C端购物、商家版、物流PDA及Lite版",
+          "confidence": 0.99
+        },
+        {
+          "name": "Tokopedia",
+          "description": "印尼本土最大电商平台之一，含消费者端与卖家端",
+          "confidence": 0.99
+        },
+        {
+          "name": "Bukalapak",
+          "description": "印尼老牌电商平台，含C端购物与Mitra商家版",
+          "confidence": 0.99
+        },
+        {
+          "name": "Lazada",
+          "description": "阿里系东南亚电商平台，印尼市场核心玩家",
+          "confidence": 0.99
+        },
+        {
+          "name": "Blibli",
+          "description": "印尼本土综合电商，含主站、Siplah教育采购及线下BYOK",
+          "confidence": 0.98
+        },
+        {
+          "name": "Alfamart / Indomaret",
+          "description": "印尼两大便利店巨头，含零售APP、数字零售、积分会员及微商户版",
+          "confidence": 0.98
+        },
+        {
+          "name": "Zalora",
+          "description": "东南亚时尚服饰垂直电商平台",
+          "confidence": 0.97
+        },
+        {
+          "name": "Matahari / Erafone / Informa",
+          "description": "印尼知名百货、数码、家居零售连锁品牌官方商城",
+          "confidence": 0.97
+        },
+        {
+          "name": "Sayurbox / PasarKuota",
+          "description": "印尼生鲜电商与本地农产品直供平台",
+          "confidence": 0.96
+        },
+        {
+          "name": "Amazon / eBay / AliExpress / JD / Taobao",
+          "description": "国际头部跨境电商平台，在印尼有跨境购物用户群",
+          "confidence": 0.98
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或描述包含 'bank', 'finance', 'loan', 'pinjaman', 'kredit', 'dana', 'ovo', 'gopay', 'linkaja' 等词",
+          "reason": "属于银行、借贷或电子钱包支付类应用，核心功能是资金流转而非商品交易。"
+        },
+        {
+          "rule": "如果包名或描述包含 'game', 'play', 'casino', 'slot', 'judi', 'bet', 'togel' 等词",
+          "reason": "属于游戏或博彩类应用，与零售购物无直接关联。"
+        },
+        {
+          "rule": "如果包名或描述包含 'social', 'chat', 'messenger', 'wa', 'line', 'ig', 'tiktok' (主应用)",
+          "reason": "属于社交或即时通讯类应用，即使内嵌商城，主类别仍为社交。"
+        },
+        {
+          "rule": "如果包名或描述包含 'news', 'media', 'tv', 'radio', 'stream', 'video' 等词",
+          "reason": "属于媒体资讯或流媒体娱乐类应用。"
+        },
+        {
+          "rule": "如果包名或描述包含 'health', 'doctor', 'clinic', 'rs' (且无购物/零售后缀)",
+          "reason": "属于医疗健康服务类应用，非商品零售。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "Travel/Booking (旅行预订)",
+          "distinguishing_feature": "样本中包含Agoda, Traveloka, Tiket, Airbnb, RedDoorz, PegiPegi, Loket, Santika, Archipelago, Travelio等。区分方法：若核心业务为酒店/机票/民宿预订，且包名含'hotel','flight','travel','booking','rental'，可归类为Travel；若需严格限定实物零售，则应排除此类服务预订应用。"
+        },
+        {
+          "confused_with": "Real Estate (房产租赁/买卖)",
+          "distinguishing_feature": "样本中包含Rumah123, Pinhome, BTN, Travelio, Mamikos。区分方法：交易标的为不动产或长租公寓，非快消/零售商品。可通过'properti','rumah','kos','rental'等词过滤。"
+        },
+        {
+          "confused_with": "Fintech/Payment (金融科技/支付)",
+          "distinguishing_feature": "样本中包含BRI Bristore, GetPlus, L-Point, Holdr。区分方法：核心为积分兑换、会员权益或支付通道，而非直接商品选购。可通过'poin','loyalty','rewards','payment'结合业务描述区分。"
+        },
+        {
+          "confused_with": "Seller/Merchant Tools (商家管理工具)",
+          "distinguishing_feature": "样本中包含Shopify, TikTokShop Seller, Bukalapak Mitra, Tokopedia Seller, BigSeller, TopMortar。区分方法：目标用户为B端商家，功能为订单管理、库存同步、数据看板。可通过'seller','merchant','mitra','agent','fms','pda'识别，若需纯C端购物判定，可降权或单独分类。"
+        },
+        {
+          "confused_with": "Logistics/Delivery (物流仓储)",
+          "distinguishing_feature": "样本中包含Indopaket, Shopee FMS/PDA。区分方法：核心为包裹追踪、仓储管理、配送调度。可通过'logistics','delivery','courier','fms','pda','tracking'识别。"
+        }
+      ],
+      "reasoning": "综合224个样本特征，印尼购物类APP包名呈现高度结构化与生态化特征：1) 核心词根明确且高频（shop/store/mart/mall/toko/beli/jual等），直接映射零售交易意图；2) 垂直场景细分清晰，涵盖综合电商、生鲜、美妆、数码、拍卖(lelang)、批发(grosir)、会员积分(loyalty/poin)及商家工具(seller/mitra)；3) 头部品牌包名高度统一（shopee/tokopedia/bukalapak/lazada/blibli等），具备强唯一性；4) 衍生服务（电子目录、积分商城、物流PDA、商家版）虽非直接C端下单，但属于电商交易闭环的必要环节，故统一归入shopping。通过正则匹配核心词根+品牌白名单，结合金融/游戏/社交等明确排除规则，可实现高准确率判定。需注意旅行预订、房产租赁、商家工具等边缘场景，可通过业务描述或辅助关键词进行二次过滤或子类别划分。"
+    },
+    "utility": {
+      "category": "utility",
+      "total_samples": 3838,
+      "keywords": {
+        "indonesian": [
+          "pulsa",
+          "kuota",
+          "pajak",
+          "bpjs",
+          "pln",
+          "pdam",
+          "samsat",
+          "ktp",
+          "npwp",
+          "cekresi",
+          "tagihan",
+          "terjemahan",
+          "penerjemah",
+          "kalkulator",
+          "kompas",
+          "senter",
+          "pembersih",
+          "penghemat",
+          "pengingat",
+          "kunci",
+          "brankas",
+          "cadangan",
+          "jarak_jauh",
+          "kontrol",
+          "jaringan",
+          "kecepatan",
+          "pintar",
+          "rumah",
+          "bantuan",
+          "layanan",
+          "pemerintah",
+          "daerah",
+          "provinsi",
+          "kabupaten",
+          "kota",
+          "desa",
+          "warga",
+          "penduduk",
+          "pendaftaran",
+          "registrasi",
+          "verifikasi",
+          "validasi",
+          "konfirmasi",
+          "persetujuan",
+          "penolakan",
+          "izin",
+          "larangan",
+          "blokir",
+          "filter",
+          "batas",
+          "anggaran",
+          "biaya",
+          "harga",
+          "nilai",
+          "tarif",
+          "skor",
+          "peringkat",
+          "level",
+          "kelas",
+          "titik",
+          "bintang",
+          "hati",
+          "suka",
+          "cinta",
+          "favorit",
+          "bookmark",
+          "simpan",
+          "toko",
+          "jaga",
+          "tahan",
+          "pertahankan",
+          "pelihara",
+          "dukung",
+          "bantu",
+          "bimbing",
+          "arahkan",
+          "pimpin",
+          "tunjukkan",
+          "tampilkan",
+          "hadirkan",
+          "ungkap",
+          "buka",
+          "temukan",
+          "cari",
+          "lokasi",
+          "lacak",
+          "jejak",
+          "ikuti",
+          "kejar",
+          "buru",
+          "lihat",
+          "tonton",
+          "amati",
+          "perhatikan",
+          "spot",
+          "deteksi",
+          "rasakan",
+          "sentuh",
+          "tekan",
+          "ketuk",
+          "klik",
+          "pukul",
+          "serang",
+          "bang",
+          "boom",
+          "crash",
+          "break",
+          "shatter",
+          "smash",
+          "crush",
+          "squeeze",
+          "press",
+          "push",
+          "pull",
+          "drag",
+          "drop",
+          "lift",
+          "raise",
+          "lower",
+          "fall",
+          "sink",
+          "dive",
+          "plunge",
+          "jump",
+          "leap",
+          "hop",
+          "skip",
+          "run",
+          "walk",
+          "step",
+          "pace",
+          "stride",
+          "march",
+          "stroll",
+          "wander",
+          "roam",
+          "travel",
+          "journey",
+          "trip",
+          "tour",
+          "visit",
+          "explore"
+        ],
+        "english": [
+          "vpn",
+          "proxy",
+          "downloader",
+          "saver",
+          "cleaner",
+          "booster",
+          "scanner",
+          "reader",
+          "editor",
+          "converter",
+          "calculator",
+          "tracker",
+          "gps",
+          "camera",
+          "player",
+          "keyboard",
+          "launcher",
+          "wallpaper",
+          "clock",
+          "compass",
+          "flashlight",
+          "battery",
+          "vault",
+          "backup",
+          "recovery",
+          "remote",
+          "control",
+          "wifi",
+          "router",
+          "smart",
+          "iot",
+          "health",
+          "fitness",
+          "pedometer",
+          "translator",
+          "ai",
+          "generator",
+          "webapk",
+          "chromium",
+          "tool",
+          "manager",
+          "explorer",
+          "zip",
+          "ocr",
+          "pdf",
+          "file",
+          "storage",
+          "cache",
+          "junk",
+          "monitor",
+          "test",
+          "device",
+          "system",
+          "update",
+          "apk",
+          "app",
+          "mobile",
+          "android",
+          "lite",
+          "pro",
+          "free",
+          "fast",
+          "quick",
+          "easy",
+          "simple",
+          "secure",
+          "safe",
+          "block",
+          "filter",
+          "adblock",
+          "spam",
+          "call",
+          "sms",
+          "contact",
+          "phone",
+          "dialer",
+          "ringtone",
+          "sound",
+          "audio",
+          "equalizer",
+          "volume",
+          "speaker",
+          "record",
+          "recorder",
+          "screenshot",
+          "screen",
+          "mirror",
+          "cast",
+          "map",
+          "navigation",
+          "weather",
+          "calendar",
+          "timer",
+          "stopwatch",
+          "alarm",
+          "notification",
+          "log",
+          "data",
+          "sync",
+          "share",
+          "transfer",
+          "copy",
+          "paste",
+          "font",
+          "icon",
+          "widget",
+          "desktop",
+          "lock",
+          "password",
+          "auth",
+          "otp",
+          "wallet",
+          "browser",
+          "search",
+          "chat",
+          "voice",
+          "music",
+          "radio",
+          "tv",
+          "hdmi",
+          "usb",
+          "bluetooth",
+          "nfc",
+          "switch",
+          "button",
+          "mouse",
+          "touch",
+          "paint",
+          "draw",
+          "design",
+          "create",
+          "manage",
+          "track",
+          "check",
+          "verify",
+          "allow",
+          "limit",
+          "budget",
+          "rate",
+          "score",
+          "save",
+          "store",
+          "keep",
+          "support",
+          "help",
+          "guide",
+          "show",
+          "find",
+          "locate",
+          "detect",
+          "press",
+          "tap",
+          "click",
+          "drop",
+          "lift",
+          "run",
+          "walk",
+          "step",
+          "travel",
+          "explore"
+        ],
+        "description": "Utility类应用的核心特征是提供设备管理、文件处理、网络优化、系统增强、生活辅助及本地化政务服务等功能。英文关键词高度集中在工具属性词（如manager, cleaner, scanner, converter, tracker, vpn, downloader等）及系统组件词（如launcher, keyboard, wallpaper, clock, battery, wifi, router等）。印尼语关键词则大量体现本地民生与政务需求（如pulsa/kuota话费流量, pajak/samsat税务, bpjs医保, pln/pdam水电, ktp/npwp证件, terjemahan翻译等）。这些词汇组合能精准区分出以‘功能实现’和‘效率提升’为核心的工具类应用，而非内容消费或社交娱乐类应用。"
+      },
+      "patterns": [
+        {
+          "regex": "^org\\.chromium\\.webapk\\.",
+          "description_cn": "Chrome浏览器WebAPK封装壳，将网页应用打包为本地APK，属于典型的轻量级工具/浏览器扩展形态",
+          "confidence": 0.98,
+          "examples": [
+            "org.chromium.webapk.aef1990548974682d_v2",
+            "org.chromium.webapk.a8279ed50522b4f3b_v2"
+          ]
+        },
+        {
+          "regex": "\\.(vpn|proxy|unblock|tunnel|shadowsocks)\\.",
+          "description_cn": "网络代理与VPN工具，用于突破网络限制、加密流量或加速连接",
+          "confidence": 0.95,
+          "examples": [
+            "free.vpn.unblock.proxy.vpnmonster",
+            "com.github.shadowsocks",
+            "com.fast.free.unblock.secure.vpn"
+          ]
+        },
+        {
+          "regex": "\\.(downloader|saver|grabber|ripper)\\.",
+          "description_cn": "媒体下载与保存工具，常见于视频、音频、社交媒体状态（Status/Story）的离线保存",
+          "confidence": 0.94,
+          "examples": [
+            "com.all.video.downloadmanager",
+            "wasaver.downloadstatus.videosaver",
+            "com.snapx.tool.video.downloader.nologo2025"
+          ]
+        },
+        {
+          "regex": "\\.(cleaner|booster|optimizer|antivirus|security|junk)\\.",
+          "description_cn": "系统清理、加速与安全防护工具，用于释放存储空间、管理后台进程或查杀恶意软件",
+          "confidence": 0.93,
+          "examples": [
+            "clean.master.antivirus.battery.ora",
+            "com.phone.junk.cleaner.appszone",
+            "com.avast.android.cleaner"
+          ]
+        },
+        {
+          "regex": "\\.(scanner|reader|viewer|editor|converter|pdf|docx|ocr)\\.",
+          "description_cn": "文档处理与格式转换工具，涵盖PDF/Office文件阅读、扫描、编辑、OCR识别及格式互转",
+          "confidence": 0.92,
+          "examples": [
+            "com.skydot.docxreader.docx.docxviewer",
+            "com.pdfreader.lite.file",
+            "com.appxy.tinyscanner"
+          ]
+        },
+        {
+          "regex": "\\.(calculator|converter|tracker|pedometer|health|fitness|water|sleep)\\.",
+          "description_cn": "计算、换算与健康追踪工具，包括科学计算、单位/汇率换算、步数/饮水/睡眠监测等",
+          "confidence": 0.91,
+          "examples": [
+            "com.appovo.bmicalculator",
+            "com.xe.currency",
+            "com.healthandfitness.pedometer.steptracker"
+          ]
+        },
+        {
+          "regex": "\\.(camera|photo|selfie|beauty|filter|editor|collage|wallpaper|theme|launcher|keyboard|clock|compass|flashlight|battery|remote|control|wifi|router|iot|smart|home)\\.",
+          "description_cn": "多媒体创作、系统美化、硬件控制与智能家居工具，覆盖相机、修图、壁纸、输入法、时钟、指南针、遥控器、网络管理等",
+          "confidence": 0.9,
+          "examples": [
+            "com.snowcorp.soda.android",
+            "com.microsoft.launcher",
+            "com.tplink.iot",
+            "com.universal.tv.remote.control.screen.mirroring"
+          ]
+        },
+        {
+          "regex": "^id\\.(go\\.)?([a-z]+\\.)?(pulsa|kuota|pajak|bpjs|pln|pdam|samsat|ktp|npwp|cekresi|tagihan|terjemahan|penerjemah|kalkulator|kompas|senter|pembersih|penghemat|pengingat|kunci|brankas|cadangan|jarak_jauh|kontrol|jaringan|kecepatan|pintar|rumah|bantuan|layanan|pemerintah|daerah|provinsi|kabupaten|kota|desa|warga|penduduk|pendaftaran|registrasi|verifikasi|validasi|konfirmasi|persetujuan|penolakan|izin|larangan|blokir|filter|batas|anggaran|biaya|harga|nilai|tarif|skor|peringkat|level|kelas|titik|bintang|hati|suka|cinta|favorit|bookmark|simpan|toko|jaga|tahan|pertahankan|pelihara|dukung|bantu|bimbing|arahkan|pimpin|tunjukkan|tampilkan|hadirkan|ungkap|buka|temukan|cari|lokasi|lacak|jejak|ikuti|kejar|buru|lihat|tonton|amati|perhatikan|spot|deteksi|rasakan|sentuh|tekan|ketuk|klik|pukul|serang|bang|boom|crash|break|shatter|smash|crush|squeeze|press|push|pull|drag|drop|lift|raise|lower|fall|sink|dive|plunge|jump|leap|hop|skip|run|walk|step|pace|stride|march|stroll|wander|roam|travel|journey|trip|tour|visit|explore)",
+          "description_cn": "印尼本地化政务与民生服务工具，包名常以id.go.或id.开头，涵盖话费充值、税务查询、医保、水电缴费、证件核验、地方政务等",
+          "confidence": 0.89,
+          "examples": [
+            "id.tirtabenteng.siganteng",
+            "id.go.kemnaker",
+            "com.topupkuota",
+            "com.otoreport.apkrajawalipulsa"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Samsung",
+          "description": "三星系统级工具与配套应用（如GoodLock、Bixby、SmartThings、配件管理、系统组件等）",
+          "confidence": 0.96
+        },
+        {
+          "name": "Xiaomi/Redmi/POCO",
+          "description": "小米生态工具（如MIUI系统组件、文件管理器、计算器、健康、投屏、路由器管理等）",
+          "confidence": 0.95
+        },
+        {
+          "name": "OPPO/Realme/OnePlus",
+          "description": "ColorOS/OPlus系统工具（如浏览器、会员中心、投屏、健康、文件管理、控制中心等）",
+          "confidence": 0.94
+        },
+        {
+          "name": "Google",
+          "description": "谷歌官方工具与服务框架（如Chrome、Google Camera、Files、Translate、Authenticator、Assistant等）",
+          "confidence": 0.97
+        },
+        {
+          "name": "Huawei/Honor",
+          "description": "华为/荣耀系统工具与互联服务（如健康、文件管理、智能家居、设备互联等）",
+          "confidence": 0.93
+        },
+        {
+          "name": "Transsion (Tecno/Infinix/itel)",
+          "description": "传音系手机内置工具（如XOS启动器、文件管理器、健康、计算器、系统服务等）",
+          "confidence": 0.92
+        },
+        {
+          "name": "Microsoft",
+          "description": "微软生产力与系统工具（如Launcher、Bing、Authenticator、Edge、Office组件等）",
+          "confidence": 0.91
+        },
+        {
+          "name": "Adobe",
+          "description": "Adobe创意与文档工具（如Photoshop Express、Lightroom、PDF服务、字体服务等）",
+          "confidence": 0.9
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含明显的主机游戏、休闲游戏或游戏引擎标识（如com.game., .unity., .unreal., .gameloft., .miniclip., .playrix. 等），则不属于utility",
+          "reason": "游戏类应用以娱乐交互为核心，不属于系统辅助或效率工具范畴"
+        },
+        {
+          "rule": "如果包名属于主流社交平台或内容社区（如com.facebook., com.instagram., com.whatsapp., com.twitter., com.tiktok., com.reddit., com.discord. 等），则不属于utility",
+          "reason": "社交与内容平台属于Communication/Social类别，其官方客户端非工具属性"
+        },
+        {
+          "rule": "如果包名属于流媒体、音乐、视频点播平台（如com.netflix., com.spotify., com.disney., com.hbo., com.youtube. 等），则不属于utility",
+          "reason": "内容消费平台属于Entertainment/Media类别，非功能性工具"
+        },
+        {
+          "rule": "如果包名属于银行、证券、支付、保险等核心金融业务（如com.bank., .finance., .insurance., .trading., .crypto.exchange. 等），则不属于utility",
+          "reason": "金融交易类应用属于Finance类别，工具类仅包含计算器、汇率换算、记账等辅助功能"
+        },
+        {
+          "rule": "如果包名属于电商、外卖、出行、酒店预订等O2O服务（如com.shopee., com.tokopedia., com.grab., com.gojek., com.booking., com.airbnb. 等），则不属于utility",
+          "reason": "生活服务与交易平台属于Shopping/Travel/Local类别，非系统或设备工具"
+        }
+      ],
+      "reasoning": "通过对3838个印尼Utility类APP包名的深度分析，判定规则主要围绕‘功能导向’与‘系统/设备增强’两大核心逻辑构建。首先，包名中高频出现的管理、清理、扫描、转换、计算、追踪、代理、下载、美化、控制等英文功能词，直接映射了工具类应用的核心用途。其次，印尼本地化特征显著，id.go.及id.开头的包名大量涉及话费(pulsa)、税务(pajak)、医保(bpjs)、水电(pln/pdam)、证件(ktp/npwp)等民生政务工具，体现了区域市场特色。此外，Chrome WebAPK封装壳(org.chromium.webapk.)占比极高，属于典型的轻量级工具载体。品牌维度上，各大手机厂商(OEM)的系统级工具、谷歌/微软的官方效率组件、以及知名第三方工具开发商构成了主力。排除规则则严格划清了与游戏、社交、流媒体、金融交易、O2O服务等非工具类别的边界，确保分类的高纯度与业务一致性。综合包名结构、关键词分布、品牌归属及功能语义，可构建出高置信度的Utility类在线判定规则。"
+    },
+    "social_entertainment": {
+      "category": "social_entertainment",
+      "total_samples": 3810,
+      "keywords": {
+        "indonesian": [
+          "hiburan",
+          "mainan",
+          "sosial",
+          "kuis",
+          "tebak",
+          "gambar",
+          "warna",
+          "anak",
+          "balita",
+          "santai",
+          "lucu",
+          "ngobrol",
+          "seru",
+          "ringan"
+        ],
+        "english": [
+          "puzzle",
+          "match",
+          "blast",
+          "pop",
+          "sort",
+          "merge",
+          "idle",
+          "tycoon",
+          "ludo",
+          "mahjong",
+          "solitaire",
+          "card",
+          "board",
+          "chess",
+          "domino",
+          "bingo",
+          "quiz",
+          "trivia",
+          "coloring",
+          "paint",
+          "draw",
+          "kids",
+          "baby",
+          "toddler",
+          "short",
+          "drama",
+          "stream",
+          "live",
+          "meme",
+          "sticker",
+          "social",
+          "chat",
+          "video",
+          "music",
+          "radio",
+          "podcast",
+          "karaoke",
+          "dance",
+          "party",
+          "prank",
+          "fakechat",
+          "status",
+          "entertainment",
+          "casual",
+          "game"
+        ],
+        "description": "这些关键词高度集中于休闲游戏（消除、益智、棋牌、模拟、儿童早教）、社交互动（聊天、状态、社区）、流媒体娱乐（短视频、短剧、直播、音乐）及趣味工具（表情包、恶搞）。在印尼市场，此类应用包名常直接嵌入功能描述词，与金融、工具、硬核游戏等类别形成明显区分。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(puzzle|match|blast|pop|sort|merge|idle|tycoon|ludo|mahjong|solitaire|card|board|chess|domino|bingo|quiz|trivia|coloring|paint|draw|kids|baby|toddler).*",
+          "description_cn": "匹配休闲/益智/棋牌/儿童类应用包名。此类应用以轻度玩法、碎片化娱乐和早教互动为核心，包名中常直接包含玩法或受众词。",
+          "confidence": 0.88,
+          "examples": [
+            "com.puzzle.fun.free.blockpuzzle",
+            "com.gametion.snakesladders",
+            "com.kigle.cocobi.babycare",
+            "com.rvappstudios.baby.toddler.kids.games.learning.activity"
+          ]
+        },
+        {
+          "regex": "^.*\\.(short|drama|stream|live|meme|sticker|social|chat|video|music|radio|podcast|karaoke|dance|party|prank|fakechat|status|entertainment|casual|game(s)?).*",
+          "description_cn": "匹配短视频、直播、社交、音乐及趣味工具类包名。体现内容消费、社交互动与娱乐辅助属性，是social_entertainment的核心子域。",
+          "confidence": 0.85,
+          "examples": [
+            "com.reel.short.drama.crazy.popcorn",
+            "com.dukulive.stream",
+            "com.memeandsticker.personal",
+            "com.wa.status.app.downloader.photo.video.status"
+          ]
+        },
+        {
+          "regex": "^com\\.(kigle\\.cocobi|rvappstudios\\.baby|gametion|halfbrick|miniclip|cedargames|fungames|turborocketgames|playtika|realmadridplay|netx|tvb|vk|quora|irccloud|alexa\\.club|bm\\.pulsagram|tuntun\\.tt|youshort|reel\\.short|dukulive|netflix|apple\\.atve)\\..*",
+          "description_cn": "匹配已知头部开发商或品牌包名。这些厂商在休闲游戏、流媒体及社交领域具有极高市场占有率，其前缀可直接作为高置信度判定依据。",
+          "confidence": 0.95,
+          "examples": [
+            "com.kigle.cocobi.pizzamake",
+            "com.halfbrick.fruitninjafree",
+            "com.quora.android",
+            "com.netflix.NGP.FootballManagerMobile"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Kigle Cocobi",
+          "description": "专注儿童早教、模拟经营与互动游戏的知名开发商",
+          "confidence": 0.95
+        },
+        {
+          "name": "RV App Studios",
+          "description": "主打幼儿学习、音乐与早教互动游戏",
+          "confidence": 0.95
+        },
+        {
+          "name": "Gametion",
+          "description": "经典棋牌与桌游开发商（如Ludo King）",
+          "confidence": 0.95
+        },
+        {
+          "name": "Halfbrick",
+          "description": "全球知名休闲游戏厂商（水果忍者、Jetpack Joyride）",
+          "confidence": 0.95
+        },
+        {
+          "name": "Miniclip",
+          "description": "体育与休闲竞技游戏头部平台",
+          "confidence": 0.95
+        },
+        {
+          "name": "Netflix",
+          "description": "流媒体巨头，近年拓展互动游戏与体育内容",
+          "confidence": 0.95
+        },
+        {
+          "name": "VK",
+          "description": "俄罗斯/东欧主流视频社交平台",
+          "confidence": 0.95
+        },
+        {
+          "name": "Tuntun TT",
+          "description": "印尼本土社交娱乐与短视频聚合应用",
+          "confidence": 0.92
+        },
+        {
+          "name": "Dukulive",
+          "description": "东南亚地区流行的直播与社交互动平台",
+          "confidence": 0.92
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包含 bank, finance, loan, credit, wallet, payment, transfer, pinjam, dana, uang 等词，则不属于social_entertainment",
+          "reason": "这些词汇明确指向金融、借贷、支付或电子钱包类应用，属于fintech或banking类别。"
+        },
+        {
+          "rule": "如果包含 shopping, ecommerce, market, store, delivery, ride, taxi, food, ojek, grab, gojek 等词，则不属于social_entertainment",
+          "reason": "这些词汇属于电商、本地生活、出行或外卖服务，具有明确的交易与履约属性。"
+        },
+        {
+          "rule": "如果包含 launcher, cleaner, booster, antivirus, file, manager, system, settings, battery, wifi, vpn 等词，则不属于social_entertainment",
+          "reason": "这些词汇属于系统工具、设备优化或网络管理类应用，无娱乐或社交内容消费属性。"
+        },
+        {
+          "rule": "如果包含 mmo, rpg, fps, shooter, battle, war, strategy, survival, gacha, pvp, esport 等词（且无casual/idle/puzzle修饰），则不属于social_entertainment",
+          "reason": "这些词汇指向重度/硬核游戏，通常归类为hardcore_games或strategy_games，与轻度休闲娱乐定位不同。"
+        },
+        {
+          "rule": "如果包含 crypto, trading, exchange, defi, nft, mining, wallet, coin 等词，则不属于social_entertainment",
+          "reason": "属于区块链、数字资产交易或加密货币类应用，具有强金融投资属性。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "hardcore_games (重度游戏)",
+          "distinguishing_feature": "检查是否包含 casual, puzzle, idle, kids, match, ludo, mahjong 等轻度词，或是否属于休闲厂商。重度游戏包名多含 mmo, rpg, fps, battle, war, strategy 等词。"
+        },
+        {
+          "confused_with": "fintech_lending (金融借贷)",
+          "distinguishing_feature": "娱乐类无资金流转、信用评估或还款功能。若包名含 loan, pinjam, kredit, dana, cicil, bunga 等词，应直接排除。"
+        },
+        {
+          "confused_with": "gambling (博彩/老虎机)",
+          "distinguishing_feature": "本类别侧重免费休闲与内容消费。若包名明确含 slot, casino, bet, taruhan, judi, poker_real_money 等词，应归入gambling类别。"
+        },
+        {
+          "confused_with": "social_messaging (纯通讯社交)",
+          "distinguishing_feature": "本类别更侧重“娱乐内容消费”（短剧、直播、游戏、表情包、状态下载）。若为纯即时通讯（如 whatsapp, telegram, line, messenger），通常归入communication类别。"
+        }
+      ],
+      "reasoning": "综合样本特征，social_entertainment 在印尼市场呈现“轻度化、碎片化、内容驱动”的特点。包名结构高度依赖功能描述词（如 puzzle, match, short, drama, stream, meme）和知名休闲/内容厂商前缀。通过组合关键词匹配、正则模式识别与品牌白名单，可高效覆盖休闲游戏、流媒体、社交互动及趣味工具四大子域。同时，通过排除金融、电商、系统工具及硬核游戏特征词，能有效降低误判率。该规则体系兼顾了包名语义、开发者生态与印尼本地化表达，适合实时在线判定。"
+    },
+    "productivity": {
+      "category": "productivity",
+      "total_samples": 770,
+      "keywords": {
+        "indonesian": [
+          "absensi",
+          "presensi",
+          "eoffice",
+          "ekinerja",
+          "laporan",
+          "belajar",
+          "kasir",
+          "gudang",
+          "rumus",
+          "tutorial",
+          "catatan",
+          "keuangan",
+          "pinjaman",
+          "tagihan",
+          "gaji",
+          "karyawan",
+          "pegawai",
+          "sekolah",
+          "ujian",
+          "soal",
+          "notaris",
+          "arsip",
+          "inventaris"
+        ],
+        "english": [
+          "office",
+          "notes",
+          "notepad",
+          "pdf",
+          "doc",
+          "excel",
+          "attendance",
+          "finance",
+          "expense",
+          "loan",
+          "calculator",
+          "tracker",
+          "planner",
+          "budget",
+          "hris",
+          "portal",
+          "crm",
+          "pos",
+          "learn",
+          "edu",
+          "scanner",
+          "reader",
+          "viewer",
+          "editor",
+          "remote",
+          "database",
+          "work",
+          "job",
+          "recruit",
+          "management",
+          "tool",
+          "system",
+          "emi",
+          "debt",
+          "cash",
+          "wallet",
+          "schedule",
+          "diary",
+          "log",
+          "report",
+          "analyzer"
+        ],
+        "description": "这些词汇高度集中于办公文档处理、财务记账与计算、考勤与人事管理、教育学习、商业销售与库存管理等生产力核心场景。印尼本土应用大量使用'absensi/presensi'（考勤）、'eoffice'（电子政务）、'kasir'（收银）等本地化业务词，而英语词根则覆盖全球通用的效率工具命名规范，在娱乐、社交、游戏等类别中极少出现。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*(office|docs|document|pdf|excel|word|ppt|spreadsheet).*$",
+          "description_cn": "匹配包含办公文档处理核心词根的包名，用于识别WPS、微软Office、PDF/Word/Excel查看器与编辑器等文档生产力工具。",
+          "confidence": 0.95,
+          "examples": [
+            "com.infraware.office.link",
+            "cn.wps.moffice_i18n",
+            "com.andropenoffice"
+          ]
+        },
+        {
+          "regex": "^.*(notes?|notepad|memo|diary|logbook|journal|checklist).*$",
+          "description_cn": "匹配笔记、备忘录、日记与清单管理类包名，用于识别Evernote、便签、手写笔记等个人知识管理工具。",
+          "confidence": 0.92,
+          "examples": [
+            "com.nhstudio.inote.noteios.noteiphone",
+            "com.bh.diary.xm",
+            "com.ogden.memo"
+          ]
+        },
+        {
+          "regex": "^.*(finance|expense|budget|money|loan|emi|debt|cash|wallet|tracker|planner|calculator).*$",
+          "description_cn": "匹配财务记账、预算规划、贷款计算与债务管理类包名，用于识别个人/企业财务效率工具（非直接支付/网银）。",
+          "confidence": 0.9,
+          "examples": [
+            "com.finance.money.manageexpense",
+            "com.emicalculator.investment.financialtools.loanplanner.easyemi",
+            "com.youneedabudget.evergreen.app"
+          ]
+        },
+        {
+          "regex": "^.*(attendance|absensi|presensi|hris|workday|portal|eoffice|ekinerja|laporan).*$",
+          "description_cn": "匹配考勤打卡、人事管理、企业门户与政务办公类包名，印尼政企应用高度依赖此类命名规范。",
+          "confidence": 0.95,
+          "examples": [
+            "id.go.kemsos.absensi",
+            "com.workday.workdroidapp",
+            "com.intechcorp.jatim.eKinerja"
+          ]
+        },
+        {
+          "regex": "^.*(learn|edu|belajar|tutorial|exam|quiz|school|class|course|lms).*$",
+          "description_cn": "匹配教育学习、考试培训、学校管理与在线课程类包名，涵盖K12、语言学习、职业培训等知识生产力场景。",
+          "confidence": 0.88,
+          "examples": [
+            "com.google.android.apps.labs.language.tailwind",
+            "com.belajarnative",
+            "com.moodle.moodlemobile"
+          ]
+        },
+        {
+          "regex": "^.*(pos|kasir|merchant|crm|sales|gudang|inventory|warehouse|logistics).*$",
+          "description_cn": "匹配商业零售、客户关系管理、销售追踪与仓储物流类包名，用于识别B端商户管理与供应链效率工具。",
+          "confidence": 0.9,
+          "examples": [
+            "com.aplikasir.android",
+            "com.colliers.indonesia.cfmcrm",
+            "com.ozzo.Gudang"
+          ]
+        },
+        {
+          "regex": "^id\\.go\\..*\\.(absensi|presensi|eoffice|ekinerja|laporan|pajak|dinas|prov|kab|kota).*$",
+          "description_cn": "精准匹配印尼政府机构（id.go）下属的电子政务、税务、考勤与绩效汇报系统，具有极高的地域与类别指向性。",
+          "confidence": 0.98,
+          "examples": [
+            "id.go.kemsos.absensi",
+            "id.go.pajak.presensi",
+            "id.go.bengkuluutarakab.absensi"
+          ]
+        },
+        {
+          "regex": "^.*(scanner|reader|viewer|editor|converter|ocr|remote|database|simulator|route).*$",
+          "description_cn": "匹配专业扫描、文档阅读、远程协作、数据库管理与工程模拟类包名，属于垂直领域的效率辅助工具。",
+          "confidence": 0.85,
+          "examples": [
+            "com.intsig.camexam",
+            "com.anydesk.anydeskandroid",
+            "com.mathworks.matlabmobile"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "wps",
+          "description": "金山WPS Office办公套件，覆盖文档、表格、演示与PDF处理",
+          "confidence": 0.99
+        },
+        {
+          "name": "microsoft",
+          "description": "微软办公生态（Office, SharePoint, Teams, Lync, Intune）",
+          "confidence": 0.99
+        },
+        {
+          "name": "evernote",
+          "description": "印象笔记，全球主流跨平台笔记与知识管理工具",
+          "confidence": 0.98
+        },
+        {
+          "name": "atlassian",
+          "description": "Confluence等企业级协作与文档管理平台",
+          "confidence": 0.97
+        },
+        {
+          "name": "zoho",
+          "description": "Zoho企业邮箱与云端办公套件",
+          "confidence": 0.96
+        },
+        {
+          "name": "workday",
+          "description": "Workday企业HR、财务与办公管理平台",
+          "confidence": 0.97
+        },
+        {
+          "name": "salesforce",
+          "description": "Salesforce CRM客户关系管理与销售办公平台",
+          "confidence": 0.96
+        },
+        {
+          "name": "anydesk",
+          "description": "AnyDesk远程桌面与IT运维协作工具",
+          "confidence": 0.95
+        },
+        {
+          "name": "kumon",
+          "description": "Kumon公文式教育学习平台",
+          "confidence": 0.94
+        },
+        {
+          "name": "classdojo",
+          "description": "ClassDojo家校沟通与课堂管理工具",
+          "confidence": 0.94
+        },
+        {
+          "name": "moodle",
+          "description": "Moodle开源在线学习管理系统(LMS)",
+          "confidence": 0.95
+        },
+        {
+          "name": "google",
+          "description": "Google Workspace/Gmail等官方办公与生产力服务",
+          "confidence": 0.98
+        },
+        {
+          "name": "linkedin",
+          "description": "LinkedIn职场社交、招聘与销售导航工具",
+          "confidence": 0.93
+        },
+        {
+          "name": "upwork",
+          "description": "Upwork自由职业者接单与项目管理平台",
+          "confidence": 0.94
+        },
+        {
+          "name": "matlab",
+          "description": "MathWorks MATLAB工程计算与仿真工具",
+          "confidence": 0.96
+        },
+        {
+          "name": "intsig",
+          "description": "合合信息（CamScanner等）文档扫描与OCR工具",
+          "confidence": 0.95
+        },
+        {
+          "name": "appsheet",
+          "description": "Google AppSheet低代码应用构建平台",
+          "confidence": 0.94
+        },
+        {
+          "name": "ipusnas",
+          "description": "印尼国家图书馆官方数字阅读平台",
+          "confidence": 0.93
+        },
+        {
+          "name": "kbbi",
+          "description": "印尼语标准词典工具（yuku.kbbi5）",
+          "confidence": 0.92
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或说明包含 'game', 'casino', 'slot', 'judi', 'bet', 'poker', 'rtp' 等词",
+          "reason": "属于游戏或赌博类别，与生产力工具的核心功能（工作/学习/管理）完全无关"
+        },
+        {
+          "rule": "如果包含 'stream', 'video', 'movie', 'music', 'radio', 'podcast', 'tiktok', 'reels' 等词",
+          "reason": "属于媒体娱乐或短视频类别，侧重内容消费而非内容生产或效率提升"
+        },
+        {
+          "rule": "如果包含 'chat', 'social', 'messenger', 'dating', 'friend', 'meet' 等词（非企业通讯如lync/teams）",
+          "reason": "属于社交或约会类别，主要满足人际互动需求，非生产力场景"
+        },
+        {
+          "rule": "如果包含 'bank', 'transfer', 'payment', 'ewallet', 'crypto', 'trading' 且无记账/计算/报表特征",
+          "reason": "属于银行、支付或加密货币类别，侧重资金流转与交易，而非财务规划或办公管理"
+        },
+        {
+          "rule": "如果包含 'weather', 'news', 'magazine', 'comic', 'novel', 'horoscope' 等词",
+          "reason": "属于资讯、阅读娱乐或生活工具，不具备工作流优化或知识管理属性"
+        },
+        {
+          "rule": "如果包含 'camera', 'photo', 'filter', 'beauty', 'makeup', 'selfie' 等词",
+          "reason": "属于摄影美化类别，侧重图像处理而非文档/数据/任务管理"
+        },
+        {
+          "rule": "如果包含 'health', 'fitness', 'diet', 'period', 'baby', 'meditation' 等词",
+          "reason": "属于健康医疗类别，除非明确为工作排班/企业健康管理，否则应排除"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "banking / fintech_payment",
+          "distinguishing_feature": "Productivity侧重记账、预算、贷款计算、报表分析与财务规划（如tracker, calculator, planner, budget）；Banking/Fintech侧重直接资金交易、网银转账、支付网关与信贷放款（如bank, transfer, pay, loan_disbursement）。可通过是否包含交易/支付接口特征词区分。"
+        },
+        {
+          "confused_with": "education",
+          "distinguishing_feature": "App Store常将学习类归入Productivity。纯游戏化学习、儿童娱乐或题库刷题易混淆。区分点：Productivity侧重系统学习、学校管理、语言工具、考试备考与LMS平台（如learn, edu, lms, school, tutorial）；若包名含'game', 'play', 'kids_fun'且无管理/教学属性，则偏向娱乐教育。"
+        },
+        {
+          "confused_with": "tools / utilities",
+          "distinguishing_feature": "系统工具（清理、加速、壁纸、手电筒、文件管理器）易混淆。Productivity侧重内容创建、数据管理、工作流优化与专业计算（如office, notes, pdf, excel, calculator, database）；若仅为系统维护或基础硬件控制，则属于Tools。"
+        },
+        {
+          "confused_with": "business / shopping",
+          "distinguishing_feature": "电商购物、外卖配送、C端零售易混淆。Productivity侧重B端商户管理、供应链、CRM、HRIS与库存系统（如pos, kasir, crm, hris, inventory, warehouse）；若侧重C端商品浏览、下单、物流追踪，则属于Shopping/Business。"
+        }
+      ],
+      "reasoning": "综合包名结构、关键词分布及业务场景，Productivity类别在印尼市场呈现明显的“办公文档+财务规划+考勤人事+教育学习+商业管理”五大核心特征。包名中大量使用office, notes, pdf, excel, absensi, presensi, finance, loan, calculator, learn, edu, pos, crm等词根，且印尼本土政务/企业应用高度依赖id.go.*及eoffice/absensi命名规范。通过正则匹配核心词根、结合知名品牌白名单、排除娱乐/社交/纯金融交易类特征，可构建高准确率的实时判定规则。该规则体系兼顾了全球通用效率工具与印尼本地化政企/商业场景，能够有效过滤非生产力应用，同时覆盖笔记、文档、财务、考勤、教育、B端管理等细分领域，确保分类的召回率与精确度。"
+    },
+    "banking": {
+      "category": "banking",
+      "total_samples": 232,
+      "keywords": {
+        "indonesian": [
+          "bank",
+          "mbanking",
+          "mobilebanking",
+          "digitalbank",
+          "livin",
+          "brimo",
+          "wondr",
+          "mybca",
+          "halobca",
+          "simobi",
+          "msmile",
+          "onemobileapp",
+          "netbank",
+          "revolut",
+          "commbank",
+          "maybank",
+          "hsbc",
+          "citi",
+          "dbank",
+          "uob",
+          "dbs",
+          "mnc",
+          "kbstar",
+          "bjb",
+          "panin",
+          "rekeningku",
+          "celenganku",
+          "kreditcard",
+          "merchant",
+          "agent",
+          "token",
+          "pay",
+          "wallet",
+          "coop",
+          "koperasi",
+          "syariah",
+          "islamic",
+          "bpr",
+          "bmt",
+          "fcu",
+          "cu",
+          "nasabah",
+          "rekening",
+          "celengan",
+          "kredit",
+          "mb",
+          "digital",
+          "banking"
+        ],
+        "english": [
+          "bank",
+          "banking",
+          "mobile",
+          "digital",
+          "merchant",
+          "agent",
+          "token",
+          "pay",
+          "wallet",
+          "credit",
+          "union",
+          "fcu",
+          "cu",
+          "coop",
+          "cooperative",
+          "trust",
+          "revolut",
+          "commbank",
+          "maybank",
+          "hsbc",
+          "citi",
+          "dbank",
+          "uob",
+          "dbs",
+          "mnc",
+          "kbstar",
+          "bjb",
+          "panin",
+          "rekeningku",
+          "celenganku",
+          "kreditcard",
+          "merchant",
+          "agent",
+          "token",
+          "pay",
+          "wallet",
+          "coop",
+          "koperasi",
+          "syariah",
+          "islamic",
+          "bpr",
+          "bmt",
+          "fcu",
+          "cu",
+          "nasabah",
+          "rekening",
+          "celengan",
+          "kredit",
+          "mb",
+          "digital",
+          "banking"
+        ],
+        "description": "这些关键词高度集中于印尼本土银行品牌缩写（如bri, bca, bni, mandiri, btn, bsi, cimb, ocbc, permata, mega, panin, jago, blu, nobu, linebank, aladinbank, hibank, danabagus, sumut, jatim, jateng, lampung, kalsel, kalteng, kaltimtara, sulselbar, ntt, riau, sumut, sulut, bpr, bmt, koperasi, syariah, islamic, rekening, celengan, kredit, nasabah, mbanking, mobilebanking, digitalbank, livin, brimo, wondr, mybca, halobca, simobi, msmile, onemobileapp, netbank, revolut, commbank, maybank, hsbc, citi, dbank, uob, dbs, mnc, kbstar, bjb, panin, rekeningku, celenganku, kreditcard, merchant, agent, token, pay, wallet, coop, koperasi, syariah, islamic, bpr, bmt, fcu, cu, nasabah, rekening, celengan, kredit, mb, digital, banking）、通用金融术语（bank, banking, mobile, digital, merchant, agent, token, pay, wallet, credit, union, fcu, cu, coop, cooperative, trust）以及印尼语特有金融词汇（rekening, celengan, kredit, nasabah, syariah, koperasi, bpr, bmt）。这些词在包名或说明中高频出现，能精准锚定银行及核心金融服务应用。"
+      },
+      "patterns": [
+        {
+          "regex": "^id\\.co\\.(bri|bca|bni|btn|bsi|cimb|ocbc|permata|mega|panin|jago|blu|nobu|linebank|aladinbank|hibank|danabagus|sumut|jatim|jateng|lampung|kalsel|kalteng|kaltimtara|sulselbar|ntt|riau|sumut|sulut|bpr|bmt|koperasi|syariah|islamic|rekening|celengan|kredit|nasabah|mbanking|mobilebanking|digitalbank|livin|brimo|wondr|mybca|halobca|simobi|msmile|onemobileapp|netbank|revolut|commbank|maybank|hsbc|citi|dbank|uob|dbs|mnc|kbstar|bjb|panin|rekeningku|celenganku|kreditcard|merchant|agent|token|pay|wallet|coop|koperasi|syariah|islamic|bpr|bmt|fcu|cu|nasabah|rekening|celengan|kredit|mb|digital|banking)\\..*",
+          "description_cn": "匹配印尼官方银行域名结构 `id.co.[银行缩写/品牌].*`。印尼绝大多数持牌商业银行、地方银行（BPD）、伊斯兰银行及信用合作社均采用此标准包名格式，是识别印尼本土银行应用的最强特征。",
+          "confidence": 0.98,
+          "examples": [
+            "id.co.bri.brimo",
+            "id.co.bca",
+            "id.co.bankjatim.majapahit.CMSPEMDATOKEN"
+          ]
+        },
+        {
+          "regex": "^com\\.(bca|btpn|dwidasa|kospin|koperasi|mbank|panin|simas|nobubank|hibank|dbank|uob|dbs|mnc|kbBukopin|lst|dev\\.jakone|asabri|celenganku|rekeningku|trust|ammana|megasyariah|aladinbank|linebank|bcasyariah|bankmega|ocbcnisp|bankraya|bankfama|bankbkemobile|bankarthagraha|bankdki|bankntbsyariah|apps\\.tkbmobileapps|revolut|commbank|maybank|hsbc|citi|dbank|uob|dbs|mnc|kbstar|bjb|panin|rekeningku|celenganku|kreditcard|merchant|agent|token|pay|wallet|coop|koperasi|syariah|islamic|bpr|bmt|fcu|cu|nasabah|rekening|celengan|kredit|mb|digital|banking)\\..*",
+          "description_cn": "匹配以 `com.` 开头且紧跟知名银行品牌、金融科技公司或通用金融词汇的包名。涵盖外资银行印尼分行、数字银行、区域银行及信用合作社的移动端应用。",
+          "confidence": 0.95,
+          "examples": [
+            "com.bca",
+            "com.btpn.touchbiz",
+            "com.dwidasa.bcas.mb.android"
+          ]
+        },
+        {
+          "regex": ".*\\.(mb|mobilebanking|digitalbank|livin|brimo|wondr|mybca|halobca|simobi|msmile|onemobileapp|netbank|revolut|commbank|maybank|hsbc|citi|dbank|uob|dbs|mnc|kbstar|bjb|panin|rekeningku|celenganku|kreditcard|merchant|agent|token|pay|wallet|coop|koperasi|syariah|islamic|bpr|bmt|fcu|cu|nasabah|rekening|celengan|kredit|mb|digital|banking)$",
+          "description_cn": "匹配包名末尾包含明确银行服务后缀的模式，如 `mb` (mobile banking), `mobilebanking`, `digitalbank`, `livin`, `brimo`, `wondr` 等。这些后缀直接表明该应用是银行官方推出的移动端服务客户端。",
+          "confidence": 0.92,
+          "examples": [
+            "id.co.bri.brimo",
+            "id.bmri.livin",
+            "com.jago.digitalBanking"
+          ]
+        },
+        {
+          "regex": "^co\\.id\\.bankbsi\\..*|^id\\.bmri\\..*|^id\\.bni\\..*|^id\\.bions\\..*|^id\\.bankina\\..*|^id\\.aladinbank\\..*|^id\\.co\\.linebank$|^id\\.co\\.bcasyariah\\..*|^id\\.co\\.bankfama\\..*|^id\\.co\\.bankbkemobile\\..*|^id\\.co\\.bankarthagraha\\..*|^id\\.co\\.bankdki\\..*|^id\\.co\\.bankntbsyariah\\..*|^id\\.co\\.bankraya\\..*|^id\\.co\\.banklampung\\..*|^id\\.co\\.banksultra\\..*|^id\\.co\\.collega\\..*|^id\\.co\\.bri\\..*|^id\\.co\\.btn\\..*|^id\\.co\\.bni\\..*|^id\\.co\\.bca\\..*|^id\\.co\\.cimbniaga\\..*|^id\\.co\\.ocbc\\..*|^id\\.co\\.permata\\..*|^id\\.co\\.mega\\..*|^id\\.co\\.panin\\..*|^id\\.co\\.jago\\..*|^id\\.co\\.blu\\..*|^id\\.co\\.nobu\\..*|^id\\.co\\.hibank\\..*|^id\\.co\\.danabagus\\..*|^id\\.co\\.sumut\\..*|^id\\.co\\.jatim\\..*|^id\\.co\\.jateng\\..*|^id\\.co\\.lampung\\..*|^id\\.co\\.kalsel\\..*|^id\\.co\\.kalteng\\..*|^id\\.co\\.kaltimtara\\..*|^id\\.co\\.sulselbar\\..*|^id\\.co\\.ntt\\..*|^id\\.co\\.riau\\..*|^id\\.co\\.sumut\\..*|^id\\.co\\.sulut\\..*|^id\\.co\\.bpr\\..*|^id\\.co\\.bmt\\..*|^id\\.co\\.koperasi\\..*|^id\\.co\\.syariah\\..*|^id\\.co\\.islamic\\..*|^id\\.co\\.rekening\\..*|^id\\.co\\.celengan\\..*|^id\\.co\\.kredit\\..*|^id\\.co\\.nasabah\\..*|^id\\.co\\.mbanking\\..*|^id\\.co\\.mobilebanking\\..*|^id\\.co\\.digitalbank\\..*|^id\\.co\\.livin\\..*|^id\\.co\\.brimo\\..*|^id\\.co\\.wondr\\..*|^id\\.co\\.mybca\\..*|^id\\.co\\.halobca\\..*|^id\\.co\\.simobi\\..*|^id\\.co\\.msmile\\..*|^id\\.co\\.onemobileapp\\..*|^id\\.co\\.netbank\\..*|^id\\.co\\.revolut\\..*|^id\\.co\\.commbank\\..*|^id\\.co\\.maybank\\..*|^id\\.co\\.hsbc\\..*|^id\\.co\\.citi\\..*|^id\\.co\\.dbank\\..*|^id\\.co\\.uob\\..*|^id\\.co\\.dbs\\..*|^id\\.co\\.mnc\\..*|^id\\.co\\.kbstar\\..*|^id\\.co\\.bjb\\..*|^id\\.co\\.panin\\..*|^id\\.co\\.rekeningku\\..*|^id\\.co\\.celenganku\\..*|^id\\.co\\.kreditcard\\..*|^id\\.co\\.merchant\\..*|^id\\.co\\.agent\\..*|^id\\.co\\.token\\..*|^id\\.co\\.pay\\..*|^id\\.co\\.wallet\\..*|^id\\.co\\.coop\\..*|^id\\.co\\.koperasi\\..*|^id\\.co\\.syariah\\..*|^id\\.co\\.islamic\\..*|^id\\.co\\.bpr\\..*|^id\\.co\\.bmt\\..*|^id\\.co\\.fcu\\..*|^id\\.co\\.cu\\..*|^id\\.co\\.nasabah\\..*|^id\\.co\\.rekening\\..*|^id\\.co\\.celengan\\..*|^id\\.co\\.kredit\\..*|^id\\.co\\.mb\\..*|^id\\.co\\.digital\\..*|^id\\.co\\.banking\\..*",
+          "description_cn": "匹配印尼银行及金融机构常用的 `co.id` 或 `id.` 顶级域名变体结构。该模式覆盖了大量地方性银行（BPD）、伊斯兰银行、数字银行及信用合作社的官方应用包名。",
+          "confidence": 0.94,
+          "examples": [
+            "co.id.bankbsi.qrismerchant",
+            "id.bmri.livin",
+            "id.bni.wondr"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "BRI (Bank Rakyat Indonesia)",
+          "description": "印尼最大的国有商业银行之一，包名常含 bri, brimo, brismart, brisya, bricreditcard, brilink 等。",
+          "confidence": 0.99
+        },
+        {
+          "name": "BCA (Bank Central Asia)",
+          "description": "印尼最大的私营银行，包名常含 bca, mybca, halobca, bcasyariah, bcalife 等。",
+          "confidence": 0.99
+        },
+        {
+          "name": "Mandiri (Bank Mandiri)",
+          "description": "印尼国有大型银行，包名常含 bmri, mandiri, livin, mandirifiestapoin, sirsmandiri 等。",
+          "confidence": 0.99
+        },
+        {
+          "name": "BNI (Bank Negara Indonesia)",
+          "description": "印尼国有银行，包名常含 bni, wondr, bnicreditcard, yapcustomer, newdigihc 等。",
+          "confidence": 0.99
+        },
+        {
+          "name": "BSI (Bank Syariah Indonesia)",
+          "description": "印尼最大的伊斯兰银行，包名常含 bankbsi, bsiagent, bsi, syariah 等。",
+          "confidence": 0.98
+        },
+        {
+          "name": "CIMB Niaga",
+          "description": "马来西亚CIMB集团印尼分行，包名常含 cimb, cimbniaga, rtbniaga 等。",
+          "confidence": 0.97
+        },
+        {
+          "name": "BTN (Bank Tabungan Negara)",
+          "description": "印尼国有住房储蓄银行，包名常含 btn, btnsyariah, btnmerchant, saas 等。",
+          "confidence": 0.97
+        },
+        {
+          "name": "Jago Digital Bank",
+          "description": "印尼新兴数字银行，包名常含 jago, digitalBanking 等。",
+          "confidence": 0.96
+        },
+        {
+          "name": "OCBC NISP",
+          "description": "新加坡华侨银行印尼分行，包名常含 ocbc, ocbcni, onemobileapp 等。",
+          "confidence": 0.96
+        },
+        {
+          "name": "Panin Bank",
+          "description": "印尼老牌私营银行，包名常含 panin, mobilepanin 等。",
+          "confidence": 0.95
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或说明明确包含 'slot', 'casino', 'judi', 'poker', 'togel', 'betting', 'gaming' 等词汇",
+          "reason": "这些词汇属于在线博彩/赌博类别，与正规银行业务完全无关，需严格排除。"
+        },
+        {
+          "rule": "如果包名包含 'insurance', 'asuransi', 'pru', 'allianz', 'manulife', 'axa' 且无银行核心服务后缀",
+          "reason": "属于保险（insurance）类别，虽然同属金融，但业务逻辑和监管分类与banking不同。"
+        },
+        {
+          "rule": "如果包名包含 'stock', 'saham', 'trading', 'forex', 'crypto', 'invest', 'securities' 且无银行品牌背书",
+          "reason": "属于证券交易/投资/外汇类别，侧重资本市场交易而非存贷/支付等银行核心业务。"
+        },
+        {
+          "rule": "如果包名包含 'loan', 'pinjaman', 'kredit', 'fintech', 'lending', 'dana', 'kredivo', 'akulaku' 且无持牌银行域名",
+          "reason": "属于金融科技借贷（fintech_lending）类别，通常为P2P或消费信贷平台，非传统银行APP。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "fintech_lending (金融科技借贷)",
+          "distinguishing_feature": "banking类应用通常带有持牌银行官方域名（id.co.*, co.id.*）或明确银行品牌缩写；而fintech_lending多为独立科技公司域名，且包名常含 'pinjaman', 'kredit', 'dana', 'kredivo' 等借贷特征词。"
+        },
+        {
+          "confused_with": "insurance (保险)",
+          "distinguishing_feature": "banking类应用核心功能为账户管理、转账、支付、信用卡；保险类应用包名/说明常含 'asuransi', 'insurance', 'claim', 'policy', 'pru', 'manulife' 等。若银行APP附带保险模块（如bcalife），仍属banking，但纯保险APP应排除。"
+        },
+        {
+          "confused_with": "investment/securities (投资/证券)",
+          "distinguishing_feature": "banking类侧重资金存管与日常交易；证券类包名常含 'stock', 'saham', 'trading', 'securities', 'reksa', 'fund'。部分银行APP集成理财功能，但主包名仍以银行品牌为主。"
+        },
+        {
+          "confused_with": "payment/wallet (支付/电子钱包)",
+          "distinguishing_feature": "banking类通常由持牌银行发行，包名含银行缩写；电子钱包（如GoPay, OVO, Dana）多为独立支付公司，包名常含 'pay', 'wallet', 'gopay', 'ovo', 'dana' 且无银行域名结构。"
+        }
+      ],
+      "reasoning": "综合推理逻辑：上述规则基于232个印尼banking样本的包名结构与语义特征构建。核心判定依据为三点：1) 域名结构特征：印尼持牌银行高度统一使用 `id.co.[bank]`、`co.id.[bank]` 或 `com.[bank]` 格式，这是最可靠的强特征；2) 品牌与产品后缀：如 `brimo`, `livin`, `wondr`, `mybca`, `halobca`, `simobi`, `msmile` 等均为各大银行官方移动端品牌，具有极高辨识度；3) 业务关键词：`bank`, `mbanking`, `mobilebanking`, `digitalbank`, `merchant`, `agent`, `token`, `rekening`, `koperasi`, `syariah` 等直接指向银行核心业务（账户、转账、商户服务、伊斯兰金融、合作社金融）。通过正则匹配包名结构、关键词过滤、品牌白名单结合排除规则（剔除博彩、纯保险、纯借贷、纯证券），可实现高精度、低误报的实时在线判定。置信度分层设计确保系统对明确品牌/域名给予最高权重，对单一关键词给予中等权重，并预留人工审核阈值。"
+    },
+    "fintech_lending": {
+      "category": "fintech_lending",
+      "total_samples": 116,
+      "keywords": {
+        "indonesian": [
+          "kredit",
+          "gadai",
+          "cicil",
+          "dana",
+          "lending",
+          "paylater",
+          "fintech",
+          "p2p",
+          "lender",
+          "modal",
+          "agen",
+          "merchant",
+          "superapp",
+          "crowdfund",
+          "finpartner"
+        ],
+        "english": [
+          "credit",
+          "finance",
+          "loan",
+          "lending",
+          "paylater",
+          "fintech",
+          "p2p",
+          "lender",
+          "agent",
+          "merchant",
+          "superapp",
+          "crowdfund",
+          "finpartner"
+        ],
+        "description": "这些关键词直接对应印尼市场的信贷、分期、典当、P2P借贷及金融科技代理业务。'kredit/credit'、'lending/loan'、'paylater/cicil'是核心借贷标识；'gadai'代表典当借贷；'dana/fintech/p2p'体现金融科技属性；'lender/agent/merchant'反映借贷生态中的放款方、代理与商户端角色。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(credit|kredit|lending|loan|paylater|cicil|gadai|dana|fintech|p2p|lender|fif|homecredit|kredivo|akulaku|indodana|koinworks|bfi|aeoncredit|wom|adira|taf|finaccel|fazz|julo|kreditplus|edufund|crowdfund|finpartner|finetiks|finflex|finture|fin|modal|nasional|virtus|tentendigital|gradana|alami|motioncredit|capitalnet|danacita|crediseal|pefi|sewasam|ucollect|payjoy|kastfinance|momofin|cermati|myidscore|pegadaian|pcpexpress|cnaf|credibook|unicorn|kopnus|blicicil|payfazz|indopremier|one\\.ifg|bridanareksasekuritas|ayovestpro|bfi\\.agenttools|fusionmedia|olymptrade|bitget|bareksa|kredivoseller|finaccel\\.lion|indodana\\.onsite\\.agent)\\..*$",
+          "description_cn": "匹配包含核心借贷、分期、典当、P2P及知名印尼金融科技品牌名称的包名。该模式覆盖了样本中绝大多数直接以业务类型或品牌命名的应用，是识别fintech_lending的最强特征。",
+          "confidence": 0.95,
+          "examples": [
+            "id.motioncredit.app",
+            "com.kredivo.komodo.android",
+            "com.akulakufinance",
+            "id.co.pegadaian.syariah.agen"
+          ]
+        },
+        {
+          "regex": "^.*\\.(agent|lender|merchant|partner|onsite|prod|dashboard|status|tools|preassessment|coll)\\..*$",
+          "description_cn": "匹配借贷生态中的B端或工具类包名后缀。印尼信贷平台常将代理端(agent)、放款端(lender)、商户端(merchant)、合作方(partner)、催收(coll)、设备锁机(status)及预评估(preassessment)独立打包，此类后缀结合金融前缀可精准识别。",
+          "confidence": 0.85,
+          "examples": [
+            "com.gradana.agent",
+            "com.gradana.lender",
+            "com.payjoy.status",
+            "com.aeoncredit.id.preassessment.fast"
+          ]
+        },
+        {
+          "regex": "^id\\.co\\..*\\.(fif|bfi|wom|adira|taf|homecredit|pegadaian|edufund|myhomecredit|fifgroup)\\..*$",
+          "description_cn": "匹配印尼本土持牌金融机构（如FIF、BFI、WOM、Adira、TAF、Home Credit、Pegadaian）的官方包名结构。'id.co.'是印尼企业标准域名前缀，结合机构缩写可高置信度判定为正规信贷/租赁服务。",
+          "confidence": 0.92,
+          "examples": [
+            "id.co.fifgroup.fema",
+            "id.co.bfi.customer",
+            "id.co.myhomecredit",
+            "id.co.edufund"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Kredivo / Finaccel",
+          "description": "印尼头部BNPL（先买后付）与消费信贷平台，母公司为Finaccel。",
+          "confidence": 0.98
+        },
+        {
+          "name": "Akulaku",
+          "description": "东南亚知名数字银行与分期购物平台，提供现金贷与商品分期。",
+          "confidence": 0.98
+        },
+        {
+          "name": "Home Credit",
+          "description": "国际消费金融集团，在印尼提供广泛的个人信贷与分期服务。",
+          "confidence": 0.97
+        },
+        {
+          "name": "Indodana",
+          "description": "印尼P2P借贷与数字信贷平台，提供个人与小微企业贷款。",
+          "confidence": 0.96
+        },
+        {
+          "name": "KoinWorks",
+          "description": "印尼合规P2P网贷平台，主打个人与商业借贷。",
+          "confidence": 0.96
+        },
+        {
+          "name": "FIF Group / WOM Finance / Adira / TAF",
+          "description": "印尼大型汽车金融与租赁集团，提供车辆抵押贷款与分期服务。",
+          "confidence": 0.95
+        },
+        {
+          "name": "Pegadaian",
+          "description": "印尼国有典当行，提供黄金/物品抵押借贷及伊斯兰金融（Syariah）服务。",
+          "confidence": 0.95
+        },
+        {
+          "name": "BFI Finance",
+          "description": "印尼持牌非银行金融机构，主营个人信贷与抵押贷款。",
+          "confidence": 0.94
+        },
+        {
+          "name": "Aeon Credit",
+          "description": "永旺集团旗下信贷服务，提供信用卡预评估与消费分期。",
+          "confidence": 0.93
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或说明明确包含 'bank'、'banking'、'digital_bank' 且无信贷/分期特征",
+          "reason": "属于传统银行或数字银行（banking）类别，而非纯fintech_lending。银行APP通常包含存款、转账、账户管理等综合功能。"
+        },
+        {
+          "rule": "如果包名包含 'trading'、'forex'、'crypto'、'wallet'、'exchange'、'invest'、'reksa' 且无信贷/分期/典当特征",
+          "reason": "属于交易、加密货币、钱包或投资理财（investment/trading）类别。样本中混入部分交易类应用，但纯fintech_lending应以资金借出/分期为核心。"
+        },
+        {
+          "rule": "如果包名包含 'game'、'slot'、'casino'、'bet'、'judi'",
+          "reason": "属于博彩/游戏类别，与金融科技借贷完全无关，需严格排除。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "investment / trading / crypto",
+          "distinguishing_feature": "fintech_lending核心是资金借出、分期还款、信用评估或抵押典当；而投资/交易类核心是资产买卖、行情查看、钱包管理。可通过关键词'loan/credit/kredit/gadai'与'trading/exchange/wallet/invest'进行区分。"
+        },
+        {
+          "confused_with": "banking / digital_wallet",
+          "distinguishing_feature": "银行/电子钱包侧重支付、转账、余额管理；fintech_lending侧重授信、放款、账单分期、催收。若包名含'paylater/cicil/kredit/lending'或明确为P2P/BNPL品牌，则归为lending。"
+        },
+        {
+          "confused_with": "credit_scoring / financial_tools",
+          "distinguishing_feature": "信用评分或比价工具（如cermati、myidscore）本身不放款，但常作为lending生态入口。若仅含'score'、'compare'、'calculator'且无放款/分期功能，置信度应降至0.7-0.8，需结合业务说明判定。"
+        }
+      ],
+      "reasoning": "综合推理逻辑：印尼fintech_lending应用包名具有高度结构化特征。首先，核心业务词（credit/kredit/lending/loan/paylater/cicil/gadai）直接出现在包名中，是最高置信度信号；其次，头部品牌（Kredivo, Akulaku, Home Credit, Indodana, KoinWorks, FIF, Pegadaian等）具有强独占性，匹配即可判定；第三，B端/工具端包名常以agent/lender/merchant/preassessment/coll结尾，反映信贷业务链条；第四，印尼企业标准域名前缀'id.co.'结合机构缩写可过滤非正规应用。通过排除纯交易、银行、博彩类特征，并结合关键词+品牌+后缀模式，可构建高召回、高精度的在线判定规则。"
+    },
+    "transportation": {
+      "category": "transportation",
+      "total_samples": 170,
+      "keywords": {
+        "indonesian": [
+          "ojol",
+          "ojek",
+          "krl",
+          "mrt",
+          "damri",
+          "pelni",
+          "kai",
+          "dishub",
+          "transjakarta",
+          "angkot",
+          "kereta",
+          "kapal",
+          "pesawat",
+          "kurir",
+          "logistik",
+          "ekspedisi",
+          "pengiriman",
+          "tiket",
+          "antar",
+          "jemput",
+          "supir",
+          "sopir",
+          "penumpang",
+          "armada",
+          "muat",
+          "sewa",
+          "kendaraan",
+          "transportasi",
+          "rute",
+          "navigasi",
+          "peta",
+          "etoll",
+          "eticket"
+        ],
+        "english": [
+          "driver",
+          "passenger",
+          "taxi",
+          "ride",
+          "transport",
+          "transit",
+          "fleet",
+          "logistics",
+          "courier",
+          "express",
+          "delivery",
+          "cargo",
+          "freight",
+          "bus",
+          "train",
+          "rail",
+          "ferry",
+          "ship",
+          "flight",
+          "airline",
+          "ticket",
+          "travel",
+          "trip",
+          "map",
+          "gps",
+          "navigation",
+          "route",
+          "drive",
+          "tms",
+          "dispatch",
+          "tracking",
+          "rental",
+          "car",
+          "motor",
+          "bike",
+          "scooter"
+        ],
+        "description": "这些关键词高度集中于人员出行（网约车、公交、航空、铁路、轮渡）、货物运输（快递、物流、车队管理）、导航定位及票务预订场景。印尼语特征词（如ojol, krl, damri, dishub, kurir）具有极强的地域指向性，能有效过滤非本地交通应用。"
+      },
+      "patterns": [
+        {
+          "regex": ".*\\.(driver|passenger|supir|sopir|penumpang)\\..*",
+          "description_cn": "匹配包名中包含司机端或乘客端标识的应用，广泛用于网约车、出租车、货运平台的角色区分端。",
+          "confidence": 0.92,
+          "examples": [
+            "com.gojek.driver.bike",
+            "co.muvmi.passenger",
+            "com.taxsee.driver3"
+          ]
+        },
+        {
+          "regex": ".*\\.(logistics|courier|express|delivery|cargo|freight|tms|dispatch|tracking|ekspedisi|pengiriman|kurir)\\..*",
+          "description_cn": "匹配物流、快递、货运调度及运输管理系统（TMS）类应用，核心功能为货物追踪、车队调度与配送管理。",
+          "confidence": 0.9,
+          "examples": [
+            "com.lionparcel.services.driver",
+            "com.easygo.tms",
+            "com.azlogistik.muatmuat"
+          ]
+        },
+        {
+          "regex": ".*\\.(transport|transit|transportasi|dishub|transjakarta|angkot|damri|pelni|kai|krl|mrt|bus|train|rail|ferry|ship|kapal|kereta)\\..*",
+          "description_cn": "匹配公共交通、城际客运、轨道交通、航运及地方交通局官方应用，涵盖印尼主流公交与铁路系统。",
+          "confidence": 0.93,
+          "examples": [
+            "com.transjakmobile",
+            "com.kci.access",
+            "id.co.pelni.superapp"
+          ]
+        },
+        {
+          "regex": ".*\\.(taxi|ride|cab|ojol|ojek|ticket|booking|travel|trip|flight|airline|aviation|map|gps|navigation|route|drive|rental|car|motor|bike|scooter|etoll|eticket)\\..*",
+          "description_cn": "匹配打车出行、旅行票务预订、地图导航、车辆租赁及电子收费卡查询类应用，覆盖出行全链路工具。",
+          "confidence": 0.88,
+          "examples": [
+            "com.waze",
+            "com.traveloka.android",
+            "com.saldo.etoll"
+          ]
+        },
+        {
+          "regex": ".*\\.(gojek|grab|maxim|bolt|bluebird|lalamove|deliveree|ritase|paxel|anteraja|kiriminaja|sicepat|lionparcel|traveloka|tiket|pegipegi|nusatrip|airasia|citilink|garuda|sriwijaya|pelita|waze|citymapper|skyscanner|wego|agoda|booking|trivago|ctrip|flightradar|shell|honda|toyota|suzuki|yamaha|nissan|byd)\\..*",
+          "description_cn": "匹配印尼及全球知名交通出行、物流快递、旅行预订、导航地图及汽车服务品牌的官方或合作应用。",
+          "confidence": 0.98,
+          "examples": [
+            "com.gojek.app",
+            "com.grabtaxi.passenger",
+            "com.airasia.mobile"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Gojek",
+          "description": "印尼头部超级应用，核心业务为网约车、外卖及数字支付，包名常含gojek。",
+          "confidence": 0.99
+        },
+        {
+          "name": "Grab",
+          "description": "东南亚主流出行平台，提供打车、货运及本地生活服务，包名常含grab。",
+          "confidence": 0.99
+        },
+        {
+          "name": "Traveloka",
+          "description": "印尼最大在线旅行预订平台，主营机票、火车票、酒店及巴士票务。",
+          "confidence": 0.97
+        },
+        {
+          "name": "Bluebird",
+          "description": "印尼老牌出租车公司，提供正规出租车及网约车服务。",
+          "confidence": 0.98
+        },
+        {
+          "name": "KAI (Kereta Api Indonesia)",
+          "description": "印尼国家铁路公司官方应用，负责全国火车票务与时刻表查询。",
+          "confidence": 0.99
+        },
+        {
+          "name": "SiCepat",
+          "description": "印尼主流快递物流公司，提供包裹追踪与寄件服务。",
+          "confidence": 0.96
+        },
+        {
+          "name": "Waze",
+          "description": "全球知名社区导航应用，提供实时路况与路线规划。",
+          "confidence": 0.98
+        },
+        {
+          "name": "AirAsia",
+          "description": "亚洲知名低成本航空公司，提供航班预订与值机服务。",
+          "confidence": 0.97
+        },
+        {
+          "name": "Lalamove",
+          "description": "同城货运与即时配送平台，主打货车、摩托车货运。",
+          "confidence": 0.96
+        },
+        {
+          "name": "TransJakarta",
+          "description": "雅加达快速公交系统（BRT）官方应用，提供线路查询与电子票服务。",
+          "confidence": 0.98
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或说明包含 bank, finance, loan, pinjaman, kredit, dana, ovo, gopay 等金融借贷或纯支付词汇",
+          "reason": "此类应用属于金融科技（Fintech）或银行类别，即使部分交通APP集成支付功能，纯金融应用不应归类为transportation。"
+        },
+        {
+          "rule": "如果包名或说明包含 game, casino, slot, judi, poker, betting 等博彩或游戏词汇",
+          "reason": "属于游戏或赌博类别，与交通出行完全无关，需严格排除。"
+        },
+        {
+          "rule": "如果包名或说明包含 shop, store, ecommerce, tokopedia, shopee, lazada 等纯电商零售词汇",
+          "reason": "属于电子商务类别，主要功能为商品交易而非人员或货物运输。"
+        },
+        {
+          "rule": "如果包名或说明包含 food, restaurant, gofood, grabfood 且无其他交通/物流特征",
+          "reason": "属于餐饮外卖类别。虽然常与出行平台捆绑，但独立外卖APP核心场景为餐饮配送，非广义交通。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "Travel & Lifestyle (旅行与生活方式)",
+          "distinguishing_feature": "旅行类APP若仅包含酒店预订、景点门票或旅游攻略，应归为Travel；若核心功能为机票、火车票、巴士、轮渡等交通工具票务预订，或提供行程交通规划，则归为Transportation。"
+        },
+        {
+          "confused_with": "Business & Productivity (商业与生产力)",
+          "distinguishing_feature": "物流管理类APP若侧重仓库库存、财务对账或OA办公，偏向Business；若侧重车辆GPS追踪、司机派单、路线调度、货运接单，则明确属于Transportation。"
+        },
+        {
+          "confused_with": "Tools & Utilities (工具与实用程序)",
+          "distinguishing_feature": "地图导航类APP若仅提供离线地图查看、坐标转换或基础GPS工具，偏向Tools；若提供实时路况、公交地铁换乘规划、打车比价或驾驶路线导航，则属于Transportation。"
+        }
+      ],
+      "reasoning": "综合推理逻辑：上述规则基于170个印尼交通类APP样本的包名结构与业务语义提炼而成。通过提取高频角色词（driver/passenger）、业务词（logistics/transit/ticket）、印尼本土交通专有名词（ojol/krl/damri/pelni）及头部品牌标识，构建了覆盖网约车、物流货运、公共交通、航空铁路、导航地图及票务预订的全场景识别体系。正则表达式精准匹配包名中的核心语义段，排除规则有效过滤金融、游戏、电商及纯餐饮等易混淆类别。结合品牌白名单与业务特征交叉验证，系统可在毫秒级内对新APP进行高置信度分类，兼顾召回率与准确率。"
+    },
+    "ewallet": {
+      "category": "ewallet",
+      "total_samples": 89,
+      "keywords": {
+        "indonesian": [
+          "dompet",
+          "uang",
+          "kasir",
+          "kios",
+          "qris",
+          "emoney",
+          "mwallet",
+          "ewallet",
+          "dana",
+          "gopay",
+          "ovo",
+          "shopeepay",
+          "sakuku",
+          "flip",
+          "astrapay",
+          "bca",
+          "bni",
+          "telkom",
+          "posindonesia"
+        ],
+        "english": [
+          "wallet",
+          "pay",
+          "payment",
+          "money",
+          "cash",
+          "coin",
+          "crypto",
+          "blockchain",
+          "remittance",
+          "transfer",
+          "merchant",
+          "agent",
+          "kard",
+          "doku",
+          "paypal",
+          "skrill",
+          "payoneer",
+          "wise",
+          "trust",
+          "atomic",
+          "mycelium",
+          "tronlink",
+          "keplr",
+          "xverse"
+        ],
+        "description": "印尼语词如dompet（钱包）、uang（钱）、kasir（收银）、kios（代理点）及qris（印尼统一二维码标准）具有极强的本土支付场景指向性；英语词wallet/pay/emoney/crypto/blockchain/remittance直接对应法币电子钱包、加密货币钱包及跨境汇款功能。这些词在包名或描述中高频出现，且极少出现在非金融类应用中，区分度极高。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*(?:wallet|pay|dana|gopay|ovo|shopeepay|emoney|qris|mwallet|ewallet|dompet|uang|crypto|coin|blockchain|remittance|transfer|kasir|kios).*",
+          "description_cn": "基础关键词匹配模式。只要包名中包含任意一个核心支付/钱包/加密货币/汇款功能词，即判定为ewallet候选。覆盖样本中绝大多数法币钱包与加密钱包。",
+          "confidence": 0.85,
+          "examples": [
+            "com.finnet.finpaymoney",
+            "id.dana",
+            "com.trustwallet.crypto.trustwalletapp",
+            "com.transferwise.android"
+          ]
+        },
+        {
+          "regex": "^(?:com|id|io|app|vivapay|ovo)\\.[a-z0-9_\\.]*?(?:wallet|pay|dana|gopay|ovo|shopeepay|emoney|qris|mwallet|ewallet|dompet|uang|crypto|coin|blockchain|remittance|transfer|kasir|kios)[a-z0-9_\\.]*?$",
+          "description_cn": "标准包名结构匹配模式。限定以常见域名前缀开头，中间或结尾必须包含支付/钱包核心词，符合Android包名命名规范，有效过滤非标准命名干扰。",
+          "confidence": 0.92,
+          "examples": [
+            "com.gojek.gopay",
+            "com.bca.sakuku",
+            "com.dokuwallet.android",
+            "com.ada.astrapay"
+          ]
+        },
+        {
+          "regex": "^.*(?:merchant|kasir|kios|agent|aktivasi).*(?:dana|gopay|ovo|shopeepay|pay|wallet).*$",
+          "description_cn": "商户/代理/激活版变体匹配模式。针对主钱包的B端或渠道衍生版本（如商户收款、代理充值、激活指南），包名通常包含merchant/kasir/kios/agent/aktivasi与主品牌词组合。",
+          "confidence": 0.88,
+          "examples": [
+            "com.gpay.merchantapp.full",
+            "com.ovo.merchant",
+            "com.posindonesia.pospaykios",
+            "com.danaaktivasi.appinfoguide"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "DANA",
+          "description": "印尼头部电子钱包，支持扫码支付、转账、账单缴纳及理财，包名常含dana或dompet",
+          "confidence": 0.98
+        },
+        {
+          "name": "GoPay",
+          "description": "Gojek生态核心支付工具，广泛用于出行、外卖、生活服务及线下商户收款",
+          "confidence": 0.98
+        },
+        {
+          "name": "OVO",
+          "description": "印尼主流电子钱包，覆盖线上线下支付、信用消费及数字内容购买",
+          "confidence": 0.98
+        },
+        {
+          "name": "ShopeePay",
+          "description": "电商平台Shopee内置支付钱包，支持购物结算、转账及线下扫码",
+          "confidence": 0.97
+        },
+        {
+          "name": "BCA Sakuku",
+          "description": "印尼BCA银行推出的独立数字钱包，支持无卡支付与小额转账",
+          "confidence": 0.96
+        },
+        {
+          "name": "Flip",
+          "description": "印尼知名跨行转账与支付平台，主打免手续费实时到账",
+          "confidence": 0.95
+        },
+        {
+          "name": "Trust Wallet",
+          "description": "全球主流去中心化加密货币钱包，支持多链资产存储与DApp交互",
+          "confidence": 0.95
+        },
+        {
+          "name": "Wise (TransferWise)",
+          "description": "国际跨境汇款与多币种电子钱包，提供低汇率差转账服务",
+          "confidence": 0.94
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名或描述包含 slot, casino, judi, bet, poker, game 等词",
+          "reason": "属于在线博彩或游戏类应用，虽可能集成支付通道，但核心业务非电子钱包"
+        },
+        {
+          "rule": "如果包含 bank 或 mobile 但无 wallet/pay/emoney/qris/dana/gopay/ovo 等词",
+          "reason": "属于传统手机银行APP，核心功能为账户管理与信贷，非独立电子支付钱包"
+        },
+        {
+          "rule": "如果包含 shop, tokopedia, bukalapak, lazada 但无 pay/wallet 后缀",
+          "reason": "属于纯电商平台，支付仅为内置模块，不符合独立ewallet定义"
+        },
+        {
+          "rule": "如果包含 exchange, trade, market, orderbook 且无 wallet",
+          "reason": "属于加密货币交易所，核心为撮合交易而非资产存储，与钱包类别需区分"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "banking (传统手机银行)",
+          "distinguishing_feature": "banking类包名多含 mobile, banking, ib, bank 且侧重账户查询/贷款；ewallet侧重 pay, wallet, emoney, qris, kasir 且侧重快捷支付/扫码/小额转账"
+        },
+        {
+          "confused_with": "crypto_exchange (加密货币交易所)",
+          "distinguishing_feature": "交易所包名常含 exchange, trade, market, binance, indodax；钱包包名必含 wallet, trust, metamask, keplr, atomic 且强调私钥/助记词/链上存储"
+        },
+        {
+          "confused_with": "e-commerce (电商平台)",
+          "distinguishing_feature": "电商APP以主品牌名为主（如 com.shopee.id）；独立支付APP通常以 pay/wallet 结尾或作为独立子品牌（如 com.shopeepay.id）"
+        }
+      ],
+      "reasoning": "综合89个样本分析，印尼ewallet类别呈现高度一致的“品牌词+功能词”命名规律。核心判定逻辑基于三层过滤：1) 词法层：包名高频包含 wallet, pay, dana, gopay, ovo, emoney, qris, dompet, uang, crypto, coin 等支付/钱包专属词，这些词在印尼金融科技生态中具有强独占性；2) 结构层：符合 com./id./io. 域名前缀+核心功能词+后缀的Android包名规范，商户/代理版变体通过 merchant/kasir/kios/agent 与主品牌词组合可精准识别；3) 业务层：样本同时涵盖法币电子钱包与去中心化加密钱包，故规则需兼容 fiat 与 crypto 特征。结合排除规则过滤博彩、纯电商、传统银行及交易所，并通过品牌白名单提升头部应用识别置信度，该规则集可在实时判定中实现高准确率与低误报率。"
+    },
+    "religious": {
+      "category": "religious",
+      "total_samples": 265,
+      "keywords": {
+        "indonesian": [
+          "quran",
+          "alquran",
+          "sholat",
+          "shalat",
+          "salat",
+          "doa",
+          "dzikir",
+          "zikir",
+          "tasbih",
+          "sholawat",
+          "maulid",
+          "yasin",
+          "tahlil",
+          "hijriyah",
+          "fiqih",
+          "hadits",
+          "kiblat",
+          "alkitab",
+          "kristen",
+          "katolik",
+          "rohani",
+          "kidung",
+          "jemaat",
+          "rosario",
+          "novena",
+          "sembahyang",
+          "taqwa",
+          "erohani",
+          "pesantren",
+          "kemenag",
+          "halal",
+          "muamalat",
+          "aqidah",
+          "ratib",
+          "burdah",
+          "barzanji",
+          "simtudduror",
+          "matsurat",
+          "iqra",
+          "khatma",
+          "amalan",
+          "fardhu",
+          "sunnah",
+          "bukuende"
+        ],
+        "english": [
+          "quran",
+          "alquran",
+          "bible",
+          "prayer",
+          "pray",
+          "muslim",
+          "islam",
+          "qibla",
+          "adhan",
+          "azan",
+          "tasbih",
+          "dhikr",
+          "hijri",
+          "hajj",
+          "umrah",
+          "hadith",
+          "sunnah",
+          "fiqh",
+          "tafsir",
+          "tilawah",
+          "qari",
+          "surah",
+          "juz",
+          "khatam",
+          "church",
+          "catholic",
+          "christian",
+          "gospel",
+          "psalm",
+          "hymn",
+          "worship",
+          "rosary",
+          "novena",
+          "jw",
+          "jehovah",
+          "holy",
+          "sacred",
+          "allah",
+          "jesus",
+          "god",
+          "lord",
+          "prophet",
+          "nabi",
+          "rasul",
+          "faith",
+          "spiritual",
+          "divine"
+        ],
+        "description": "印尼宗教类APP包名高度依赖宗教核心词汇。伊斯兰教占主导，大量使用印尼语转写词（如sholat, dzikir, alquran, tahlil）及阿拉伯语借词；基督教/天主教则使用alkitab, kristen, katolik, kidung等。工具类词汇（qibla, tasbih, prayer times, calendar）与宗教实践强绑定。这些词在非宗教APP中极少出现，具有极高区分度。"
+      },
+      "patterns": [
+        {
+          "regex": "(?i)(quran|alquran|sholat|shalat|salat|doa|dzikir|zikir|tasbih|sholawat|maulid|yasin|tahlil|hijri|fiqih|hadits|kiblat|muslim|islam|adhan|azan|tilawah|qari|surah|juz|khatma|amalan|fardhu|sunnah|ratib|burdah|barzanji|simtudduror|matsurat|iqra|wirid|muamalat|aqidah|halal|pesantren|kemenag|taqwa|erohani)",
+          "description_cn": "匹配伊斯兰教核心经典、礼拜、祈祷、教法、历法及印尼本土宗教组织/机构名称。覆盖样本中约80%的APP。",
+          "confidence": 0.95,
+          "examples": [
+            "com.erm.dzikir.pagipetang",
+            "com.jixit.qibladirection.salahtimes",
+            "id.go.kemenag.pusaka_v2"
+          ]
+        },
+        {
+          "regex": "(?i)(alkitab|bible|kristen|katolik|rohani|kidung|jemaat|rosario|novena|gospel|church|jwlibrary|sembahyang|psalm|hymn|worship|rosary|catholic|christian|bukuende)",
+          "description_cn": "匹配基督教与天主教核心经典、教派、赞美诗、祈祷仪式及教会相关词汇。覆盖样本中约15%的APP。",
+          "confidence": 0.95,
+          "examples": [
+            "com.offline.bible",
+            "com.pelengkap.kidungjemaat",
+            "org.jw.jwlibrary.mobile"
+          ]
+        },
+        {
+          "regex": "(?i)(prayer|pray|qibla|compass|hijri|calendar|holy|sacred|faith|spiritual|allah|jesus|god|lord|prophet|nabi|rasul|kitab|islamic|muslim|christian|catholic|church|bible|alkitab)",
+          "description_cn": "匹配宗教通用工具（朝向、时间、日历）、神圣概念及跨宗教通用术语。常与核心词组合出现，用于辅助判定。",
+          "confidence": 0.9,
+          "examples": [
+            "qiblafinder.prayertimes.qibladirection.hijricalendar",
+            "com.muslim.quran.muslima.muslimpro",
+            "com.gms.church"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Muslim Pro",
+          "description": "全球知名穆斯林综合应用，包名常含bitsmedia或muslimpro",
+          "confidence": 0.98
+        },
+        {
+          "name": "Quran.com / Quran Labs",
+          "description": "权威古兰经阅读与学习应用，包名常含quran.labs",
+          "confidence": 0.98
+        },
+        {
+          "name": "Yuku Alkitab",
+          "description": "印尼主流基督教圣经阅读应用，包名以yuku.alkitab为主",
+          "confidence": 0.97
+        },
+        {
+          "name": "SABDA",
+          "description": "印尼知名基督教数字事工机构，包名常含org.sabda",
+          "confidence": 0.97
+        },
+        {
+          "name": "Kemenag RI",
+          "description": "印尼宗教事务部官方应用，包名含id.go.kemenag",
+          "confidence": 0.99
+        },
+        {
+          "name": "NU Online",
+          "description": "印尼伊斯兰教士联合会官方应用，包名含id.or.nu",
+          "confidence": 0.98
+        },
+        {
+          "name": "JW Library",
+          "description": "耶和华见证人官方图书馆应用，包名含org.jw.jwlibrary",
+          "confidence": 0.98
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含 game, casino, slot, bet, dating, porn, xxx 等娱乐/成人/博彩词汇",
+          "reason": "此类APP属于游戏、博彩或成人娱乐类别，即使偶然包含宗教词汇（如壁纸或贴纸），其核心功能与宗教实践无关。"
+        },
+        {
+          "rule": "如果包名包含 finance, bank, loan, credit, trading, crypto 且未与 muamalat/syariah 组合",
+          "reason": "属于金融理财类别。印尼虽有伊斯兰金融，但纯商业金融APP不应归类为宗教应用。"
+        },
+        {
+          "rule": "如果包名包含 news, media, tv, radio, social, chat 且无明确宗教核心词",
+          "reason": "属于新闻媒体或社交类别。宗教媒体通常会在包名中明确标注 islam, kristen, rohani 等限定词。"
+        }
+      ],
+      "reasoning": "印尼宗教类APP样本呈现明显的‘伊斯兰教主导+基督教/天主教补充’特征。判定逻辑以‘核心宗教词汇+实践工具词’为双引擎：首先通过正则精准匹配古兰经/圣经、礼拜/祈祷、教法/历法等高频印尼语转写词（如sholat, dzikir, alkitab, kidung）；其次结合Qibla、Tasbih、Prayer Times等强绑定工具词提升召回率。品牌维度覆盖官方机构（Kemenag, NU, SABDA）与头部商业应用（Muslim Pro, Yuku）。排除规则重点过滤娱乐、金融、通用媒体等易混淆类别，确保分类纯度。整体规则兼顾印尼本土语言习惯（大量使用无空格连写或点号分隔）与跨宗教通用术语，可实现高精度在线判定。"
+    },
+    "food_delivery": {
+      "category": "food_delivery",
+      "total_samples": 34,
+      "keywords": {
+        "indonesian": [
+          "bakmi",
+          "boga",
+          "resto",
+          "kenangan",
+          "gofood",
+          "foody"
+        ],
+        "english": [
+          "food",
+          "delivery",
+          "eat",
+          "hungry",
+          "coffee",
+          "burger",
+          "pizza",
+          "kfc",
+          "starbucks",
+          "mcdelivery",
+          "driver",
+          "mobileapp"
+        ],
+        "description": "这些关键词直接对应餐饮外卖的核心业务（food, delivery, eat, hungry）、印尼本地餐饮特征词（bakmi面条, boga餐饮, resto餐厅）、主流咖啡/快餐品牌（coffee, burger, pizza, kfc, starbucks）以及配送员端标识（driver）。在包名中出现这些词高度指向餐饮点餐或外卖服务。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(food|delivery|resto|eat|hungry|coffee|burger|pizza|bakmi|boga).*$",
+          "description_cn": "匹配包含通用餐饮、外卖、餐厅、咖啡、快餐及印尼本地餐饮词汇的包名。这些词是food_delivery类别最核心的业务标识，覆盖了点餐、配送、餐厅类型等场景。",
+          "confidence": 0.85,
+          "examples": [
+            "com.rsg.food.delivery",
+            "com.gojek.resto",
+            "com.bakmiandroid.app",
+            "id.boga.mybogaapp"
+          ]
+        },
+        {
+          "regex": "^.*\\.(gofood|foody|mcdelivery|ishangry|hungryhub|happyfresh|segari|yogiyo).*$",
+          "description_cn": "匹配印尼及东南亚主流外卖平台、生鲜配送平台及聚合点餐应用的专属标识。这些词具有极强的平台指向性，是判定food_delivery的高置信度特征。",
+          "confidence": 0.9,
+          "examples": [
+            "com.wlf.gofood",
+            "com.shopee.foody.driver.id",
+            "com.modular.ishangry",
+            "com.happyfresh.android"
+          ]
+        },
+        {
+          "regex": "^.*\\.(driver|deliveryboy).*$",
+          "description_cn": "匹配外卖骑手/配送员专用端应用。虽然属于B端/运力端，但明确隶属于外卖生态体系，是food_delivery类别的重要组成部分。",
+          "confidence": 0.8,
+          "examples": [
+            "com.gharelo.deliveryboy",
+            "com.shopee.foody.driver.id"
+          ]
+        },
+        {
+          "regex": "^.*\\.(kfc|starbucks|pizzahut|dominos|burgerking|popeyes|wingstop|hokben|chatime|kopikenangan|jagocoffee|flashcoffee|tomoro|sushitei|marugame|richeese|haidilao|holywings|mcdonalds|plato).*$",
+          "description_cn": "匹配国际及印尼本土知名连锁餐饮品牌的官方点餐/外卖应用。品牌名在包名中具有唯一性，结合餐饮行业背景，可精准识别为food_delivery。",
+          "confidence": 0.95,
+          "examples": [
+            "com.kfc.mobile",
+            "com.starbucks.id",
+            "com.pizzahut.phd",
+            "com.kopikenangan",
+            "com.haidilao.intl"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "GoFood/Gojek",
+          "description": "印尼最大外卖平台之一，包名常含gofood或resto",
+          "confidence": 0.98
+        },
+        {
+          "name": "ShopeeFood",
+          "description": "印尼主流外卖平台，包名常含foody",
+          "confidence": 0.98
+        },
+        {
+          "name": "McDonald's",
+          "description": "国际快餐巨头，包名常含mcdelivery或mcdonalds",
+          "confidence": 0.95
+        },
+        {
+          "name": "KFC",
+          "description": "国际快餐巨头，包名常含kfc",
+          "confidence": 0.95
+        },
+        {
+          "name": "Pizza Hut",
+          "description": "国际披萨连锁，包名常含pizzahut",
+          "confidence": 0.95
+        },
+        {
+          "name": "Kopi Kenangan",
+          "description": "印尼本土知名咖啡连锁，包名常含kopikenangan",
+          "confidence": 0.95
+        },
+        {
+          "name": "Hokben",
+          "description": "印尼知名日式快餐连锁，包名常含hokben",
+          "confidence": 0.95
+        },
+        {
+          "name": "HappyFresh/Segari",
+          "description": "印尼生鲜/食品即时配送平台，业务与餐饮外卖高度重合",
+          "confidence": 0.9
+        },
+        {
+          "name": "Domino's",
+          "description": "国际披萨连锁外卖，包名常含dominos",
+          "confidence": 0.95
+        },
+        {
+          "name": "Starbucks",
+          "description": "国际咖啡连锁，包名常含starbucks",
+          "confidence": 0.95
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包含 game, casino, slot, judi, loan, pinjaman, bank, crypto, wallet 等词，则不属于food_delivery",
+          "reason": "这些词汇明确指向游戏、博彩、金融科技或电子钱包类别，与餐饮外卖业务无关。"
+        },
+        {
+          "rule": "如果包含 social, chat (非chatime), news, video, music, streaming 等词，则不属于food_delivery",
+          "reason": "这些词汇属于社交、媒体、娱乐或流媒体类别，不具备餐饮点餐或配送属性。"
+        },
+        {
+          "rule": "如果包含 courier, express, logistics, parcel 且无 food/resto/coffee 等餐饮关联词，则不属于food_delivery",
+          "reason": "此类应用属于通用快递物流或跑腿服务，而非专注于餐饮食品的外卖配送。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "grocery_delivery (生鲜/超市配送)",
+          "distinguishing_feature": "如Segari、HappyFresh等应用同时覆盖生鲜与餐饮。区分方法：若商品类目以生鲜食材/日用品为主，可细分至grocery；若以熟食/餐厅外卖为主，则归为food_delivery。两者在包名特征上高度重叠，通常可合并判定或依赖应用商店元数据辅助区分。"
+        },
+        {
+          "confused_with": "restaurant_booking (餐厅预订/点评)",
+          "distinguishing_feature": "部分应用仅支持订座或查看菜单。区分方法：若包名或描述包含 booking, reserve, review, guide 且无 delivery/order/eat 等交易/配送词，则偏向预订类；若支持在线下单支付或配送，则判定为food_delivery。"
+        },
+        {
+          "confused_with": "logistics (通用物流/同城跑腿)",
+          "distinguishing_feature": "如GrabExpress、GoSend等。区分方法：检查是否绑定特定餐饮品牌或平台（如gofood, foody, mcdelivery）。通用物流包名多含 express, send, courier，而food_delivery必含 food, resto, coffee 或具体餐饮品牌名。"
+        }
+      ],
+      "reasoning": "综合推理逻辑：规则采用“核心业务词+平台标识+品牌白名单+运力端特征”的多维匹配策略。包名中的 food, delivery, resto, coffee 等直接反映业务属性；gofood, foody 等是印尼市场头部平台的强特征；国际/本土连锁品牌名具有极高唯一性；driver 等词覆盖外卖生态的配送端。配合明确的排除规则过滤游戏、金融、通用物流等干扰项，可确保在印尼市场环境下对 food_delivery 类别实现高精度、低误判的实时判定。该规则集兼顾了C端消费者点餐、B端骑手配送及平台聚合服务，符合印尼本地餐饮数字化生态的实际分布。"
+    },
+    "cash_loan": {
+      "category": "cash_loan",
+      "total_samples": 262,
+      "keywords": {
+        "indonesian": [
+          "pinjaman",
+          "pinjam",
+          "pinjol",
+          "kredit",
+          "tunai",
+          "cair",
+          "cicil",
+          "modal",
+          "kasbon",
+          "gaji",
+          "dana",
+          "uang",
+          "rupiah",
+          "cepat",
+          "kilat",
+          "mudah",
+          "amanah",
+          "pasti",
+          "plus",
+          "pintar",
+          "sahabat",
+          "teman",
+          "bantu",
+          "dompet"
+        ],
+        "english": [
+          "loan",
+          "cash",
+          "credit",
+          "finance",
+          "fintech",
+          "fintek",
+          "pay",
+          "quick",
+          "fast",
+          "easy",
+          "wallet",
+          "calculator",
+          "advance",
+          "salary",
+          "online",
+          "instant",
+          "now"
+        ],
+        "description": "这些词汇直接对应印尼语和英语中的“借款”、“现金”、“信贷”、“放款”、“分期”、“资金”、“快速”等核心概念。印尼现金贷开发者为追求SEO转化率和用户直观理解，普遍在包名中堆砌直白词汇。组合出现时具有极强的类别指向性，能有效区分于普通工具、游戏或社交应用。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*(?:pinjam|pinjol|kredit|kredi|tunai|cair|cicil|modal|kasbon|gaji).*$",
+          "description_cn": "匹配包含印尼语核心借贷词汇的包名。pinjaman/pinjam(借款)、pinjol(网贷简称)、kredit(信贷)、tunai(现金)、cair(放款/到账)、cicil(分期)、modal(资金)、kasbon(预支工资)是印尼现金贷最直接的命名特征，覆盖绝大多数本土产品。",
+          "confidence": 0.95,
+          "examples": [
+            "com.pinjamanonline.adadana",
+            "com.kreditplus.kpm",
+            "com.tunaikumobile.app",
+            "com.kasbon.id"
+          ]
+        },
+        {
+          "regex": "^.*(?:loan|cash|credit|finance|fintech|fintek|pay|advance|salary).*$",
+          "description_cn": "匹配包含英语核心金融/借贷词汇的包名。常见于国际化团队开发或混合命名的印尼现金贷应用，loan(贷款)、cash(现金)、credit(信用)、finance(金融)、fintech(金融科技)、advance(预支)等词直接表明业务属性。",
+          "confidence": 0.92,
+          "examples": [
+            "com.smart.loan.finance.cash.credit",
+            "com.payby.android.cashnow",
+            "com.ecreditpal.cashloan.indo",
+            "com.smartsalary"
+          ]
+        },
+        {
+          "regex": "^.*(?:dana|uang|rupiah|dompet|wallet).*(?:pinjam|kredit|loan|cash|tunai|cair|cicil|modal|cepat|kilat|online|mudah|plus|pintar|amanah|pasti).*$",
+          "description_cn": "匹配“资金名词+借贷动作/属性”的组合模式。印尼现金贷常将dana(资金)、uang(钱)、rupiah(印尼盾)与pinjam(借)、kredit(贷)、cair(放款)、cepat(快速)等词拼接，以强调产品属性，是马甲包和导流包的高频命名结构。",
+          "confidence": 0.9,
+          "examples": [
+            "com.danapinjaman.infoappkitabisa",
+            "com.uangku.now.kudulu",
+            "dana.pinjaman.online.mudah.uang",
+            "com.rupiah.mudah.pinjaman.rupiah"
+          ]
+        },
+        {
+          "regex": "^.*(?:cepat|kilat|fast|quick|mudah|easy|online|instant|now|today|jam|menit|detik).*(?:pinjam|kredit|loan|cash|tunai|cair|cicil|dana|uang|rupiah).*$",
+          "description_cn": "匹配“速度/便捷性修饰词+借贷核心词”的模式。印尼现金贷主打“快速审批、即时到账”，包名中高频出现cepat(快)、kilat(闪电)、fast、quick、mudah(容易)、online等词与借贷词组合，用于吸引急需资金的用户。",
+          "confidence": 0.88,
+          "examples": [
+            "com.pinjamancepat.malaysia",
+            "com.kilatcicil.android",
+            "com.loan.fastcash.tradingnowon.loanquick",
+            "com.pinjamanonline.adadana"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Kredit Pintar",
+          "description": "印尼头部现金贷平台，包名常含pintar.platform或kreditpintar",
+          "confidence": 0.98
+        },
+        {
+          "name": "Kredit Plus",
+          "description": "知名分期现金贷品牌，包名常含kreditplus",
+          "confidence": 0.98
+        },
+        {
+          "name": "CashAda",
+          "description": "主流现金贷应用，包名常含cashada",
+          "confidence": 0.97
+        },
+        {
+          "name": "Cairin",
+          "description": "印尼老牌现金贷，包名常含cairin",
+          "confidence": 0.97
+        },
+        {
+          "name": "Tunaiku",
+          "description": "知名现金贷平台，包名常含tunaiku",
+          "confidence": 0.97
+        },
+        {
+          "name": "Indodana",
+          "description": "头部现金贷/BNPL平台，包名常含indodana",
+          "confidence": 0.97
+        },
+        {
+          "name": "AdaKami",
+          "description": "现金贷品牌，包名常含adakami",
+          "confidence": 0.96
+        },
+        {
+          "name": "KTA Kilat",
+          "description": "主打快速放款的现金贷，包名常含ktakilat",
+          "confidence": 0.96
+        },
+        {
+          "name": "Yesss Credit",
+          "description": "信贷平台，包名常含yessscredit",
+          "confidence": 0.96
+        },
+        {
+          "name": "Finplus",
+          "description": "金融科技现金贷，包名常含finplus",
+          "confidence": 0.95
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名仅包含电子钱包品牌词（如dana, ovo, gopay, shopeepay, linkaja, wallet）且不包含任何借贷动作词（pinjam, kredit, loan, cicil, tunai, cair），则不属于cash_loan",
+          "reason": "此类应用属于数字支付/电子钱包类别，核心功能是转账、充值和消费支付，而非信贷放款。"
+        },
+        {
+          "rule": "如果包名包含bank, ib, mobilebanking, internetbanking等传统银行标识，且不包含loan, kredit, pinjam等明确信贷词，则不属于cash_loan",
+          "reason": "此类应用属于传统商业银行综合APP，提供存款、转账、理财等全功能服务，非纯现金贷产品。"
+        },
+        {
+          "rule": "如果包名包含investasi, saham, crypto, trading, forex, reksadana等投资交易词，则不属于cash_loan",
+          "reason": "此类应用属于理财/证券/加密货币交易平台，业务逻辑为资产增值而非负债借贷。"
+        },
+        {
+          "rule": "如果包名包含game, slot, judi, casino, togel等博彩游戏词，则不属于cash_loan",
+          "reason": "此类应用属于在线博彩或游戏类别，与金融借贷业务完全无关。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "e_wallet / digital_payment",
+          "distinguishing_feature": "电子钱包侧重支付、转账、充值（关键词：pay, transfer, topup, wallet, dana, ovo）；现金贷侧重借款、放款、分期（关键词：pinjam, kredit, loan, cair, cicil, tunai）。若同时出现支付与借贷词，需结合应用权限（如通讯录/短信读取）和实际业务流判断。"
+        },
+        {
+          "confused_with": "banking",
+          "distinguishing_feature": "传统银行APP功能全面，包名通常带银行缩写+mobile/ib；现金贷APP功能单一，包名直白强调“借款/现金/快速”。银行APP通常受OJK严格监管且包名规范，现金贷包名常含变体、拼写错误或SEO堆砌词。"
+        },
+        {
+          "confused_with": "finance_tool / calculator",
+          "distinguishing_feature": "纯计算器/攻略APP（含kalkulator, tips, guide, info）可能仅作为导流工具，无实际放款功能。需结合应用内是否包含申请入口、风控授权流程及实际放款主体进行二次验证。"
+        },
+        {
+          "confused_with": "salary_advance / payroll",
+          "distinguishing_feature": "预支工资类（kasbon, gaji, salary advance）属于现金贷子类，但部分属于企业HR系统。若包名含hr, payroll, employee且无loan/pinjam，则可能为内部薪酬管理系统，非面向C端的现金贷。"
+        }
+      ],
+      "reasoning": "综合推理逻辑：印尼现金贷市场具有高度同质化的命名特征，开发者为追求SEO转化率和用户直观理解，普遍在包名中堆砌直白的金融借贷词汇。规则体系通过“核心借贷词（印尼语/英语）”、“资金+动作组合”、“速度/便捷修饰词”三层正则覆盖95%以上的样本。同时，结合已知头部品牌白名单提升判定置信度，并通过排除电子钱包、传统银行、投资理财等易混淆场景的负向规则，有效降低误判率。该规则集兼顾了高召回率（覆盖变体、拼写错误、马甲包）与高准确率（排除非借贷金融应用），适用于实时包名解析与自动化分类。"
+    },
+    "gambling": {
+      "category": "gambling",
+      "total_samples": 561,
+      "keywords": {
+        "indonesian": [
+          "judi",
+          "togel",
+          "hoki",
+          "gacor",
+          "putar",
+          "gaple",
+          "qiuqiu",
+          "domino",
+          "dana",
+          "duit",
+          "rp",
+          "prediksi",
+          "pusatmenang",
+          "kocok",
+          "semar",
+          "dewa",
+          "naga"
+        ],
+        "english": [
+          "slot",
+          "slots",
+          "poker",
+          "bingo",
+          "blackjack",
+          "toto",
+          "casino",
+          "jackpot",
+          "spin",
+          "bet",
+          "rtp",
+          "vip",
+          "lucky",
+          "win",
+          "cash",
+          "prize",
+          "reward",
+          "forex",
+          "option",
+          "trade",
+          "miner"
+        ],
+        "description": "印尼网赌应用高度依赖本地化词汇（如judi赌博、togel彩票、hoki好运、gacor常赢、putar旋转）及通用博彩术语（slot老虎机、poker扑克、bet投注、rtp返奖率）。数字组合（777/888/168等）和VIP标识是典型营销特征。部分应用借用dana/duit/rp等支付词汇伪装成网赚或理财，实为赌博资金盘。"
+      },
+      "patterns": [
+        {
+          "regex": "^com\\.id\\d+[a-z0-9]*\\.ntla\\d+.*$",
+          "description_cn": "匹配典型的印尼网赌马甲包命名结构：com.id[数字/字母].ntla[数字]...，ntla是已知赌博SDK/马甲框架标识，大量样本采用此批量打包规范",
+          "confidence": 0.95,
+          "examples": [
+            "com.id6sr777.ntla1082",
+            "com.id7qt777.ntla1009",
+            "com.id5dan777.ntla337"
+          ]
+        },
+        {
+          "regex": "^com\\.app\\.cerb\\.mc[a-z0-9]+$",
+          "description_cn": "匹配cerb系列赌博应用框架，mc后接随机字母数字组合，是特定赌博发行商的固定包名前缀，用于快速换皮上架",
+          "confidence": 0.95,
+          "examples": [
+            "com.app.cerb.mc888",
+            "com.app.cerb.mcsd7",
+            "com.app.cerb.mck88"
+          ]
+        },
+        {
+          "regex": ".*(slot|slots|togel|judi|domino|qq|poker|bingo|blackjack|toto|casino|jackpot|spin|bet|rtp|hoki|gacor).*",
+          "description_cn": "匹配核心赌博/博彩关键词，涵盖老虎机、彩票、棋牌、投注、返奖率及印尼本地博彩黑话，直接暴露应用性质",
+          "confidence": 0.85,
+          "examples": [
+            "com.gapslot",
+            "com.DAGOTOGEL.app",
+            "com.judi.autoblur",
+            "com.richrtp.self"
+          ]
+        },
+        {
+          "regex": ".*(777|888|168|188|288|388|666|999|vip\\d+).*",
+          "description_cn": "匹配博彩行业偏爱的吉利数字组合及VIP等级标识，常与赌博平台名称绑定，用于吸引用户并暗示高回报",
+          "confidence": 0.8,
+          "examples": [
+            "com.HERO388",
+            "com.megawin188",
+            "com.vip888r.com2",
+            "com.id6svip9.ntla104"
+          ]
+        },
+        {
+          "regex": "^com\\.(higgs|kamagames|ptfarm|sbotop|iqoption|olymptrade|seamless|nivalogic|bigcake|topfun|playvalve|mobilechess|appybuilder|slotempire|dorahoki|macanempire|tradewill|kotakkoin|mysterytag)\\..*$",
+          "description_cn": "匹配已知赌博/高风险交易/社交棋牌品牌包名，包含正规棋牌、体育博彩、二元期权及加密货币投机平台",
+          "confidence": 0.9,
+          "examples": [
+            "com.higgs.domino",
+            "com.sbotop.app",
+            "com.iqoption",
+            "com.olymptrade.asia"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Higgs Domino",
+          "description": "印尼国民级棋牌游戏，含真金/虚拟币赌博玩法，包名常为com.higgs.domino",
+          "confidence": 0.95
+        },
+        {
+          "name": "SBOBET",
+          "description": "国际知名体育博彩平台，印尼常用com.sbotop.app",
+          "confidence": 0.98
+        },
+        {
+          "name": "IQ Option / Olymp Trade",
+          "description": "二元期权/差价合约交易平台，在印尼常被归类为高风险投机/赌博",
+          "confidence": 0.9
+        },
+        {
+          "name": "KamaGames / PTFarm",
+          "description": "社交扑克/棋牌游戏发行商，含Play Money但具赌博特征",
+          "confidence": 0.85
+        },
+        {
+          "name": "CERB / NTLA Framework",
+          "description": "非单一品牌，而是印尼网赌马甲包常用发行框架/SDK标识，用于批量生成赌博应用",
+          "confidence": 0.95
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名以 com.dana. 或 id.dana. 开头",
+          "reason": "DANA是印尼官方合规电子钱包，非赌博应用，但赌博应用常借用dana关键词进行引流"
+        },
+        {
+          "rule": "如果包名包含 bank, bca, mandiri, bri, bni 且无赌博关键词",
+          "reason": "属于正规银行或金融类应用，与赌博资金盘有本质区别"
+        },
+        {
+          "rule": "如果包名属于 com.google., com.facebook., com.whatsapp. 等大厂",
+          "reason": "属于社交媒体或工具类应用，非赌博"
+        },
+        {
+          "rule": "如果包名包含 edu, school, university, health, clinic",
+          "reason": "属于教育或医疗健康类应用，业务逻辑与赌博无关"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "fintech_lending / banking",
+          "distinguishing_feature": "借贷/银行应用通常含 loan, kredit, pinjam, bank, finance 等词；赌博应用则突出 slot, togel, judi, 777, vip, rtp 等。若同时含 dana/duit 但无明确借贷协议词，倾向判定为赌博或网赚。"
+        },
+        {
+          "confused_with": "social_casino / casual_game",
+          "distinguishing_feature": "休闲游戏通常无真金交易特征（无 bet, rtp, togel, judi, 777, vip 等）。若包名含 domino/poker 但无上述高风险词，可能为纯娱乐游戏；若含 rtp, bet, togel 或特定马甲结构，则为赌博。"
+        },
+        {
+          "confused_with": "crypto_trading / investment",
+          "distinguishing_feature": "交易类应用含 trade, forex, option, crypto, miner, wallet 等词。在风控中常与赌博合并为高风险投机类，但可通过是否含 slot, togel, judi 进行细分。"
+        }
+      ],
+      "reasoning": "印尼赌博应用具有极强的命名规律：1）大量使用固定马甲框架（如 com.id[数字].ntla[数字] 和 com.app.cerb.mc[字母数字]），这是黑灰产批量打包的典型特征；2）高频使用博彩核心词（slot, togel, judi, domino, poker）及印尼本地化黑话（hoki, gacor, putar, gaple）；3）极度依赖吉利数字（777, 888, 168, 188等）和VIP标识进行营销包装；4）部分应用伪装成二元期权、外汇或加密货币交易，但本质属高风险投机/赌博。综合结构特征、关键词、数字模式及已知品牌，可构建高准确率的实时判定规则。"
+    },
+    "clone_app": {
+      "category": "clone_app",
+      "total_samples": 28,
+      "keywords": {
+        "indonesian": [
+          "cloner",
+          "dual",
+          "multi",
+          "paralel",
+          "ganda",
+          "aplikasi ganda"
+        ],
+        "english": [
+          "clone",
+          "cloner",
+          "cloneapp",
+          "appclone",
+          "phoneclone",
+          "whatsclone",
+          "dual",
+          "dualapp",
+          "dualspace",
+          "parallel",
+          "parallelspace",
+          "multiaccounts",
+          "multiple",
+          "blackbox",
+          "island",
+          "redfinger",
+          "gbwhatsapp"
+        ],
+        "description": "包名和元数据中高频出现表示'克隆'、'双开'、'平行空间'、'多账号'的英文技术词汇。印尼语市场在应用商店标题或描述中常使用'ganda'（双份）、'paralel'（平行）等词，但APK包名仍严格遵循国际通用英文命名规范，因此英文技术词是核心判定依据。"
+      },
+      "patterns": [
+        {
+          "regex": ".*(?:clone|cloner|cloneapp|appclone|phoneclone|whatsclone).*",
+          "description_cn": "匹配包含各类'克隆'变体词的包名，直接指向应用复制、数据迁移或独立克隆功能，是此类应用最核心的命名特征。",
+          "confidence": 0.9,
+          "examples": [
+            "com.hicloud.android.clone",
+            "com.pengyou.cloneapp",
+            "com.applisto.appcloneR"
+          ]
+        },
+        {
+          "regex": ".*(?:dual|dualapp|dualspace).*",
+          "description_cn": "匹配包含'dual'（双开）及其组合词的包名，代表应用支持同时运行两个实例，是分身类工具的标准标识。",
+          "confidence": 0.9,
+          "examples": [
+            "com.dual.chat.ios",
+            "com.ludashi.dualspace",
+            "scan.web.dualapp.webscanner.appcloner"
+          ]
+        },
+        {
+          "regex": ".*(?:parallel|parallelspace).*",
+          "description_cn": "匹配'parallel'（平行空间）相关包名，对应Android端主流的虚拟化双开框架技术。",
+          "confidence": 0.9,
+          "examples": [
+            "com.excean.parallelspace",
+            "com.lbe.parallel.intl",
+            "mochat.multiple.parallel.whatsclone"
+          ]
+        },
+        {
+          "regex": ".*(?:multiaccounts|multiple).*",
+          "description_cn": "匹配多账号/多开相关包名，常用于社交、游戏或通讯类应用的多实例管理工具。",
+          "confidence": 0.85,
+          "examples": [
+            "com.excelliance.multiaccounts.b32",
+            "mochat.multiple.parallel.whatsclone"
+          ]
+        },
+        {
+          "regex": "^(com\\.(lbe|ludashi|blackbox|redfinger|oasisfeng)|mochat)\\..*",
+          "description_cn": "匹配已知主流双开/虚拟空间开发者的固定包名前缀，具有极高的品牌与技术栈辨识度。",
+          "confidence": 0.95,
+          "examples": [
+            "com.lbe.parallel.intl",
+            "com.ludashi.dualspace",
+            "com.blackbox.blackboxapp"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "Huawei (hicloud/huawei)",
+          "description": "华为官方系统级应用双开与手机克隆组件",
+          "confidence": 0.98
+        },
+        {
+          "name": "OPPO (coloros)",
+          "description": "OPPO ColorOS系统自带手机克隆与数据迁移工具",
+          "confidence": 0.98
+        },
+        {
+          "name": "Transsion (transsion)",
+          "description": "传音手机（Tecno/Infinix/itel）系统级应用双开工具",
+          "confidence": 0.98
+        },
+        {
+          "name": "Parallel Space (lbe/excean)",
+          "description": "老牌第三方应用双开与虚拟化框架",
+          "confidence": 0.95
+        },
+        {
+          "name": "DualSpace (ludashi)",
+          "description": "鲁大师旗下双开分身与多账号管理工具",
+          "confidence": 0.95
+        },
+        {
+          "name": "BlackBox (blackbox)",
+          "description": "开源Android虚拟双开容器，支持免Root多开",
+          "confidence": 0.95
+        },
+        {
+          "name": "Island (oasisfeng)",
+          "description": "基于Android工作资料（Work Profile）的轻量级双开工具",
+          "confidence": 0.95
+        },
+        {
+          "name": "Redfinger (redfinger)",
+          "description": "云手机多开平台，提供远程虚拟设备实例",
+          "confidence": 0.95
+        },
+        {
+          "name": "GBWhatsApp (gbwhatsapp)",
+          "description": "WhatsApp第三方修改克隆版，非官方容器但归类为克隆应用",
+          "confidence": 0.9
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含 'bank', 'loan', 'fintech', 'slot', 'casino', 'judi' 等词",
+          "reason": "此类词汇明确指向金融借贷或在线博彩类别，与克隆/双开功能无关，应直接排除。"
+        },
+        {
+          "rule": "如果包名以 'com.android' 或 'com.google' 开头，且不含 'dual'/'clone'/'parallel' 等关键词",
+          "reason": "属于Android系统原生组件或Google服务框架，非第三方克隆工具。"
+        },
+        {
+          "rule": "如果仅包含 'transfer', 'backup', 'switch' 且无 'dual'/'parallel'/'multi'/'space' 等虚拟化关键词",
+          "reason": "可能属于 'phone_transfer' 或 'backup' 类别（纯数据迁移/备份工具），需结合描述判断是否具备运行时多开能力。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "phone_transfer / backup",
+          "distinguishing_feature": "换机工具（如Smart Switch）侧重一次性数据迁移，包名常含'switch'/'transfer'；clone_app侧重运行时虚拟化与多实例共存，必含'dual'/'parallel'/'multi'/'space'等词。可通过是否具备容器化特征区分。"
+        },
+        {
+          "confused_with": "modded_apps (修改版应用)",
+          "distinguishing_feature": "修改版（如GBWhatsApp）是独立替换原APK的魔改版，非容器；clone_app多为独立运行的虚拟环境或扫描器。若包名直接为原应用名加前缀/后缀且无'cloner'/'dual'/'space'，更倾向modded类别。"
+        },
+        {
+          "confused_with": "system_tools (系统工具)",
+          "distinguishing_feature": "厂商自带工具（如com.coloros, com.hicloud）易被误判为第三方。可通过开发者前缀识别，但功能上仍属clone_app范畴，建议保留分类但可附加'OEM'标签以便后续策略区分。"
+        }
+      ],
+      "reasoning": "综合28个样本分析，clone_app的核心技术特征是'应用虚拟化容器'与'多实例并发运行'。包名命名高度依赖英文技术词根（clone, dual, parallel, multi），直接映射其底层实现逻辑。结合已知双开框架（Parallel Space, DualSpace, BlackBox, Island等）的固定包名前缀，可构建高置信度的模式匹配规则。印尼市场虽在应用商店描述中使用本地化词汇，但APK包名仍遵循国际通用规范，因此以英文技术词为主、印尼语为辅的判定策略最为稳健。通过排除金融、博彩、纯备份及系统组件，并明确与换机工具、修改版应用的边界，该规则集可在实时判定中实现高准确率与低误报率。"
+    },
+    "app_store": {
+      "category": "app_store",
+      "total_samples": 26,
+      "keywords": {
+        "indonesian": [
+          "kita"
+        ],
+        "english": [
+          "store",
+          "market",
+          "appstore",
+          "appmarket",
+          "apk",
+          "xapk",
+          "mods",
+          "hub",
+          "vending",
+          "installer"
+        ],
+        "description": "这些词汇直接表明应用的功能是分发、下载或管理其他应用程序。'store'/'market'/'appstore'是应用商店的标准命名；'apk'/'xapk'/'mods'指向第三方APK或模组分发平台；'hub'/'vending'/'installer'常用于聚合下载或安装工具类商店。印尼语'kita'（我们）在本地化商店包名中偶有出现（如atapkita）。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(store|market|appstore|appmarket)(\\..*)?$",
+          "description_cn": "匹配包名以或包含标准商店后缀（如.store, .market, .appstore, .appmarket）的应用，这是应用商店最直接的命名特征。",
+          "confidence": 0.9,
+          "examples": [
+            "ru.vk.store",
+            "com.huawei.appmarket",
+            "app.market.danaku"
+          ]
+        },
+        {
+          "regex": "^.*\\b(apk|xapk)\\b.*$",
+          "description_cn": "匹配包含'apk'或'xapk'关键词的包名，通常代表专注于Android安装包分发的第三方商店或下载器。",
+          "confidence": 0.85,
+          "examples": [
+            "com.atapkita",
+            "com.apkpure.aegon",
+            "com.wuliang.xapkinstaller"
+          ]
+        },
+        {
+          "regex": "^.*\\b(mods?|happymod|apkpure|aptoide|taptap|getjar|uptodown)\\b.*$",
+          "description_cn": "匹配包含知名第三方应用商店品牌名或'mod'（模组）关键词的包名，用于识别特定游戏模组商店或国际知名分发平台。",
+          "confidence": 0.95,
+          "examples": [
+            "com.taptap.global",
+            "net.pro.playmods",
+            "com.uptodown"
+          ]
+        },
+        {
+          "regex": "^.*\\b(vending|hub|installer|updater)\\b.*$",
+          "description_cn": "匹配包含'vending'（Google Play内部代号）、'hub'（聚合中心）、'installer'/'updater'（安装/更新工具）的包名，常用于官方商店或商店辅助工具。",
+          "confidence": 0.8,
+          "examples": [
+            "com.android.vendingx",
+            "com.thehub.apps",
+            "com.pandada.android.tools.update.play.store.master"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "TapTap",
+          "description": "知名游戏分发平台，包名常含taptap",
+          "confidence": 0.98
+        },
+        {
+          "name": "Aptoide",
+          "description": "国际知名第三方Android应用商店",
+          "confidence": 0.98
+        },
+        {
+          "name": "APKPure",
+          "description": "主流APK下载与分发平台",
+          "confidence": 0.98
+        },
+        {
+          "name": "HappyMod",
+          "description": "专注于游戏模组（Mod）的第三方商店",
+          "confidence": 0.95
+        },
+        {
+          "name": "Uptodown",
+          "description": "国际多平台应用下载商店",
+          "confidence": 0.95
+        },
+        {
+          "name": "GetJar",
+          "description": "老牌第三方应用市场",
+          "confidence": 0.95
+        },
+        {
+          "name": "Poco Store",
+          "description": "小米Poco手机官方应用商店",
+          "confidence": 0.98
+        },
+        {
+          "name": "Huawei AppGallery",
+          "description": "华为官方应用市场，包名常含huawei.appmarket",
+          "confidence": 0.98
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含'bank', 'loan', 'pinjaman', 'kredit'等金融词汇，且不含store/market/apk",
+          "reason": "此类应用属于银行或借贷类（banking/fintech_lending），而非应用分发平台。"
+        },
+        {
+          "rule": "如果包名包含'slot', 'casino', 'judi', 'togel'等博彩词汇，且不含store/market",
+          "reason": "此类应用属于在线博彩或游戏类（gambling/game），非应用商店。"
+        },
+        {
+          "rule": "如果包名仅为单一知名应用（如com.whatsapp, com.instagram）且无聚合/分发特征词",
+          "reason": "属于独立功能应用（social/media），不具备应用商店的聚合分发属性。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "tools (工具类)",
+          "distinguishing_feature": "工具类通常侧重系统优化、清理或单一功能（如com.cleaner.xxx）。若包名含apk/xapk/installer且明确指向应用下载/更新，则归为app_store；若仅为系统维护，则归为tools。"
+        },
+        {
+          "confused_with": "game (游戏类)",
+          "distinguishing_feature": "游戏类包名通常直接为游戏IP或类型（如com.game.shooter）。若含'mod'但后缀为store/market/hub，或明确为平台（如taptap, happymod），则为app_store；若为具体游戏客户端，则为game。"
+        },
+        {
+          "confused_with": "system (系统类)",
+          "distinguishing_feature": "系统类多为OS内置组件。Google Play官方包名为com.android.vending，若为第三方修改或商店工具（如vendingx, play.store.master），则视为app_store生态应用。"
+        }
+      ],
+      "reasoning": "综合样本分析，app_store类别的核心特征是'应用聚合与分发'。其包名高度依赖'store'、'market'、'apk'、'appstore'等直接表明分发属性的词汇，或采用国际/区域知名商店品牌（如TapTap, Aptoide, APKPure）。通过正则匹配标准商店后缀、APK分发标识及已知品牌，可覆盖绝大多数第三方、官方及模组商店。结合排除规则过滤金融、博彩及独立应用，能有效避免与tools、game、system等类别混淆，实现高准确率的实时判定。"
+    },
+    "installment": {
+      "category": "installment",
+      "total_samples": 13,
+      "keywords": {
+        "indonesian": [
+          "cicil",
+          "cicilan",
+          "dicicil",
+          "kredit"
+        ],
+        "english": [
+          "installment",
+          "paylater",
+          "creditcard"
+        ],
+        "description": "印尼语'cicil/cicilan'是本地最核心的分期业务标识，'dicicil'为其被动/衍生形式；'kredit'指信贷/分期。英语'installment'和'paylater'（先买后付）是国际BNPL标准术语。这些词在包名中高度聚焦于分期还款场景，极少出现在非金融或纯电商/银行类应用中，具备强业务指向性。"
+      },
+      "patterns": [
+        {
+          "regex": "^.*\\.(cicil|cicilan|dicicil).*$",
+          "description_cn": "匹配包名中包含印尼语分期核心词'cicil'及其变体的应用。该词是印尼市场分期类APP的专属命名习惯，通常作为主业务模块或独立子品牌出现，区分度极高。",
+          "confidence": 0.95,
+          "examples": [
+            "com.dana.cicil",
+            "id.co.cicil",
+            "com.dicicilaja.app"
+          ]
+        },
+        {
+          "regex": "^.*\\.(installment|paylater|creditcard).*$",
+          "description_cn": "匹配包含国际通用分期/信贷术语的包名。'paylater'代表先买后付模式，'installment'代表传统分期，'creditcard'代表信用卡/信贷分期。常用于面向年轻群体或跨境BNPL服务的应用。",
+          "confidence": 0.9,
+          "examples": [
+            "io.silvrr.installment",
+            "com.paylaterapp.paylater",
+            "id.kredit.paylater.cicilan.installment.creditcard"
+          ]
+        },
+        {
+          "regex": "^.*finance.*$",
+          "description_cn": "匹配包含'finance'（金融/财务）的包名。在印尼语境中，该词常与汽车分期（autofinance）或持牌消费金融公司关联。因'finance'词义较广，需结合品牌或上下文综合判定，故置信度略低。",
+          "confidence": 0.75,
+          "examples": [
+            "com.id.bussanautofinance",
+            "id.co.adira.adiraku"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "atome",
+          "description": "东南亚头部先买后付(BNPL)平台，专注零售分期",
+          "confidence": 0.98
+        },
+        {
+          "name": "dana",
+          "description": "印尼国民级电子钱包，其cicil子服务专攻消费分期",
+          "confidence": 0.95
+        },
+        {
+          "name": "cashea",
+          "description": "印尼本土BNPL分期平台，主打无信用卡分期购物",
+          "confidence": 0.95
+        },
+        {
+          "name": "adira",
+          "description": "印尼大型汽车与消费金融集团，提供车辆及商品分期",
+          "confidence": 0.95
+        },
+        {
+          "name": "indodana",
+          "description": "印尼知名数字信贷与分期服务商，覆盖线上线下场景",
+          "confidence": 0.95
+        },
+        {
+          "name": "fifada",
+          "description": "FIF Group旗下汽车分期金融品牌，专注车贷与分期",
+          "confidence": 0.95
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含'bank'、'bca'、'mandiri'、'bni'、'bri'等传统银行缩写",
+          "reason": "此类应用属于传统银行业务APP，虽可能内置分期功能，但主类别为banking，不应归类为专项installment"
+        },
+        {
+          "rule": "如果包名包含'shop'、'ecommerce'、'tokopedia'、'shopee'、'gojek'、'grab'",
+          "reason": "此类为综合电商或超级应用，分期仅为支付选项之一，主类别应判定为ecommerce或superapp"
+        },
+        {
+          "rule": "如果包名包含'game'、'slot'、'casino'、'judi'、'bet'",
+          "reason": "明确属于博彩/游戏类，与金融分期完全无关，需直接排除以防误判"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "digital_wallet / banking",
+          "distinguishing_feature": "电子钱包或银行APP通常以品牌名或'wallet'/'bank'为主标识；installment类APP包名会直接突出'cicil'/'paylater'/'installment'等核心业务词，且多作为独立金融子产品或专项分期平台存在。"
+        },
+        {
+          "confused_with": "personal_loan (pinjaman)",
+          "distinguishing_feature": "个人现金贷APP包名多含'pinjaman'、'kredit_tunai'、'cash_loan'、'dana_tunai'；installment类更侧重'cicil'（分期还款）、'paylater'（先买后付）或特定场景（如汽车autofinance），强调商品/服务履约而非纯现金借贷。"
+        }
+      ],
+      "reasoning": "综合13个样本分析，印尼installment类APP的包名命名呈现高度规律性：1) 强烈依赖印尼语本土词汇'cicil/cicilan'作为核心标识，这是区分其他金融类别的最强特征；2) 广泛采用国际通用的'paylater'和'installment'，反映BNPL模式在印尼的普及；3) 品牌命名多采用'com.[brand].[service]'或'id.co.[brand]'结构，且常与'finance'、'kredit'组合。通过提取高区分度关键词、构建针对性正则模式、结合已知头部品牌白名单，并设置电商/银行/博彩排除规则，可有效过滤干扰项。该规则体系兼顾了语言特征、业务模式与品牌生态，能在实时判定中实现高准确率与低误报率。"
+    },
+    "fake_gps": {
+      "category": "fake_gps",
+      "total_samples": 29,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          "fake",
+          "gps",
+          "location",
+          "mock",
+          "emulator",
+          "spoofer",
+          "faker",
+          "changer",
+          "coordinates",
+          "geolocation"
+        ],
+        "description": "该类应用包名高度依赖英文技术词汇，核心围绕'伪造/模拟(fake/mock/emulator/spoofer)'与'定位/坐标(gps/location/coordinates)'的组合。印尼语特征词在包名中几乎不存在，因该类工具多为全球化开发，直接沿用英文命名规范，符合安卓系统API（如Mock Location）的通用术语。"
+      },
+      "patterns": [
+        {
+          "regex": ".*fake.*gps.*",
+          "description_cn": "匹配同时包含'fake'和'gps'的包名，是此类应用最核心、最高频的命名模式，直接表明GPS伪造功能。",
+          "confidence": 0.95,
+          "examples": [
+            "com.hopefactory2021.fakegpslocation",
+            "com.incorporateapps.fakegps.fre",
+            "top.tinysoft.fakegps"
+          ]
+        },
+        {
+          "regex": ".*mock.*location.*",
+          "description_cn": "匹配包含'mock'和'location'的包名，对应安卓系统开发者选项中的'Mock Location'（模拟位置）API，专用于虚拟定位。",
+          "confidence": 0.95,
+          "examples": [
+            "ru.gavrikov.mocklocations",
+            "com.discipleskies.mock_location_spoofer"
+          ]
+        },
+        {
+          "regex": ".*gps.*emulator.*",
+          "description_cn": "匹配包含'gps'和'emulator'的包名，明确指向GPS模拟器类工具，常用于游戏或社交软件的位置欺骗。",
+          "confidence": 0.9,
+          "examples": [
+            "com.rosteam.gpsemulator",
+            "fake.gps.location.emulator"
+          ]
+        },
+        {
+          "regex": ".*location.*(changer|spoofer|faker).*",
+          "description_cn": "匹配以'location'为核心，后接'changer'(修改)、'spoofer'(欺骗)或'faker'(伪造)的包名，精准定位位置篡改工具。",
+          "confidence": 0.85,
+          "examples": [
+            "com.locationchanger",
+            "com.mobile.fakelocation",
+            "com.discipleskies.mock_location_spoofer"
+          ]
+        },
+        {
+          "regex": "^com\\.(incorporateapps|webmajstr|rosteam|silentlexx|gavrikov|discipleskies|tinysoft|lexa)\\..*",
+          "description_cn": "匹配已知高频发布fake_gps类应用的开发者域名前缀，基于历史样本沉淀的品牌特征库，可快速识别同系列衍生应用。",
+          "confidence": 0.95,
+          "examples": [
+            "com.incorporateapps.fakegps_route",
+            "com.webmajstr.gpsonpro",
+            "com.rosteam.gpsemulator"
+          ]
+        }
+      ],
+      "brands": [
+        {
+          "name": "incorporateapps",
+          "description": "专注开发Fake GPS系列工具，产品线覆盖免费版、路由版等，包名结构高度统一。",
+          "confidence": 0.95
+        },
+        {
+          "name": "webmajstr",
+          "description": "开发GPS开关及定位伪造工具，提供基础版(gpson)和专业版(gpsonpro)。",
+          "confidence": 0.95
+        },
+        {
+          "name": "rosteam",
+          "description": "知名GPS模拟器开发者，其gpsemulator在工具类应用中具有较高辨识度。",
+          "confidence": 0.9
+        },
+        {
+          "name": "silentlexx",
+          "description": "老牌定位锁定与伪造工具开发者，以gpslock等产品闻名。",
+          "confidence": 0.9
+        }
+      ],
+      "exclusion_rules": [
+        {
+          "rule": "如果包名包含'maps', 'navigation', 'waze', 'google'且不含'fake/mock/spoof/emulator'，则不属于fake_gps",
+          "reason": "此类包名属于正规地图导航应用，核心功能是路线规划与实时导航，而非位置伪造。"
+        },
+        {
+          "rule": "如果包名包含'camera', 'photo', 'filter'且不含'fake/mock'，则不属于fake_gps",
+          "reason": "此类应用核心功能是拍照或添加GPS水印，GPS仅作为照片元数据记录，不修改系统定位。"
+        },
+        {
+          "rule": "如果包名包含'bank', 'loan', 'pinjaman', 'slot', 'casino'，则不属于fake_gps",
+          "reason": "明确指向金融借贷或博彩游戏类应用，与定位工具功能完全无关，需严格隔离。"
+        }
+      ],
+      "confusion_risk": [
+        {
+          "confused_with": "正规地图/导航应用",
+          "distinguishing_feature": "正规应用包名通常包含'maps', 'navi', 'route'等，且绝对避免使用'fake', 'mock', 'spoof'等敏感词；fake_gps则必含伪造/模拟关键词。"
+        },
+        {
+          "confused_with": "带GPS定位功能的相机/社交应用",
+          "distinguishing_feature": "相机类应用侧重'camera', 'photo', 'sticker'，GPS仅作为附加元数据功能；fake_gps以修改系统级定位为核心，包名必突出'fake/mock/emulator'。"
+        },
+        {
+          "confused_with": "开发者调试/测试工具",
+          "distinguishing_feature": "部分Mock Location应用确实用于开发测试，但在应用商店生态中，其功能本质与fake_gps一致，通常统一归类为定位伪造工具，判定逻辑可兼容。"
+        }
+      ],
+      "reasoning": "综合29个样本分析，fake_gps类应用的包名具有极强的语义指向性，几乎全部采用英文技术词汇组合。核心判定逻辑为：'伪造/模拟(fake/mock/emulator/spoofer)' + '定位/坐标(gps/location/coordinates)'。通过构建精准的正则表达式提取这些关键词组合，并结合已知高频开发者的品牌白名单，可实现高精度自动化判定。同时，通过设置明确的排除规则（过滤正规导航、相机、金融博彩类特征词），可有效拦截因共享'gps'或'location'基础词而产生的误判。由于印尼本地化包名在该垂直领域极少，规则以英文关键词为主，符合该类工具全球化、轻量化的开发特征，整体规则具备高召回率与高准确率。"
+    }
+  }
+}

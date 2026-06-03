@@ -1,0 +1,18 @@
+[
+  {
+    "id": "k_20260602173301_1",
+    "filename": "sample_doc.md",
+    "size": 1684,
+    "uploaded_at": "2026-06-02T17:33:01.753033",
+    "category": "doc",
+    "tags": []
+  },
+  {
+    "id": "k_20260603140433_2",
+    "filename": "sample_code.py",
+    "size": 1857,
+    "uploaded_at": "2026-06-03T14:04:33.612636",
+    "category": "code",
+    "tags": []
+  }
+]

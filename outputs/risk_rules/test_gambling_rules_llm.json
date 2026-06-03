@@ -1,0 +1,145 @@
+{
+  "category": "gambling",
+  "total_samples": 561,
+  "keywords": {
+    "indonesian": [
+      "judi",
+      "togel",
+      "hoki",
+      "gacor",
+      "duit",
+      "menang",
+      "prediksi",
+      "dana"
+    ],
+    "english": [
+      "slot",
+      "slots",
+      "casino",
+      "jackpot",
+      "rtp",
+      "bet",
+      "toto",
+      "poker",
+      "domino",
+      "bingo",
+      "blackjack",
+      "vip",
+      "svip",
+      "cash",
+      "money",
+      "reward",
+      "spin",
+      "win"
+    ],
+    "description": "印尼网赌应用高度依赖本土博彩文化词汇与国际通用博彩术语的组合。印尼语词如judi(赌博)、togel(彩票)、hoki(好运)、gacor(爆奖)直接指向博彩属性；英语词如slot、jackpot、rtp、vip、bet等是国际通用博彩/老虎机术语。这些词在正规工具、社交或金融应用中极少集中出现，具有极高区分度。"
+  },
+  "patterns": [
+    {
+      "regex": "^com\\.id\\d+[a-z0-9]*\\d*\\.(ntla|ntl|nt)[a-z0-9]*\\d+.*$",
+      "description_cn": "匹配NTLA/NT系列马甲包特征。大量印尼网赌采用固定前缀com.idX...配合ntla/ntl/nt系列域名生成，是黑灰产批量打包的典型模板。",
+      "confidence": 0.95,
+      "examples": [
+        "com.id6sr777.ntla1082",
+        "com.id7qt777.ntla1"
+      ]
+    },
+    {
+      "regex": "^com\\.app\\.cerb\\.mc[a-z0-9]+.*$",
+      "description_cn": "匹配Cerb系列老虎机/棋牌包名。固定使用com.app.cerb.mc开头，后接随机字母数字，属于特定网赌发行商的标准化包名结构。",
+      "confidence": 0.95,
+      "examples": [
+        "com.app.cerb.mc888",
+        "com.app.cerb.mcsd7"
+      ]
+    },
+    {
+      "regex": ".*(?:777|888|999|168|188|288|388|666|178).*",
+      "description_cn": "匹配幸运数字簇。印尼博彩极爱使用777/888/168/188等吉利数字作为品牌标识或版本号，远超正常应用的使用频率。",
+      "confidence": 0.85,
+      "examples": [
+        "com.HERO388",
+        "com.megawin188"
+      ]
+    },
+    {
+      "regex": ".*(?:slot|slots|togel|judi|hoki|gacor|domino|qq|poker|toto|4d|vip|svip|jackpot|rtp|spin|bet).*",
+      "description_cn": "匹配核心博彩关键词。覆盖老虎机、彩票、棋牌、VIP会员、返奖率等典型业务线，是判定gambling的最直接语义特征。",
+      "confidence": 0.9,
+      "examples": [
+        "com.gapslot",
+        "com.DAGOTOGEL.app"
+      ]
+    },
+    {
+      "regex": "^(?:com|net|io|app|idn|aplikasi|togel)\\.(?:.*(?:danagame|duit8|cashprize|realmoney|rewardsapp|iqoption|olymptrade|sbotop).*)$",
+      "description_cn": "匹配知名网赚/二元期权/体育博彩平台特征包名。包含特定支付网赚变体或国际投机交易平台标识。",
+      "confidence": 0.92,
+      "examples": [
+        "com.danagame193.app",
+        "com.sbotop.app"
+      ]
+    }
+  ],
+  "brands": [
+    {
+      "name": "NTLA系列",
+      "description": "印尼网赌马甲包通用框架，包名高度模板化，常与777/888等数字组合出现",
+      "confidence": 0.95
+    },
+    {
+      "name": "Cerb系列",
+      "description": "专注老虎机/棋牌的网赌发行商，采用com.app.cerb.mc固定前缀",
+      "confidence": 0.95
+    },
+    {
+      "name": "Higgs Domino",
+      "description": "印尼国民级棋牌游戏，含真金交易与VIP体系，常被归类为赌博",
+      "confidence": 0.9
+    },
+    {
+      "name": "SBOBET",
+      "description": "国际知名体育博彩平台，在印尼市场广泛使用",
+      "confidence": 0.95
+    },
+    {
+      "name": "IQ Option / Olymp Trade",
+      "description": "二元期权/外汇投机交易平台，在印尼监管语境下常被归类为高风险赌博",
+      "confidence": 0.9
+    },
+    {
+      "name": "Togel/4D平台集群",
+      "description": "印尼传统数字彩票赌博应用，包名常含togel、4d、prediksi等词",
+      "confidence": 0.95
+    }
+  ],
+  "exclusion_rules": [
+    {
+      "rule": "如果包名包含 com.google, com.android, com.microsoft, com.samsung 等官方系统/大厂前缀，且无明确赌博关键词，则不属于gambling",
+      "reason": "大厂官方包名通常用于系统组件、工具或正规应用商店分发，不具备网赌黑灰产特征"
+    },
+    {
+      "rule": "如果包名明确属于传统金融机构（如 com.bank, com.finance, com.insurance）且无 slot/judi/togel 等词，则不属于gambling",
+      "reason": "属于banking/fintech类别，金融类包名侧重账户管理与支付，无博彩业务语义"
+    },
+    {
+      "rule": "如果为纯休闲游戏（如 com.king.candycrush）且无 real_money/cash/vip/bet 等变现特征，则不属于gambling",
+      "reason": "属于game类别，缺乏真金交易、返奖率或博彩平台架构特征"
+    }
+  ],
+  "confusion_risk": [
+    {
+      "confused_with": "social_casino (社交赌场游戏)",
+      "distinguishing_feature": "社交游戏同样使用slot/poker/domino等词，但无真金交易。区分：检查是否含 real_money, cash, withdraw, deposit, rtp 或已知网赌品牌/马甲包模板"
+    },
+    {
+      "confused_with": "fintech_lending / crypto (借贷/加密货币)",
+      "distinguishing_feature": "可能含 dana, duit, cash, coin。区分：赌博类必含 judi, togel, slot, bet, jackpot 或幸运数字簇，而金融类侧重 loan, credit, wallet, exchange"
+    },
+    {
+      "confused_with": "utility (工具类)",
+      "distinguishing_feature": "如 prediksi (预测) 可能被误判为工具。区分：结合 togel, 4d, hoki 上下文判定为彩票赌博辅助工具，而非通用效率工具"
+    }
+  ],
+  "reasoning": "综合推理逻辑：印尼在线赌博应用具有极强的“模板化”和“关键词堆砌”特征。首先，大量马甲包采用固定前缀（如 com.idX...ntlaY、com.app.cerb.mcX）配合随机字母/数字生成，这是黑灰产批量打包的典型痕迹。其次，包名高度依赖印尼本土博彩文化词汇（judi, togel, hoki, gacor）与国际通用博彩术语（slot, jackpot, rtp, vip, bet）的组合。第三，幸运数字（777, 888, 168, 188等）在包名中高频出现，远超正常应用。通过“正则匹配固定模板 + 关键词语义过滤 + 品牌白名单/黑名单 + 排除正规大厂/金融包名”的多维策略，可精准覆盖95%以上的印尼网赌应用，同时有效规避社交游戏、金融工具等易混淆类别。"
+}

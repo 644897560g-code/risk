@@ -1,0 +1,181 @@
+[
+  {
+    "template_id": "T017",
+    "template_name": "recency",
+    "template_name_cn": "最近事件距今时间",
+    "dimension": "change",
+    "complexity": "L1",
+    "description": "计算指定时间窗口内，满足条件的最近一次事件发生时间距离基准申请时间的间隔。用于衡量行为的新鲜度、活跃度衰减或沉默期长度。",
+    "dsl": "recency(source, window, time_field, cond?, unit)",
+    "dsl_description": "在指定窗口内筛选事件，提取最近一次事件的时间戳，计算其与申请时间的差值，并按指定单位返回。若无事件则返回窗口上限值。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识，如 applist, fdc_inquiry, fdc_pinjaman"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，常用值: 7, 15, 30, 60, 90, 180"
+      },
+      "time_field": {
+        "type": "string",
+        "description": "时间字段名，如 install_time, inquiry_time, disburse_time"
+      },
+      "cond": {
+        "type": "string",
+        "description": "过滤条件表达式，如 status=='SUCCESS' 或 category=='high_risk'"
+      },
+      "unit": {
+        "type": "string",
+        "description": "返回单位，枚举: days, hours"
+      }
+    },
+    "python_function": "calc_recency",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天内最近一次{source}事件距今{unit}数",
+    "examples": [
+      "近30天最近一次FDC查询距今天数",
+      "近90天最近一次贷款放款距今天数",
+      "近7天最近一次APP安装距今小时数"
+    ],
+    "python_code": "from channel1_calculators import _filter_by_time, _get_event_time\nfrom datetime import datetime, timedelta\nfrom typing import Dict, Optional\n\ndef calc_recency(data: Dict, apply_time_dt: datetime, window_days: int = 30,\n                 time_field: str = 'event_time', cond: Optional[str] = None,\n                 unit: str = 'days') -> float:\n    \"\"\"计算指定窗口内最近一次事件距今的时间间隔\n\n    DSL: recency(source, window, time_field, cond?, unit)\n\n    Args:\n        data: 订单数据字典\n        apply_time_dt: 申请时间基准点\n        window_days: 回溯窗口天数\n        time_field: 事件时间字段名\n        cond: 过滤条件（预留扩展）\n        unit: 返回单位 ('days' 或 'hours')\n\n    Returns:\n        时间间隔浮点数，无事件时返回 window_days 或 window_days*24\n    \"\"\"\n    items = _filter_by_time(data, 'source_placeholder', apply_time_dt, window_days)\n    if not isinstance(items, list) or len(items) == 0:\n        return float(window_days) if unit == 'days' else float(window_days * 24)\n\n    latest_ts = max(_get_event_time(item, time_field) for item in items if _get_event_time(item, time_field))\n    if not latest_ts:\n        return float(window_days) if unit == 'days' else float(window_days * 24)\n\n    delta = apply_time_dt - latest_ts\n    if unit == 'hours':\n        return round(delta.total_seconds() / 3600.0, 2)\n    return round(delta.days + delta.seconds / 86400.0, 2)",
+    "design_reason": "填补时间新鲜度维度的空白，直接反映用户近期活跃度与行为衰减轨迹。在印尼现金贷场景中，最近一次多头查询或放款距今时间越短，通常意味着资金饥渴度越高或欺诈试探越频繁，是强预测性特征。",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-03T12:54:57.636521",
+    "source": "模板生成"
+  },
+  {
+    "template_id": "T018",
+    "template_name": "interval_stats",
+    "template_name_cn": "事件间隔统计",
+    "dimension": "change",
+    "complexity": "L2",
+    "description": "计算指定窗口内连续事件之间的时间间隔序列，并返回该序列的统计指标。用于识别行为规律性、周期性或突发性聚集。",
+    "dsl": "interval_stats(source, window, time_field, method, cond?)",
+    "dsl_description": "按时间正序排列窗口内事件，计算相邻事件的时间差，对差值序列应用指定的统计方法（如均值、标准差、变异系数等）。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，常用值: 30, 60, 90, 180"
+      },
+      "time_field": {
+        "type": "string",
+        "description": "事件时间字段名"
+      },
+      "method": {
+        "type": "string",
+        "description": "统计方法，枚举: mean, std, median, cv, min_gap, max_gap"
+      },
+      "cond": {
+        "type": "string",
+        "description": "过滤条件表达式"
+      }
+    },
+    "python_function": "calc_interval_stats",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天{source}事件时间间隔的{method}",
+    "examples": [
+      "近180天贷款申请间隔均值",
+      "近30天FDC查询间隔标准差",
+      "近90天还款事件间隔变异系数"
+    ],
+    "python_code": "from channel1_calculators import _filter_by_time, _get_event_time\nfrom datetime import datetime\nfrom typing import Dict, Optional, List\nimport math\n\ndef calc_interval_stats(data: Dict, apply_time_dt: datetime, window_days: int = 90,\n                        time_field: str = 'event_time', method: str = 'mean',\n                        cond: Optional[str] = None) -> float:\n    \"\"\"计算窗口内连续事件时间间隔的统计指标\n\n    DSL: interval_stats(source, window, time_field, method, cond?)\n\n    Args:\n        data: 订单数据字典\n        apply_time_dt: 申请时间基准点\n        window_days: 回溯窗口天数\n        time_field: 事件时间字段名\n        method: 统计方法\n        cond: 过滤条件\n\n    Returns:\n        间隔统计值，事件不足2个时返回0.0\n    \"\"\"\n    items = _filter_by_time(data, 'source_placeholder', apply_time_dt, window_days)\n    if not isinstance(items, list) or len(items) < 2:\n        return 0.0\n\n    timestamps = sorted([_get_event_time(item, time_field) for item in items if _get_event_time(item, time_field)])\n    if len(timestamps) < 2:\n        return 0.0\n\n    gaps = [(timestamps[i] - timestamps[i-1]).total_seconds() / 86400.0 for i in range(1, len(timestamps))]\n    \n    if method == 'mean':\n        return round(sum(gaps) / len(gaps), 2)\n    elif method == 'std':\n        mean_val = sum(gaps) / len(gaps)\n        variance = sum((x - mean_val) ** 2 for x in gaps) / len(gaps)\n        return round(math.sqrt(variance), 2)\n    elif method == 'median':\n        sorted_gaps = sorted(gaps)\n        mid = len(sorted_gaps) // 2\n        return round((sorted_gaps[mid] + sorted_gaps[~mid]) / 2.0, 2)\n    elif method == 'cv':\n        mean_val = sum(gaps) / len(gaps)\n        if mean_val == 0:\n            return 0.0\n        variance = sum((x - mean_val) ** 2 for x in gaps) / len(gaps)\n        return round(math.sqrt(variance) / mean_val, 4)\n    elif method == 'min_gap':\n        return round(min(gaps), 2)\n    elif method == 'max_gap':\n        return round(max(gaps), 2)\n    return 0.0",
+    "design_reason": "捕捉用户行为的时间节奏特征。间隔稳定通常代表正常资金周转需求，间隔极短（标准差小且均值小）可能暗示多头借贷集中爆发，间隔变异系数大则可能反映不稳定的现金流或试探性申请行为。",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-03T12:54:57.636542",
+    "source": "模板生成"
+  },
+  {
+    "template_id": "T019",
+    "template_name": "value_stats",
+    "template_name_cn": "数值字段统计",
+    "dimension": "volume",
+    "complexity": "L1",
+    "description": "对指定时间窗口内满足条件的数值型字段进行基础聚合统计，支持多种统计方法。用于量化特定行为的规模、强度或分布边界。",
+    "dsl": "value_stats(source, window, value_field, method, cond?, min_count)",
+    "dsl_description": "过滤窗口内数据，提取目标数值字段，计算指定统计量。支持设置最小样本量阈值以保证统计有效性。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，常用值: 30, 60, 90, 180"
+      },
+      "value_field": {
+        "type": "string",
+        "description": "目标数值字段名，如 amount, score, limit"
+      },
+      "method": {
+        "type": "string",
+        "description": "统计方法，枚举: sum, mean, max, min, std"
+      },
+      "cond": {
+        "type": "string",
+        "description": "过滤条件表达式"
+      },
+      "min_count": {
+        "type": "int",
+        "description": "最小有效样本数，低于此值返回0.0"
+      }
+    },
+    "python_function": "calc_value_stats",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天{source}中{value_field}的{method}",
+    "examples": [
+      "近90天FDC贷款记录放款金额均值",
+      "近30天APP安装列表对应风险评分最大值",
+      "近180天查询记录授信额度求和"
+    ],
+    "python_code": "from channel1_calculators import _filter_by_time\nfrom typing import Dict, Optional\nimport math\n\ndef calc_value_stats(data: Dict, apply_time_dt: datetime, window_days: int = 90,\n                     value_field: str = 'amount', method: str = 'mean',\n                     cond: Optional[str] = None, min_count: int = 1) -> float:\n    \"\"\"对窗口内数值字段进行基础聚合统计\n\n    DSL: value_stats(source, window, value_field, method, cond?, min_count)\n\n    Args:\n        data: 订单数据字典\n        apply_time_dt: 申请时间基准点\n        window_days: 回溯窗口天数\n        value_field: 目标数值字段名\n        method: 统计方法\n        cond: 过滤条件\n        min_count: 最小有效样本数\n\n    Returns:\n        统计结果浮点数，样本不足时返回0.0\n    \"\"\"\n    items = _filter_by_time(data, 'source_placeholder', apply_time_dt, window_days)\n    if not isinstance(items, list):\n        return 0.0\n\n    values = []\n    for item in items:\n        val = item.get(value_field)\n        if val is not None:\n            try:\n                values.append(float(val))\n            except (ValueError, TypeError):\n                continue\n\n    if len(values) < min_count:\n        return 0.0\n\n    if method == 'sum':\n        return round(sum(values), 2)\n    elif method == 'mean':\n        return round(sum(values) / len(values), 2)\n    elif method == 'max':\n        return round(max(values), 2)\n    elif method == 'min':\n        return round(min(values), 2)\n    elif method == 'std':\n        mean_val = sum(values) / len(values)\n        variance = sum((x - mean_val) ** 2 for x in values) / len(values)\n        return round(math.sqrt(variance), 2)\n    return 0.0",
+    "design_reason": "提供通用的数值聚合能力，覆盖求和、极值、均值、标准差等基础风控特征。避免为每个金额、评分、额度字段单独硬编码计算逻辑，大幅提升特征工程的复用率与迭代效率。",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-03T12:54:57.636548",
+    "source": "模板生成"
+  },
+  {
+    "template_id": "T020",
+    "template_name": "interval_stat",
+    "template_name_cn": "事件时间间隔统计",
+    "dimension": "change",
+    "complexity": "L2",
+    "description": "计算指定事件序列中相邻两次事件的时间间隔分布统计量，用于刻画行为密集度、规律性及异常聚集特征。",
+    "dsl": "interval_stat(source, time_field, window, stat_method)",
+    "dsl_description": "在时间窗口内提取事件时间戳并排序，计算相邻时间差序列，按指定统计方法聚合输出。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识，如 applist, fdc_inquiry, fdc_pinjaman"
+      },
+      "time_field": {
+        "type": "string",
+        "description": "事件时间字段名"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，取值范围 [30, 60, 90, 180]"
+      },
+      "stat_method": {
+        "type": "string",
+        "description": "统计聚合方法，枚举值: min(最小间隔), mean(平均间隔), std(间隔标准差), median(中位数间隔)"
+      }
+    },
+    "python_function": "calc_interval_stat",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天{source}事件相邻时间间隔的{stat_method}值",
+    "examples": [
+      "近30天FDC查询记录的平均申请间隔天数",
+      "近90天贷款发放记录的最小间隔天数",
+      "近60天APP安装记录的间隔标准差"
+    ],
+    "python_code": "def calc_interval_stat(data: Dict, apply_time_dt: datetime, window_days: int = 30,\n                         source: str = 'fdc_pinjaman', time_field: str = 'event_time',\n                         stat_method: str = 'mean') -> float:\n    \"\"\"计算事件序列相邻时间间隔的统计量（防穿越设计）\n\n    DSL: interval_stat(source, time_field, window, stat_method)\n\n    Args:\n        data: 订单数据\n        apply_time_dt: 申请时间\n        window_days: 回溯窗口天数\n        source: 数据源标识\n        time_field: 时间字段名\n        stat_method: 统计方法 (min, mean, std, median)\n\n    Returns:\n        间隔统计值（天）\n    \"\"\"\n    import statistics\n    from channel1_calculators import _filter_by_time, _get_event_time\n\n    items = _filter_by_time(data, source, apply_time_dt, window_days)\n    if not isinstance(items, list):\n        return 0.0\n\n    timestamps = []\n    for item in items:\n        t = _get_event_time(item, time_field)\n        if t <= apply_time_dt:\n            timestamps.append(t)\n\n    if len(timestamps) < 2:\n        return 0.0  # 不足两次事件无法计算间隔\n\n    timestamps.sort()\n    diffs = [(timestamps[i+1] - timestamps[i]).total_seconds() / 86400.0 for i in range(len(timestamps)-1)]\n\n    if stat_method == 'min':\n        return float(min(diffs))\n    elif stat_method == 'mean':\n        return float(statistics.mean(diffs))\n    elif stat_method == 'std':\n        return float(statistics.stdev(diffs)) if len(diffs) > 1 else 0.0\n    elif stat_method == 'median':\n        return float(statistics.median(diffs))\n    else:\n        return float(statistics.mean(diffs))",
+    "design_reason": "现有模板侧重事件数量与金额聚合，缺乏对行为时间节奏的刻画。间隔统计能有效识别‘多头借贷冲刺期’（极小间隔）或‘集中安装高风险应用’的密集行为模式，补充时间维度特征，且标准差可反映行为规律性（如机器刷单间隔固定 vs 真人随机）。",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-03T14:09:09.068102"
+  }
+]

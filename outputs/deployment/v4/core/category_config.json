@@ -1,0 +1,29 @@
+{
+  "high_risk_categories": [
+    "gambling",
+    "cash_loan",
+    "fintech_lending",
+    "fake_gps",
+    "clone_app"
+  ],
+  "loan_categories": [
+    "cash_loan",
+    "fintech_lending",
+    "banking",
+    "ewallet",
+    "installment"
+  ],
+  "financial_categories": [
+    "cash_loan",
+    "fintech_lending",
+    "banking",
+    "ewallet",
+    "installment"
+  ],
+  "clone_gps_categories": [
+    "fake_gps",
+    "clone_app"
+  ],
+  "social_entertainment_category": "social_entertainment",
+  "description": "特征工程类别配置 - 由业务规则定义，非hardcoded"
+}

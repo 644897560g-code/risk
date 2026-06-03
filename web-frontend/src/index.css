@@ -1,0 +1,265 @@
+/* ============================================================
+   Reset & Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f2f4f8;
+  color: #141b2d;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(43, 95, 217, 0.15);
+  color: #141b2d;
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c8ced8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 4px rgba(43, 95, 217, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(43, 95, 217, 0.35);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================================
+   Ant Design Overrides — Professional Refinements
+   ============================================================ */
+
+/* Card — subtle shadow + smooth hover lift */
+.ant-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #e8ecf2;
+  border-radius: 10px;
+}
+.ant-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+  border-color: #d0d6e0;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid #edf0f5;
+  padding: 0 20px;
+  min-height: 48px;
+}
+
+.ant-card-head-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #141b2d;
+}
+
+/* Table — cleaner header + refined hover */
+.ant-table-thead > tr > th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #5a6070;
+  border-bottom: 2px solid #e2e6ed;
+}
+.ant-table-tbody > tr {
+  transition: background 0.15s ease;
+}
+.ant-table-tbody > tr:hover > td {
+  background: rgba(43, 95, 217, 0.03) !important;
+}
+
+/* Button — subtle scale on hover */
+.ant-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+.ant-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.ant-btn-primary {
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+/* Tag — cleaner */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  padding: 1px 8px;
+}
+
+/* Steps — refined connectors */
+.ant-steps-item-title {
+  font-size: 13px;
+}
+
+/* Drawer — smoother */
+.ant-drawer-header {
+  border-bottom: 1px solid #edf0f5;
+}
+
+/* Segmented — professional */
+.ant-segmented {
+  font-size: 12px;
+  border-radius: 6px;
+  background: #f2f4f8;
+  padding: 2px;
+}
+.ant-segmented-item {
+  border-radius: 4px;
+}
+.ant-segmented-item-selected {
+  font-weight: 600;
+}
+
+/* Tooltip */
+.ant-tooltip-inner {
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+.agent-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
+}
+.agent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card {
+  text-align: center;
+  padding: 16px;
+}
+.stat-card .value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2b5fd9;
+  letter-spacing: -0.5px;
+}
+.stat-card .label {
+  font-size: 13px;
+  color: #5a6070;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* Page transition */
+.page-enter {
+  animation: fadeInUp 0.35s ease;
+}
+
+/* Divider accent */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #141b2d;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background: #2b5fd9;
+  border-radius: 2px;
+}

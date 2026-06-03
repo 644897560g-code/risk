@@ -1,0 +1,469 @@
+{
+  "version": "2.0",
+  "created": "2026-04-28",
+  "total_templates": 16,
+  "dimensions": [
+    {
+      "dimension_id": "D01",
+      "dimension_name": "volume",
+      "dimension_name_cn": "数量统计",
+      "description": "计数、去重计数、衰减求和等数量层面的计算模式",
+      "templates": ["T001", "T002", "T003"]
+    },
+    {
+      "dimension_id": "D02",
+      "dimension_name": "structure",
+      "dimension_name_cn": "结构占比",
+      "description": "占比、集中度、重叠度等结构层面的计算模式",
+      "templates": ["T004", "T005", "T006"]
+    },
+    {
+      "dimension_id": "D03",
+      "dimension_name": "change",
+      "dimension_name_cn": "变化趋势",
+      "description": "周期对比、趋势斜率、突增检测等变化层面的计算模式",
+      "templates": ["T007", "T008", "T009"]
+    },
+    {
+      "dimension_id": "D04",
+      "dimension_name": "position",
+      "dimension_name_cn": "位置排名",
+      "description": "百分位、偏离度、异常检测等位置层面的计算模式",
+      "templates": ["T010", "T011", "T012"]
+    },
+    {
+      "dimension_id": "D05",
+      "dimension_name": "consistency",
+      "dimension_name_cn": "一致性校验",
+      "description": "申报对比、跨源不一致性等校验层面的计算模式",
+      "templates": ["T013", "T014"]
+    },
+    {
+      "dimension_id": "D06",
+      "dimension_name": "relation",
+      "dimension_name_cn": "关系识别",
+      "description": "身份聚类等关系层面的计算模式",
+      "templates": ["T015"]
+    },
+    {
+      "dimension_id": "D07",
+      "dimension_name": "derived",
+      "dimension_name_cn": "衍生计算",
+      "description": "对主特征进行数学变换的衍生计算模式",
+      "templates": ["T016"]
+    }
+  ],
+  "templates": [
+    {
+      "template_id": "T001",
+      "template_name": "count",
+      "template_name_cn": "计数",
+      "dimension": "volume",
+      "complexity": "L1",
+      "description": "按时间窗口统计事件数量（FDC查询次数、APP安装数、贷款笔数）",
+      "dsl": "count(source, window, cond?)",
+      "dsl_description": "统计指定数据源在回溯窗口内的事件总数，可选条件过滤",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_inquiry/fdc_pinjaman"},
+        "window": {"type": "int", "description": "回溯窗口天数，可选: 3/7/15/30/60/90/180/360"},
+        "cond": {"type": "dict|null", "description": "可选条件过滤，如 {status_pinjaman: O}"}
+      },
+      "python_function": "calc_count",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内{source}的事件总数(条件:{cond})",
+      "examples": [
+        "近30天FDC查询次数 → 捕捉近期频繁申请信号",
+        "近7天APP安装数 → 近期活跃度指标",
+        "近90天未结清贷款笔数 → 多头借贷规模"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T002",
+      "template_name": "distinct_count",
+      "template_name_cn": "去重计数",
+      "dimension": "volume",
+      "complexity": "L1",
+      "description": "去重统计活跃机构数、查询方数、贷款类型数",
+      "dsl": "distinct_count(source, dedup_field, window)",
+      "dsl_description": "按指定字段去重后统计唯一值数量",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: fdc_inquiry/fdc_pinjaman"},
+        "dedup_field": {"type": "string", "description": "去重字段: hit_by/id_penyelenggara/tipe_pinjaman/status_pinjaman/kualitas_pinjaman/pendanaan_syariah"},
+        "window": {"type": "int", "description": "回溯窗口天数，可选: 7/15/30/60/90/180"}
+      },
+      "python_function": "calc_distinct_count",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内{source}中不同{dedup_field}的数量",
+      "examples": [
+        "近90天活跃贷款机构数 → 多头借贷核心指标",
+        "近30天涉及的贷款类型数 → 风险偏好多样性",
+        "近180天FDC查询方数 → 借款申请分散度"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T003",
+      "template_name": "decayed_sum",
+      "template_name_cn": "衰减求和",
+      "dimension": "volume",
+      "complexity": "L2",
+      "description": "带时间衰减的资金流、在贷余额、收入时间序列聚合",
+      "dsl": "decayed_sum(source, window, decay_func, decay_rate, value_field)",
+      "dsl_description": "按时间衰减权重聚合数值字段，近期数据权重更高",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: fdc_pinjaman"},
+        "window": {"type": "int", "description": "回溯窗口天数: 30/60/90/180"},
+        "decay_func": {"type": "string", "description": "衰减函数: exponential/linear"},
+        "decay_rate": {"type": "float", "description": "衰减率: 0.02/0.05/0.1/0.5"},
+        "value_field": {"type": "string", "description": "数值字段: nilai_pendanaan/sisa_pinjaman_berjalan/pendapatan"}
+      },
+      "python_function": "calc_decayed_sum",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内{source}的{value_field}按{decay_func}({decay_rate})衰减加权和",
+      "examples": [
+        "近90天贷款金额衰减加权和(e005) → 近期资金需求总量",
+        "近180天在贷余额衰减加权和 → 当前负债压力趋势",
+        "近60天收入衰减加权和 → 近期收入水平评估"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T004",
+      "template_name": "proportion",
+      "template_name_cn": "占比",
+      "dimension": "structure",
+      "complexity": "L1",
+      "description": "高风险APP安装占比、特定贷款类型（伊斯兰/非伊斯兰）占比",
+      "dsl": "proportion(source, window, target_cond|allowed_categories)",
+      "dsl_description": "计算满足条件的子集占全集的比例",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_pinjaman"},
+        "window": {"type": "int", "description": "回溯窗口天数: 3/7/15/30/60/90/180"},
+        "allowed_categories": {"type": "list", "description": "APP类别过滤（applist源用），如 [gambling, cash_loan]"},
+        "target_cond": {"type": "dict", "description": "条件过滤（fdc源用），如 {kualitas_pinjaman: 1}"}
+      },
+      "python_function": "calc_proportion",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内符合条件的{source}记录占比",
+      "examples": [
+        "近30天赌博APP安装占比 → 风险偏好指标",
+        "近90天伊斯兰贷款占比 → 贷款类型偏好",
+        "近7天高风险APP占比 → 风险行为集中度"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T005",
+      "template_name": "concentration",
+      "template_name_cn": "集中度",
+      "dimension": "structure",
+      "complexity": "L2",
+      "description": "贷款机构/应用类别的集中度（基尼系数、熵、CV变异系数、HHI指数）",
+      "dsl": "concentration(source, method, window, category_field?)",
+      "dsl_description": "计算贷款机构或APP类别的分布集中度，衡量分散程度",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_pinjaman"},
+        "method": {"type": "string", "description": "计算方法: gini/entropy/cv"},
+        "window": {"type": "int", "description": "回溯窗口天数: 30/60/90/180"},
+        "category_field": {"type": "string", "description": "分类字段（fdc源用）: id_penyelenggara/tipe_pinjaman/kualitas_pinjaman"},
+        "use_by_category": {"type": "bool", "description": "是否使用APP类别分组（applist源用）"}
+      },
+      "python_function": "calc_concentration",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内{source}按{category_field}的{method}集中度",
+      "examples": [
+        "近90天贷款机构的基尼系数 → 集中度越低共债风险越高",
+        "近60天贷款类型的熵 → 类型分散度指标",
+        "近30天APP类别的CV变异系数 → 安装行为波动性"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T006",
+      "template_name": "overlap",
+      "template_name_cn": "重叠度",
+      "dimension": "structure",
+      "complexity": "L2",
+      "description": "已安装APP列表与FDC借贷机构的重叠程度（共现率）",
+      "dsl": "overlap(source_a, source_b, field_a, field_b, window)",
+      "dsl_description": "计算两个数据源在指定字段上的重叠比率",
+      "parameter_space": {
+        "source_a": {"type": "string", "description": "数据源A: applist"},
+        "field_a": {"type": "string", "description": "字段A: packageX"},
+        "source_b": {"type": "string", "description": "数据源B: fdc_pinjaman"},
+        "field_b": {"type": "string", "description": "字段B: id_penyelenggara"},
+        "window": {"type": "int", "description": "回溯窗口天数: 7/30/60/90"}
+      },
+      "python_function": "calc_overlap",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天内{source_a}与{source_b}在{field_a}/{field_b}上的重叠比例",
+      "examples": [
+        "已安装APP与FDC借贷机构重叠率 → 重叠高则多头借贷明显",
+        "近90天APP与贷款机构共现率 → 识别非正规渠道借款"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T007",
+      "template_name": "period_compare",
+      "template_name_cn": "周期对比",
+      "dimension": "change",
+      "complexity": "L1",
+      "description": "短期vs长期行为对比（近7天vs近90天、近30天vs近180天等）",
+      "dsl": "period_compare(source, short_window, long_window)",
+      "dsl_description": "计算短窗口与长窗口的事件量比值，衡量行为变化趋势",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_inquiry/fdc_pinjaman"},
+        "short_window": {"type": "int", "description": "短期窗口天数: 3/7/15/30"},
+        "long_window": {"type": "int", "description": "长期窗口天数: 30/60/90/180"}
+      },
+      "python_function": "calc_period_compare",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{short_window}天vs近{long_window}天的{source}事件量比值",
+      "examples": [
+        "近7天vs近30天APP安装比 → 近期活跃度激增信号",
+        "近30天vs近90天FDC查询比 → 借款申请频率变化",
+        "近15天vs近90天贷款笔数比 → 资金需求加速信号"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T008",
+      "template_name": "trend",
+      "template_name_cn": "趋势",
+      "dimension": "change",
+      "complexity": "L2",
+      "description": "多窗口事件量的线性趋势斜率（近7天→15天→30天→60天）",
+      "dsl": "trend(source, windows)",
+      "dsl_description": "对多个窗口的事件量进行线性回归，返回斜率",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_inquiry/fdc_pinjaman"},
+        "windows": {"type": "list", "description": "窗口序列: [3,7,30] / [7,15,30] / [7,30,60] 等"}
+      },
+      "python_function": "calc_trend",
+      "python_module": "channel1_calculators",
+      "formula_template": "{source}在窗口序列{windows}上的线性趋势斜率",
+      "examples": [
+        "APP安装数在[7,15,30]天的趋势斜率 → 安装行为加速",
+        "FDC查询数在[3,7,30]天的趋势斜率 → 查询频率变化",
+        "贷款笔数在[30,60,90]天的趋势斜率 → 借贷行为累积趋势"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T009",
+      "template_name": "spike",
+      "template_name_cn": "突增检测",
+      "dimension": "change",
+      "complexity": "L2",
+      "description": "近期事件量突增检测（近7天vs更长期窗口的倍数阈值）",
+      "dsl": "spike(source, window, threshold)",
+      "dsl_description": "检测短窗口与等窗口事件量的比值是否超过阈值",
+      "parameter_space": {
+        "source": {"type": "string", "description": "数据源: applist/fdc_pinjaman"},
+        "window": {"type": "int", "description": "短窗口天数: 7/15/30/60"},
+        "threshold": {"type": "float", "description": "突增倍数阈值: 1.5/2.0/2.5/3.0"}
+      },
+      "python_function": "calc_spike",
+      "python_module": "channel1_calculators",
+      "formula_template": "近{window}天{source}事件量突增至阈值{threshold}倍以上",
+      "examples": [
+        "近7天APP安装突增2倍 → 突发性资金需求信号",
+        "近30天贷款笔数突增3倍 → 多头借贷急升",
+        "近15天行为突增1.5倍 → 早期预警信号"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T010",
+      "template_name": "percentile",
+      "template_name_cn": "百分位排名",
+      "dimension": "position",
+      "complexity": "L3",
+      "description": "用户薪资/贷款额/查询数在全体样本中的百分位排名",
+      "dsl": "percentile(target_metric, reference_distribution)",
+      "dsl_description": "计算用户指标在参考分布中的百分位",
+      "parameter_space": {
+        "target_metric": {"type": "string", "description": "目标指标: salary/loan_amount/inquiry_count/applist_count"}
+      },
+      "python_function": "calc_percentile",
+      "python_module": "channel1_calculators",
+      "formula_template": "用户的{target_metric}在全体样本中的百分位排名",
+      "examples": [
+        "薪资百分位 → 低收入群体的逾期风险更高",
+        "贷款额百分位 → 极端借贷行为识别",
+        "查询数百分位 → 高查询频率的多头借贷信号"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T011",
+      "template_name": "deviation",
+      "template_name_cn": "偏离度",
+      "dimension": "position",
+      "complexity": "L3",
+      "description": "用户指标与同群体均值的偏离程度（Z-Score标准化偏差）",
+      "dsl": "deviation(target_metric, ref_mean, ref_std)",
+      "dsl_description": "计算用户指标与参考均值的Z-Score标准化偏离",
+      "parameter_space": {
+        "target_metric": {"type": "string", "description": "目标指标: salary/loan_amount/inquiry_count/applist_count"}
+      },
+      "python_function": "calc_deviation",
+      "python_module": "channel1_calculators",
+      "formula_template": "用户的{target_metric}与群体均值的Z-Score偏离度",
+      "examples": [
+        "薪资Z-Score偏离 → 异常收入水平的识别",
+        "贷款额Z-Score → 负债水平偏离度",
+        "查询数Z-Score → 查询行为异常检测"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T012",
+      "template_name": "anomaly",
+      "template_name_cn": "异常检测",
+      "dimension": "position",
+      "complexity": "L3",
+      "description": "多维特征的马氏距离异常检测（综合多个维度的异常评分）",
+      "dsl": "anomaly(target_metric, method, reference_matrix)",
+      "dsl_description": "计算用户多维特征向量的马氏距离异常评分",
+      "parameter_space": {
+        "target_metric": {"type": "string", "description": "目标指标: app_install_pattern/loan_pattern"},
+        "method": {"type": "string", "description": "检测方法: mahalanobis"}
+      },
+      "python_function": "calc_anomaly",
+      "python_module": "channel1_calculators",
+      "formula_template": "用户在{target_metric}上的{method}多维异常评分",
+      "examples": [
+        "APP安装模式异常评分 → 安装行为偏离常规",
+        "贷款模式异常评分 → 借贷行为多维异常检测"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T013",
+      "template_name": "declared_vs_actual",
+      "template_name_cn": "申报对比",
+      "dimension": "consistency",
+      "complexity": "L2",
+      "description": "用户申报薪资与FDC实际收入/在贷金额的偏差比、绝对差值",
+      "dsl": "declared_vs_actual(declared_field, actual_field, method)",
+      "dsl_description": "对比用户主动申报值与FDC实际数据的差异",
+      "parameter_space": {
+        "declared_field": {"type": "string", "description": "申报字段: base.salary"},
+        "actual_field": {"type": "string", "description": "实际字段: fdc_pinjaman.nilai_pendanaan/fdc_pinjaman.pendapatan"},
+        "method": {"type": "string", "description": "对比方法: ratio/gap/abs_diff"}
+      },
+      "python_function": "calc_declared_vs_actual",
+      "python_module": "channel1_calculators",
+      "formula_template": "{declared_field} 与 {actual_field} 的{method}对比",
+      "examples": [
+        "申报薪资vsFDC贷款额比值 → 收入报表异常",
+        "申报薪资vs实际收入差值 → 收入造假检测",
+        "申报薪资vs在贷金额绝对值差 → 隐瞒负债判断"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T014",
+      "template_name": "cross_discrepancy",
+      "template_name_cn": "跨源不一致性",
+      "dimension": "consistency",
+      "complexity": "L3",
+      "description": "申报薪资与FDC贷款额/征信数据的跨源不一致性评分",
+      "dsl": "cross_discrepancy(field_pairs)",
+      "dsl_description": "综合多对字段的跨源不一致性评分，衡量信息真实性",
+      "parameter_space": {
+        "field_pairs": {"type": "list", "description": "字段对列表，每对包含 {src, field}"}
+      },
+      "python_function": "calc_cross_discrepancy",
+      "python_module": "channel1_calculators",
+      "formula_template": "多源数据不一致性综合评分",
+      "examples": [
+        "薪资vs贷款额跨源不一致性 → 信息真实性存疑",
+        "多源字段综合校验 → 需要人工审核介入"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T015",
+      "template_name": "identity_cluster",
+      "template_name_cn": "身份聚类",
+      "dimension": "relation",
+      "complexity": "L3",
+      "description": "设备共享APP安装/共贷机构的聚类分析（团伙欺诈识别）",
+      "dsl": "identity_cluster(identity_field, shared_field, min_threshold)",
+      "dsl_description": "通过共享应用或机构识别疑似团伙欺诈",
+      "parameter_space": {
+        "identity_field": {"type": "string", "description": "身份字段: device_id"},
+        "shared_field": {"type": "string", "description": "共享字段: packageX/id_penyelenggara"},
+        "min_threshold": {"type": "int", "description": "最小共享数阈值: 2/3"}
+      },
+      "python_function": "calc_identity_cluster",
+      "python_module": "channel1_calculators",
+      "formula_template": "基于{identity_field}识别共享{shared_field}的聚类数量",
+      "examples": [
+        "设备共享APP聚类 → 团伙欺诈设备识别",
+        "设备共享贷款机构 → 共贷团伙检测"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    },
+    {
+      "template_id": "T016",
+      "template_name": "derived",
+      "template_name_cn": "衍生特征",
+      "dimension": "derived",
+      "complexity": "L2",
+      "description": "衍生特征：比值/密度/加权组合/对数/平方/差分/速度变化/高值标记",
+      "dsl": "derived(type, ref_features, params)",
+      "dsl_description": "对主特征进行数学变换，挖掘非线性关系和隐藏风险模式",
+      "parameter_space": {
+        "derived_type": {"type": "string", "description": "衍生类型: ratio_density/ratio_cross/weighted_combo/extended_velocity/squared/log_transform/difference/is_high"},
+        "ref_features": {"type": "list", "description": "依赖的主特征名列表"},
+        "params": {"type": "dict", "description": "衍生参数，不同type有不同参数"}
+      },
+      "python_function": "derived_arithmetic",
+      "python_module": "channel1_calculators",
+      "formula_template": "基于主特征的{derived_type}衍生计算",
+      "examples": [
+        "密度特征：count/window → 事件发生频率",
+        "交叉比值：赌博占比/银行占比 → 风险偏好指数",
+        "加权组合：赌博占比×未结清贷款数 → 风险暴露度"
+      ],
+      "_promoted_from": "bootstrap",
+      "_promoted_at": "2026-04-28T00:00:00",
+      "_promoted_round": 1
+    }
+  ]
+}

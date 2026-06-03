@@ -1,0 +1,5231 @@
+{
+  "meta": {
+    "total_apps": 11850,
+    "total_categories": 17,
+    "learning_date": "2026-04-26",
+    "model": "qwen/qwen3.6-plus",
+    "classification_date": "2026-04-26 22:47:40"
+  },
+  "high_risk_categories": [
+    "gambling",
+    "cash_loan",
+    "fintech_lending",
+    "fake_gps",
+    "clone_app",
+    "app_store"
+  ],
+  "rules": {
+    "shopping": {
+      "category": "shopping",
+      "sample_count": 224,
+      "confidence_threshold": 0.8160714285714287,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "shopee",
+            "freq": 8
+          },
+          {
+            "word": "shopping",
+            "freq": 5
+          },
+          {
+            "word": "indonesia",
+            "freq": 5
+          },
+          {
+            "word": "indomaret",
+            "freq": 5
+          },
+          {
+            "word": "blibli",
+            "freq": 4
+          },
+          {
+            "word": "shop",
+            "freq": 4
+          },
+          {
+            "word": "loyalty",
+            "freq": 3
+          },
+          {
+            "word": "indogrosir",
+            "freq": 3
+          },
+          {
+            "word": "sinyee",
+            "freq": 3
+          },
+          {
+            "word": "babybus",
+            "freq": 3
+          },
+          {
+            "word": "ecommerce",
+            "freq": 3
+          },
+          {
+            "word": "alibaba",
+            "freq": 3
+          },
+          {
+            "word": "evermos",
+            "freq": 3
+          },
+          {
+            "word": "my",
+            "freq": 2
+          },
+          {
+            "word": "toko",
+            "freq": 2
+          },
+          {
+            "word": "yimm",
+            "freq": 2
+          },
+          {
+            "word": "artaku",
+            "freq": 2
+          },
+          {
+            "word": "familymartindonesia",
+            "freq": 2
+          },
+          {
+            "word": "amazon",
+            "freq": 2
+          },
+          {
+            "word": "auction",
+            "freq": 2
+          },
+          {
+            "word": "catalogue",
+            "freq": 2
+          },
+          {
+            "word": "overseas",
+            "freq": 2
+          },
+          {
+            "word": "market",
+            "freq": 2
+          },
+          {
+            "word": "dealer",
+            "freq": 2
+          },
+          {
+            "word": "alfamart",
+            "freq": 2
+          },
+          {
+            "word": "trendluxe",
+            "freq": 2
+          },
+          {
+            "word": "bigseller",
+            "freq": 2
+          },
+          {
+            "word": "astra",
+            "freq": 2
+          },
+          {
+            "word": "moladin",
+            "freq": 2
+          },
+          {
+            "word": "store",
+            "freq": 2
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "sd1",
+            "freq": 3
+          },
+          {
+            "word": "rumah123",
+            "freq": 2
+          }
+        ]
+      },
+      "patterns": [
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 9
+        },
+        {
+          "pattern": "^com\\.shopee\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.indomaret\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.indogrosir\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.sinyee\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.alibaba\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 10
+        },
+        {
+          "name": "shopee",
+          "count": 8
+        },
+        {
+          "name": "indomaret",
+          "count": 5
+        },
+        {
+          "name": "indogrosir",
+          "count": 3
+        },
+        {
+          "name": "sinyee",
+          "count": 3
+        },
+        {
+          "name": "alibaba",
+          "count": 3
+        },
+        {
+          "name": "artaku",
+          "count": 2
+        },
+        {
+          "name": "blibli",
+          "count": 2
+        },
+        {
+          "name": "familymartindonesia",
+          "count": 2
+        },
+        {
+          "name": "id",
+          "count": 2
+        },
+        {
+          "name": "amazon",
+          "count": 2
+        },
+        {
+          "name": "alfamart",
+          "count": 2
+        },
+        {
+          "name": "astra",
+          "count": 2
+        },
+        {
+          "name": "moladin",
+          "count": 2
+        },
+        {
+          "name": "indonesia",
+          "count": 2
+        },
+        {
+          "name": "tokopedia",
+          "count": 2
+        },
+        {
+          "name": "bukalapak",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 96
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 22
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 15
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 8
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "id.[SHORT].[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "[WORD].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "co.id.[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "utility": {
+      "category": "utility",
+      "sample_count": 3838,
+      "confidence_threshold": 0.8538301198540906,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "webapk",
+            "freq": 429
+          },
+          {
+            "word": "chromium",
+            "freq": 423
+          },
+          {
+            "word": "samsung",
+            "freq": 101
+          },
+          {
+            "word": "video",
+            "freq": 98
+          },
+          {
+            "word": "downloader",
+            "freq": 74
+          },
+          {
+            "word": "photo",
+            "freq": 72
+          },
+          {
+            "word": "black",
+            "freq": 61
+          },
+          {
+            "word": "themesdigital",
+            "freq": 58
+          },
+          {
+            "word": "google",
+            "freq": 56
+          },
+          {
+            "word": "apps",
+            "freq": 54
+          },
+          {
+            "word": "browser",
+            "freq": 54
+          },
+          {
+            "word": "camera",
+            "freq": 53
+          },
+          {
+            "word": "music",
+            "freq": 51
+          },
+          {
+            "word": "vpn",
+            "freq": 47
+          },
+          {
+            "word": "pdf",
+            "freq": 41
+          },
+          {
+            "word": "ai",
+            "freq": 38
+          },
+          {
+            "word": "editor",
+            "freq": 36
+          },
+          {
+            "word": "gps",
+            "freq": 35
+          },
+          {
+            "word": "pdfreader",
+            "freq": 34
+          },
+          {
+            "word": "reader",
+            "freq": 32
+          },
+          {
+            "word": "phone",
+            "freq": 32
+          },
+          {
+            "word": "videodownloader",
+            "freq": 32
+          },
+          {
+            "word": "wallpaper",
+            "freq": 32
+          },
+          {
+            "word": "language",
+            "freq": 31
+          },
+          {
+            "word": "proxy",
+            "freq": 30
+          },
+          {
+            "word": "calculator",
+            "freq": 30
+          },
+          {
+            "word": "theme",
+            "freq": 29
+          },
+          {
+            "word": "go",
+            "freq": 29
+          },
+          {
+            "word": "all",
+            "freq": 28
+          },
+          {
+            "word": "live",
+            "freq": 28
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "v2",
+            "freq": 423
+          },
+          {
+            "word": "mp3",
+            "freq": 20
+          },
+          {
+            "word": "smartinputv5",
+            "freq": 17
+          }
+        ]
+      },
+      "patterns": [
+        {
+          "pattern": "^org\\.chromium\\..*",
+          "type": "prefix",
+          "count": 423
+        },
+        {
+          "pattern": "^com\\.samsung\\..*",
+          "type": "prefix",
+          "count": 98
+        },
+        {
+          "pattern": "^ThemesDigital\\.Black\\..*",
+          "type": "prefix",
+          "count": 58
+        },
+        {
+          "pattern": "^com\\.google\\..*",
+          "type": "prefix",
+          "count": 56
+        },
+        {
+          "pattern": "^com\\.app\\..*",
+          "type": "prefix",
+          "count": 25
+        },
+        {
+          "pattern": "^com\\.sec\\..*",
+          "type": "prefix",
+          "count": 22
+        },
+        {
+          "pattern": "^id\\.go\\..*",
+          "type": "prefix",
+          "count": 21
+        },
+        {
+          "pattern": "^com\\.cootek\\..*",
+          "type": "prefix",
+          "count": 17
+        },
+        {
+          "pattern": "^com\\.transsion\\..*",
+          "type": "prefix",
+          "count": 17
+        },
+        {
+          "pattern": "^com\\.miui\\..*",
+          "type": "prefix",
+          "count": 14
+        },
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 13
+        },
+        {
+          "pattern": "^com\\.video\\..*",
+          "type": "prefix",
+          "count": 11
+        },
+        {
+          "pattern": "^com\\.pdfreader\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.coloros\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.monotype\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^free\\.vpn\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.calculator\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.pdf\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.launcher\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.gps\\..*",
+          "type": "prefix",
+          "count": 8
+        }
+      ],
+      "brands": [
+        {
+          "name": "chromium",
+          "count": 423
+        },
+        {
+          "name": "samsung",
+          "count": 98
+        },
+        {
+          "name": "Black",
+          "count": 58
+        },
+        {
+          "name": "google",
+          "count": 56
+        },
+        {
+          "name": "video",
+          "count": 39
+        },
+        {
+          "name": "go",
+          "count": 22
+        },
+        {
+          "name": "sec",
+          "count": 22
+        },
+        {
+          "name": "co",
+          "count": 21
+        },
+        {
+          "name": "cootek",
+          "count": 17
+        },
+        {
+          "name": "transsion",
+          "count": 17
+        },
+        {
+          "name": "miui",
+          "count": 14
+        },
+        {
+          "name": "com",
+          "count": 13
+        },
+        {
+          "name": "pdfreader",
+          "count": 12
+        },
+        {
+          "name": "vpn",
+          "count": 12
+        },
+        {
+          "name": "gps",
+          "count": 12
+        },
+        {
+          "name": "photo",
+          "count": 10
+        },
+        {
+          "name": "coloros",
+          "count": 10
+        },
+        {
+          "name": "videodownloader",
+          "count": 10
+        },
+        {
+          "name": "id",
+          "count": 9
+        },
+        {
+          "name": "all",
+          "count": 9
+        },
+        {
+          "name": "calculator",
+          "count": 9
+        },
+        {
+          "name": "pdf",
+          "count": 9
+        },
+        {
+          "name": "phone",
+          "count": 9
+        },
+        {
+          "name": "music",
+          "count": 8
+        },
+        {
+          "name": "monotype",
+          "count": 8
+        },
+        {
+          "name": "launcher",
+          "count": 8
+        },
+        {
+          "name": "photoeditor",
+          "count": 8
+        },
+        {
+          "name": "xiaomi",
+          "count": 8
+        },
+        {
+          "name": "otoreport",
+          "count": 7
+        },
+        {
+          "name": "hd",
+          "count": 7
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 1125
+        },
+        {
+          "structure": "org.[WORD].[WORD].[WORD]",
+          "count": 424
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 391
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD]",
+          "count": 187
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 178
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 106
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD]",
+          "count": 97
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 89
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 77
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 76
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 57
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 54
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 49
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 46
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD].[WORD]",
+          "count": 36
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "social_entertainment": {
+      "category": "social_entertainment",
+      "sample_count": 3810,
+      "confidence_threshold": 0.8370603674540682,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "game",
+            "freq": 228
+          },
+          {
+            "word": "games",
+            "freq": 171
+          },
+          {
+            "word": "puzzle",
+            "freq": 154
+          },
+          {
+            "word": "simulator",
+            "freq": 69
+          },
+          {
+            "word": "master",
+            "freq": 51
+          },
+          {
+            "word": "sort",
+            "freq": 48
+          },
+          {
+            "word": "match",
+            "freq": 48
+          },
+          {
+            "word": "babybus",
+            "freq": 46
+          },
+          {
+            "word": "block",
+            "freq": 45
+          },
+          {
+            "word": "sinyee",
+            "freq": 45
+          },
+          {
+            "word": "music",
+            "freq": 43
+          },
+          {
+            "word": "gp",
+            "freq": 43
+          },
+          {
+            "word": "car",
+            "freq": 40
+          },
+          {
+            "word": "merge",
+            "freq": 40
+          },
+          {
+            "word": "drama",
+            "freq": 35
+          },
+          {
+            "word": "fun",
+            "freq": 33
+          },
+          {
+            "word": "color",
+            "freq": 33
+          },
+          {
+            "word": "video",
+            "freq": 33
+          },
+          {
+            "word": "tv",
+            "freq": 28
+          },
+          {
+            "word": "io",
+            "freq": 28
+          },
+          {
+            "word": "robot",
+            "freq": 28
+          },
+          {
+            "word": "live",
+            "freq": 26
+          },
+          {
+            "word": "world",
+            "freq": 25
+          },
+          {
+            "word": "craft",
+            "freq": 25
+          },
+          {
+            "word": "escape",
+            "freq": 25
+          },
+          {
+            "word": "monster",
+            "freq": 24
+          },
+          {
+            "word": "katanlabs",
+            "freq": 23
+          },
+          {
+            "word": "air",
+            "freq": 23
+          },
+          {
+            "word": "short",
+            "freq": 22
+          },
+          {
+            "word": "jam",
+            "freq": 22
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^com\\.sinyee\\..*",
+          "type": "prefix",
+          "count": 45
+        },
+        {
+          "pattern": "^com\\.katanlabs\\..*",
+          "type": "prefix",
+          "count": 21
+        },
+        {
+          "pattern": "^com\\.game\\..*",
+          "type": "prefix",
+          "count": 17
+        },
+        {
+          "pattern": "^com\\.facebook\\..*",
+          "type": "prefix",
+          "count": 16
+        },
+        {
+          "pattern": "^com\\.outfit7\\..*",
+          "type": "prefix",
+          "count": 15
+        },
+        {
+          "pattern": "^com\\.google\\..*",
+          "type": "prefix",
+          "count": 15
+        },
+        {
+          "pattern": "^org\\.telegram\\..*",
+          "type": "prefix",
+          "count": 15
+        },
+        {
+          "pattern": "^air\\.com\\..*",
+          "type": "prefix",
+          "count": 14
+        },
+        {
+          "pattern": "^com\\.kigle\\..*",
+          "type": "prefix",
+          "count": 13
+        },
+        {
+          "pattern": "^com\\.yg\\..*",
+          "type": "prefix",
+          "count": 12
+        },
+        {
+          "pattern": "^com\\.higame\\..*",
+          "type": "prefix",
+          "count": 11
+        },
+        {
+          "pattern": "^com\\.fc\\..*",
+          "type": "prefix",
+          "count": 11
+        },
+        {
+          "pattern": "^com\\.hotplay\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.tencent\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.ig\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.easybrain\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^com\\.puzzle\\..*",
+          "type": "prefix",
+          "count": 9
+        },
+        {
+          "pattern": "^com\\.miniclip\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.app\\..*",
+          "type": "prefix",
+          "count": 8
+        },
+        {
+          "pattern": "^com\\.bubadu\\..*",
+          "type": "prefix",
+          "count": 8
+        }
+      ],
+      "brands": [
+        {
+          "name": "sinyee",
+          "count": 45
+        },
+        {
+          "name": "com",
+          "count": 22
+        },
+        {
+          "name": "katanlabs",
+          "count": 21
+        },
+        {
+          "name": "facebook",
+          "count": 17
+        },
+        {
+          "name": "outfit7",
+          "count": 15
+        },
+        {
+          "name": "google",
+          "count": 15
+        },
+        {
+          "name": "telegram",
+          "count": 15
+        },
+        {
+          "name": "kigle",
+          "count": 13
+        },
+        {
+          "name": "puzzle",
+          "count": 12
+        },
+        {
+          "name": "yg",
+          "count": 12
+        },
+        {
+          "name": "block",
+          "count": 11
+        },
+        {
+          "name": "higame",
+          "count": 11
+        },
+        {
+          "name": "fc",
+          "count": 11
+        },
+        {
+          "name": "hotplay",
+          "count": 10
+        },
+        {
+          "name": "sort",
+          "count": 10
+        },
+        {
+          "name": "tencent",
+          "count": 10
+        },
+        {
+          "name": "ig",
+          "count": 10
+        },
+        {
+          "name": "easybrain",
+          "count": 10
+        },
+        {
+          "name": "co",
+          "count": 9
+        },
+        {
+          "name": "miniclip",
+          "count": 8
+        },
+        {
+          "name": "music",
+          "count": 8
+        },
+        {
+          "name": "video",
+          "count": 8
+        },
+        {
+          "name": "bubadu",
+          "count": 8
+        },
+        {
+          "name": "drama",
+          "count": 8
+        },
+        {
+          "name": "fullmetalgamedev",
+          "count": 8
+        },
+        {
+          "name": "merge",
+          "count": 8
+        },
+        {
+          "name": "xgame",
+          "count": 7
+        },
+        {
+          "name": "netease",
+          "count": 7
+        },
+        {
+          "name": "chat",
+          "count": 7
+        },
+        {
+          "name": "ea",
+          "count": 7
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 1556
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 411
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD]",
+          "count": 188
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 100
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 95
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 89
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 88
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 85
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 75
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 71
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 50
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD]",
+          "count": 41
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 39
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD].[WORD]",
+          "count": 37
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD].[WORD].[WORD]",
+          "count": 35
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "productivity": {
+      "category": "productivity",
+      "sample_count": 770,
+      "confidence_threshold": 0.82,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "loan",
+            "freq": 6
+          }
+        ],
+        "english": [
+          {
+            "word": "office",
+            "freq": 22
+          },
+          {
+            "word": "microsoft",
+            "freq": 19
+          },
+          {
+            "word": "go",
+            "freq": 18
+          },
+          {
+            "word": "google",
+            "freq": 17
+          },
+          {
+            "word": "apps",
+            "freq": 17
+          },
+          {
+            "word": "reader",
+            "freq": 15
+          },
+          {
+            "word": "tracker",
+            "freq": 14
+          },
+          {
+            "word": "notepad",
+            "freq": 13
+          },
+          {
+            "word": "finance",
+            "freq": 12
+          },
+          {
+            "word": "money",
+            "freq": 12
+          },
+          {
+            "word": "notes",
+            "freq": 12
+          },
+          {
+            "word": "ai",
+            "freq": 11
+          },
+          {
+            "word": "viewer",
+            "freq": 11
+          },
+          {
+            "word": "pdf",
+            "freq": 11
+          },
+          {
+            "word": "note",
+            "freq": 10
+          },
+          {
+            "word": "calendar",
+            "freq": 10
+          },
+          {
+            "word": "otoreport",
+            "freq": 9
+          },
+          {
+            "word": "pdfreader",
+            "freq": 9
+          },
+          {
+            "word": "absensi",
+            "freq": 8
+          },
+          {
+            "word": "notebook",
+            "freq": 8
+          },
+          {
+            "word": "expense",
+            "freq": 7
+          },
+          {
+            "word": "presensi",
+            "freq": 7
+          },
+          {
+            "word": "document",
+            "freq": 7
+          },
+          {
+            "word": "ekinerja",
+            "freq": 6
+          },
+          {
+            "word": "cn",
+            "freq": 6
+          },
+          {
+            "word": "wps",
+            "freq": 6
+          },
+          {
+            "word": "budget",
+            "freq": 6
+          },
+          {
+            "word": "manager",
+            "freq": 6
+          },
+          {
+            "word": "calculator",
+            "freq": 6
+          },
+          {
+            "word": "pdfviewer",
+            "freq": 6
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^com\\.microsoft\\..*",
+          "type": "prefix",
+          "count": 19
+        },
+        {
+          "pattern": "^id\\.go\\..*",
+          "type": "prefix",
+          "count": 17
+        },
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 17
+        },
+        {
+          "pattern": "^com\\.google\\..*",
+          "type": "prefix",
+          "count": 15
+        },
+        {
+          "pattern": "^com\\.otoreport\\..*",
+          "type": "prefix",
+          "count": 9
+        },
+        {
+          "pattern": "^cn\\.wps\\..*",
+          "type": "prefix",
+          "count": 6
+        },
+        {
+          "pattern": "^com\\.money\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.advantagescm\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^pdf\\.reader\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.moneytracker\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.samsung\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.adobe\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.finance\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.app\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.skf\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^co\\.id\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.zoho\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.moneymanager\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^us\\.zoom\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.maestromn\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 21
+        },
+        {
+          "name": "microsoft",
+          "count": 19
+        },
+        {
+          "name": "go",
+          "count": 17
+        },
+        {
+          "name": "google",
+          "count": 15
+        },
+        {
+          "name": "otoreport",
+          "count": 9
+        },
+        {
+          "name": "wps",
+          "count": 6
+        },
+        {
+          "name": "reader",
+          "count": 6
+        },
+        {
+          "name": "money",
+          "count": 5
+        },
+        {
+          "name": "advantagescm",
+          "count": 5
+        },
+        {
+          "name": "id",
+          "count": 4
+        },
+        {
+          "name": "office",
+          "count": 4
+        },
+        {
+          "name": "moneytracker",
+          "count": 4
+        },
+        {
+          "name": "samsung",
+          "count": 4
+        },
+        {
+          "name": "adobe",
+          "count": 4
+        },
+        {
+          "name": "finance",
+          "count": 3
+        },
+        {
+          "name": "skf",
+          "count": 3
+        },
+        {
+          "name": "zoho",
+          "count": 3
+        },
+        {
+          "name": "pdf",
+          "count": 3
+        },
+        {
+          "name": "com",
+          "count": 3
+        },
+        {
+          "name": "moneymanager",
+          "count": 3
+        },
+        {
+          "name": "zoom",
+          "count": 3
+        },
+        {
+          "name": "maestromn",
+          "count": 3
+        },
+        {
+          "name": "intsig",
+          "count": 2
+        },
+        {
+          "name": "yahoo",
+          "count": 2
+        },
+        {
+          "name": "notes",
+          "count": 2
+        },
+        {
+          "name": "emicalculator",
+          "count": 2
+        },
+        {
+          "name": "crew",
+          "count": 2
+        },
+        {
+          "name": "jobseeker",
+          "count": 2
+        },
+        {
+          "name": "intech",
+          "count": 2
+        },
+        {
+          "name": "unilever",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 294
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 76
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD]",
+          "count": 33
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 28
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 23
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 22
+        },
+        {
+          "structure": "id.[SHORT].[WORD].[WORD]",
+          "count": 16
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 14
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 13
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 11
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 9
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 8
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD]",
+          "count": 8
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 8
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 7
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "banking": {
+      "category": "banking",
+      "sample_count": 232,
+      "confidence_threshold": 0.8396551724137932,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "bri",
+            "freq": 18
+          },
+          {
+            "word": "mb",
+            "freq": 12
+          },
+          {
+            "word": "dwidasa",
+            "freq": 11
+          },
+          {
+            "word": "mobilebanking",
+            "freq": 10
+          },
+          {
+            "word": "mbank",
+            "freq": 8
+          },
+          {
+            "word": "bni",
+            "freq": 8
+          },
+          {
+            "word": "bca",
+            "freq": 5
+          },
+          {
+            "word": "bank",
+            "freq": 4
+          },
+          {
+            "word": "banking",
+            "freq": 4
+          },
+          {
+            "word": "btn",
+            "freq": 4
+          },
+          {
+            "word": "digital",
+            "freq": 4
+          },
+          {
+            "word": "bankbsi",
+            "freq": 3
+          },
+          {
+            "word": "btpn",
+            "freq": 3
+          },
+          {
+            "word": "bankmandiri",
+            "freq": 3
+          },
+          {
+            "word": "merchant",
+            "freq": 3
+          },
+          {
+            "word": "digitalbank",
+            "freq": 3
+          },
+          {
+            "word": "bmri",
+            "freq": 3
+          },
+          {
+            "word": "mbanking",
+            "freq": 3
+          },
+          {
+            "word": "sumut",
+            "freq": 3
+          },
+          {
+            "word": "livin",
+            "freq": 2
+          },
+          {
+            "word": "sc",
+            "freq": 2
+          },
+          {
+            "word": "achievacu",
+            "freq": 2
+          },
+          {
+            "word": "adelficu",
+            "freq": 2
+          },
+          {
+            "word": "aerofcu",
+            "freq": 2
+          },
+          {
+            "word": "airforcefcu",
+            "freq": 2
+          },
+          {
+            "word": "centracu",
+            "freq": 2
+          },
+          {
+            "word": "commchoicecu",
+            "freq": 2
+          },
+          {
+            "word": "cpmfcu",
+            "freq": 2
+          },
+          {
+            "word": "directfcu",
+            "freq": 2
+          },
+          {
+            "word": "dirigofcu",
+            "freq": 2
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 43
+        },
+        {
+          "pattern": "^id\\.co\\.bri\\..*",
+          "type": "prefix",
+          "count": 16
+        },
+        {
+          "pattern": "^com\\.dwidasa\\..*",
+          "type": "prefix",
+          "count": 11
+        },
+        {
+          "pattern": "^id\\.co\\.bni\\..*",
+          "type": "prefix",
+          "count": 6
+        },
+        {
+          "pattern": "^co\\.id\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.bca\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.btpn\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.bankmandiri\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 43
+        },
+        {
+          "name": "bri",
+          "count": 17
+        },
+        {
+          "name": "dwidasa",
+          "count": 11
+        },
+        {
+          "name": "bni",
+          "count": 7
+        },
+        {
+          "name": "id",
+          "count": 5
+        },
+        {
+          "name": "com",
+          "count": 5
+        },
+        {
+          "name": "bca",
+          "count": 4
+        },
+        {
+          "name": "btpn",
+          "count": 3
+        },
+        {
+          "name": "bankmandiri",
+          "count": 3
+        },
+        {
+          "name": "btn",
+          "count": 3
+        },
+        {
+          "name": "bmri",
+          "count": 3
+        },
+        {
+          "name": "myinfosys",
+          "count": 2
+        },
+        {
+          "name": "trust",
+          "count": 2
+        },
+        {
+          "name": "trimegah",
+          "count": 2
+        },
+        {
+          "name": "bm",
+          "count": 2
+        },
+        {
+          "name": "asabri",
+          "count": 2
+        },
+        {
+          "name": "siemo",
+          "count": 2
+        },
+        {
+          "name": "panin",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 73
+        },
+        {
+          "structure": "id.co.[SHORT].[WORD]",
+          "count": 18
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 12
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 11
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT].[WORD]",
+          "count": 8
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 8
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 7
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 7
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "id.co.[WORD].[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "co.id.[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "id.co.[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "fintech_lending": {
+      "category": "fintech_lending",
+      "sample_count": 116,
+      "confidence_threshold": 0.8517241379310344,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "dana",
+            "freq": 2
+          },
+          {
+            "word": "kredit",
+            "freq": 1
+          }
+        ],
+        "english": [
+          {
+            "word": "agent",
+            "freq": 4
+          },
+          {
+            "word": "prod",
+            "freq": 4
+          },
+          {
+            "word": "homecredit",
+            "freq": 3
+          },
+          {
+            "word": "indonesia",
+            "freq": 3
+          },
+          {
+            "word": "indodana",
+            "freq": 3
+          },
+          {
+            "word": "kredivo",
+            "freq": 3
+          },
+          {
+            "word": "pcpexpress",
+            "freq": 3
+          },
+          {
+            "word": "fifgroup",
+            "freq": 3
+          },
+          {
+            "word": "much",
+            "freq": 2
+          },
+          {
+            "word": "danacita",
+            "freq": 2
+          },
+          {
+            "word": "trading",
+            "freq": 2
+          },
+          {
+            "word": "superapp",
+            "freq": 2
+          },
+          {
+            "word": "gradana",
+            "freq": 2
+          },
+          {
+            "word": "wom",
+            "freq": 2
+          },
+          {
+            "word": "kawan",
+            "freq": 2
+          },
+          {
+            "word": "pa",
+            "freq": 2
+          },
+          {
+            "word": "io",
+            "freq": 2
+          },
+          {
+            "word": "pegadaian",
+            "freq": 2
+          },
+          {
+            "word": "exness",
+            "freq": 2
+          },
+          {
+            "word": "cermati",
+            "freq": 2
+          },
+          {
+            "word": "finaccel",
+            "freq": 2
+          },
+          {
+            "word": "fintech",
+            "freq": 2
+          },
+          {
+            "word": "bfi",
+            "freq": 2
+          },
+          {
+            "word": "aeoncredit",
+            "freq": 2
+          },
+          {
+            "word": "preassessment",
+            "freq": 2
+          },
+          {
+            "word": "gateio",
+            "freq": 2
+          },
+          {
+            "word": "one",
+            "freq": 2
+          },
+          {
+            "word": "smmf",
+            "freq": 2
+          },
+          {
+            "word": "motioncredit",
+            "freq": 1
+          },
+          {
+            "word": "navigator",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "trade211",
+            "freq": 1
+          }
+        ]
+      },
+      "patterns": [
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 12
+        },
+        {
+          "pattern": "^com\\.indodana\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^id\\.co\\.fifgroup\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 12
+        },
+        {
+          "name": "homecredit",
+          "count": 3
+        },
+        {
+          "name": "indodana",
+          "count": 3
+        },
+        {
+          "name": "kredivo",
+          "count": 3
+        },
+        {
+          "name": "indonesia",
+          "count": 2
+        },
+        {
+          "name": "gradana",
+          "count": 2
+        },
+        {
+          "name": "wom",
+          "count": 2
+        },
+        {
+          "name": "pegadaian",
+          "count": 2
+        },
+        {
+          "name": "fifgroup",
+          "count": 2
+        },
+        {
+          "name": "exness",
+          "count": 2
+        },
+        {
+          "name": "id",
+          "count": 2
+        },
+        {
+          "name": "cermati",
+          "count": 2
+        },
+        {
+          "name": "finaccel",
+          "count": 2
+        },
+        {
+          "name": "bfi",
+          "count": 2
+        },
+        {
+          "name": "aeoncredit",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 36
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 14
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 7
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "id.co.[SHORT].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "id.co.[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "id.[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "id.co.[WORD].[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].id.[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "transportation": {
+      "category": "transportation",
+      "sample_count": 170,
+      "confidence_threshold": 0.8258823529411765,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "driver",
+            "freq": 20
+          },
+          {
+            "word": "gojek",
+            "freq": 4
+          },
+          {
+            "word": "consumer",
+            "freq": 4
+          },
+          {
+            "word": "passenger",
+            "freq": 3
+          },
+          {
+            "word": "sicepat",
+            "freq": 3
+          },
+          {
+            "word": "client",
+            "freq": 3
+          },
+          {
+            "word": "lionparcel",
+            "freq": 2
+          },
+          {
+            "word": "services",
+            "freq": 2
+          },
+          {
+            "word": "honda",
+            "freq": 2
+          },
+          {
+            "word": "sindoferry",
+            "freq": 2
+          },
+          {
+            "word": "kci",
+            "freq": 2
+          },
+          {
+            "word": "bluebird",
+            "freq": 2
+          },
+          {
+            "word": "transport",
+            "freq": 2
+          },
+          {
+            "word": "taxsee",
+            "freq": 2
+          },
+          {
+            "word": "indonesia",
+            "freq": 2
+          },
+          {
+            "word": "idexpress",
+            "freq": 2
+          },
+          {
+            "word": "tms",
+            "freq": 2
+          },
+          {
+            "word": "codexplore",
+            "freq": 2
+          },
+          {
+            "word": "go",
+            "freq": 2
+          },
+          {
+            "word": "expert",
+            "freq": 2
+          },
+          {
+            "word": "maps",
+            "freq": 2
+          },
+          {
+            "word": "navigation",
+            "freq": 2
+          },
+          {
+            "word": "tiket",
+            "freq": 2
+          },
+          {
+            "word": "deliveree",
+            "freq": 2
+          },
+          {
+            "word": "taxi",
+            "freq": 2
+          },
+          {
+            "word": "booking",
+            "freq": 2
+          },
+          {
+            "word": "citilink",
+            "freq": 2
+          },
+          {
+            "word": "grabtaxi",
+            "freq": 2
+          },
+          {
+            "word": "merchant",
+            "freq": 2
+          },
+          {
+            "word": "jt",
+            "freq": 2
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 7
+        },
+        {
+          "pattern": "^com\\.gojek\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.sicepat\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 8
+        },
+        {
+          "name": "gojek",
+          "count": 4
+        },
+        {
+          "name": "sicepat",
+          "count": 3
+        },
+        {
+          "name": "lionparcel",
+          "count": 2
+        },
+        {
+          "name": "honda",
+          "count": 2
+        },
+        {
+          "name": "com",
+          "count": 2
+        },
+        {
+          "name": "kci",
+          "count": 2
+        },
+        {
+          "name": "taxsee",
+          "count": 2
+        },
+        {
+          "name": "idexpress",
+          "count": 2
+        },
+        {
+          "name": "tiket",
+          "count": 2
+        },
+        {
+          "name": "deliveree",
+          "count": 2
+        },
+        {
+          "name": "m",
+          "count": 2
+        },
+        {
+          "name": "grabtaxi",
+          "count": 2
+        },
+        {
+          "name": "jt",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 76
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 15
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 9
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 9
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "[SHORT].com.[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "ewallet": {
+      "category": "ewallet",
+      "sample_count": 89,
+      "confidence_threshold": 0.8370786516853933,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "dana",
+            "freq": 5
+          }
+        ],
+        "english": [
+          {
+            "word": "wallet",
+            "freq": 12
+          },
+          {
+            "word": "emoney",
+            "freq": 3
+          },
+          {
+            "word": "mwallet",
+            "freq": 3
+          },
+          {
+            "word": "amanah",
+            "freq": 2
+          },
+          {
+            "word": "go",
+            "freq": 2
+          },
+          {
+            "word": "ottopay",
+            "freq": 2
+          },
+          {
+            "word": "posindonesia",
+            "freq": 2
+          },
+          {
+            "word": "otoreport",
+            "freq": 2
+          },
+          {
+            "word": "google",
+            "freq": 2
+          },
+          {
+            "word": "apps",
+            "freq": 2
+          },
+          {
+            "word": "io",
+            "freq": 2
+          },
+          {
+            "word": "ovo",
+            "freq": 2
+          },
+          {
+            "word": "merchant",
+            "freq": 2
+          },
+          {
+            "word": "gojek",
+            "freq": 2
+          },
+          {
+            "word": "shopeepay",
+            "freq": 2
+          },
+          {
+            "word": "indon",
+            "freq": 2
+          },
+          {
+            "word": "finnet",
+            "freq": 1
+          },
+          {
+            "word": "finpaymoney",
+            "freq": 1
+          },
+          {
+            "word": "pede",
+            "freq": 1
+          },
+          {
+            "word": "bukupay",
+            "freq": 1
+          },
+          {
+            "word": "danapayz",
+            "freq": 1
+          },
+          {
+            "word": "bsg",
+            "freq": 1
+          },
+          {
+            "word": "tiops",
+            "freq": 1
+          },
+          {
+            "word": "nobodyjr",
+            "freq": 1
+          },
+          {
+            "word": "bsgqris",
+            "freq": 1
+          },
+          {
+            "word": "paymobileku",
+            "freq": 1
+          },
+          {
+            "word": "secretkeylabs",
+            "freq": 1
+          },
+          {
+            "word": "xverse",
+            "freq": 1
+          },
+          {
+            "word": "ackinacki",
+            "freq": 1
+          },
+          {
+            "word": "aptoslabs",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [],
+      "brands": [
+        {
+          "name": "wallet",
+          "count": 2
+        },
+        {
+          "name": "posindonesia",
+          "count": 2
+        },
+        {
+          "name": "otoreport",
+          "count": 2
+        },
+        {
+          "name": "google",
+          "count": 2
+        },
+        {
+          "name": "com",
+          "count": 2
+        },
+        {
+          "name": "dana",
+          "count": 2
+        },
+        {
+          "name": "gojek",
+          "count": 2
+        },
+        {
+          "name": "shopeepay",
+          "count": 2
+        },
+        {
+          "name": "indon",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 40
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 7
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 3
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "religious": {
+      "category": "religious",
+      "sample_count": 265,
+      "confidence_threshold": 0.8675471698113207,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "quran",
+            "freq": 17
+          },
+          {
+            "word": "muslim",
+            "freq": 10
+          },
+          {
+            "word": "islam",
+            "freq": 3
+          }
+        ],
+        "english": [
+          {
+            "word": "alquran",
+            "freq": 14
+          },
+          {
+            "word": "aplikita",
+            "freq": 13
+          },
+          {
+            "word": "qibla",
+            "freq": 9
+          },
+          {
+            "word": "lengkap",
+            "freq": 9
+          },
+          {
+            "word": "qiblafinder",
+            "freq": 7
+          },
+          {
+            "word": "maulid",
+            "freq": 7
+          },
+          {
+            "word": "offline",
+            "freq": 7
+          },
+          {
+            "word": "bible",
+            "freq": 7
+          },
+          {
+            "word": "alkitab",
+            "freq": 7
+          },
+          {
+            "word": "terjemahan",
+            "freq": 5
+          },
+          {
+            "word": "indonesia",
+            "freq": 5
+          },
+          {
+            "word": "islamiapps",
+            "freq": 5
+          },
+          {
+            "word": "holyquran",
+            "freq": 5
+          },
+          {
+            "word": "va",
+            "freq": 4
+          },
+          {
+            "word": "qibladirection",
+            "freq": 4
+          },
+          {
+            "word": "prayertimes",
+            "freq": 4
+          },
+          {
+            "word": "scriptkiddie",
+            "freq": 4
+          },
+          {
+            "word": "kitabkuning",
+            "freq": 4
+          },
+          {
+            "word": "rilixtech",
+            "freq": 4
+          },
+          {
+            "word": "yasin",
+            "freq": 4
+          },
+          {
+            "word": "tahlil",
+            "freq": 4
+          },
+          {
+            "word": "dzikir",
+            "freq": 3
+          },
+          {
+            "word": "apps",
+            "freq": 3
+          },
+          {
+            "word": "prayertime",
+            "freq": 3
+          },
+          {
+            "word": "kodelokus",
+            "freq": 3
+          },
+          {
+            "word": "muslimidia",
+            "freq": 3
+          },
+          {
+            "word": "nabi",
+            "freq": 3
+          },
+          {
+            "word": "amalan",
+            "freq": 3
+          },
+          {
+            "word": "mungmedia",
+            "freq": 3
+          },
+          {
+            "word": "doa",
+            "freq": 3
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^com\\.aplikita\\..*",
+          "type": "prefix",
+          "count": 13
+        },
+        {
+          "pattern": "^com\\.muslim\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.islamiapps\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.va\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.scriptkiddie\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^id\\.kitabkuning\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.rilixtech\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.kodelokus\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.muslimidia\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.mungmedia\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.andi\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.quran\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.adjiofficial\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "aplikita",
+          "count": 13
+        },
+        {
+          "name": "muslim",
+          "count": 6
+        },
+        {
+          "name": "islamiapps",
+          "count": 5
+        },
+        {
+          "name": "va",
+          "count": 4
+        },
+        {
+          "name": "scriptkiddie",
+          "count": 4
+        },
+        {
+          "name": "kitabkuning",
+          "count": 4
+        },
+        {
+          "name": "rilixtech",
+          "count": 4
+        },
+        {
+          "name": "kodelokus",
+          "count": 3
+        },
+        {
+          "name": "muslimidia",
+          "count": 3
+        },
+        {
+          "name": "mungmedia",
+          "count": 3
+        },
+        {
+          "name": "offline",
+          "count": 3
+        },
+        {
+          "name": "andi",
+          "count": 3
+        },
+        {
+          "name": "quran",
+          "count": 3
+        },
+        {
+          "name": "adjiofficial",
+          "count": 3
+        },
+        {
+          "name": "id",
+          "count": 2
+        },
+        {
+          "name": "barribarrie",
+          "count": 2
+        },
+        {
+          "name": "aslam",
+          "count": 2
+        },
+        {
+          "name": "sevapp",
+          "count": 2
+        },
+        {
+          "name": "hundred",
+          "count": 2
+        },
+        {
+          "name": "kajianislam2",
+          "count": 2
+        },
+        {
+          "name": "bismillah",
+          "count": 2
+        },
+        {
+          "name": "forfamily3",
+          "count": 2
+        },
+        {
+          "name": "kabarstudio",
+          "count": 2
+        },
+        {
+          "name": "alquran",
+          "count": 2
+        },
+        {
+          "name": "sabda",
+          "count": 2
+        },
+        {
+          "name": "or",
+          "count": 2
+        },
+        {
+          "name": "kristen",
+          "count": 2
+        },
+        {
+          "name": "bible",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 149
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 16
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 8
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 7
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "id.[WORD].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "net.[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "other": {
+      "category": "other",
+      "sample_count": 1383,
+      "confidence_threshold": 0.546999276934201,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "cerb",
+            "freq": 43
+          },
+          {
+            "word": "go",
+            "freq": 30
+          },
+          {
+            "word": "apps",
+            "freq": 13
+          },
+          {
+            "word": "example",
+            "freq": 12
+          },
+          {
+            "word": "andromo",
+            "freq": 11
+          },
+          {
+            "word": "xyz",
+            "freq": 10
+          },
+          {
+            "word": "io",
+            "freq": 9
+          },
+          {
+            "word": "xm",
+            "freq": 8
+          },
+          {
+            "word": "hermez",
+            "freq": 7
+          },
+          {
+            "word": "ai",
+            "freq": 7
+          },
+          {
+            "word": "global",
+            "freq": 7
+          },
+          {
+            "word": "sg",
+            "freq": 6
+          },
+          {
+            "word": "crypto",
+            "freq": 6
+          },
+          {
+            "word": "network",
+            "freq": 6
+          },
+          {
+            "word": "client",
+            "freq": 6
+          },
+          {
+            "word": "otoreport",
+            "freq": 6
+          },
+          {
+            "word": "wallet",
+            "freq": 6
+          },
+          {
+            "word": "vivo",
+            "freq": 5
+          },
+          {
+            "word": "sagadsg",
+            "freq": 5
+          },
+          {
+            "word": "user",
+            "freq": 5
+          },
+          {
+            "word": "diskominfo",
+            "freq": 5
+          },
+          {
+            "word": "cn",
+            "freq": 5
+          },
+          {
+            "word": "gp",
+            "freq": 4
+          },
+          {
+            "word": "rongrit",
+            "freq": 4
+          },
+          {
+            "word": "or",
+            "freq": 4
+          },
+          {
+            "word": "fxbl",
+            "freq": 4
+          },
+          {
+            "word": "mining",
+            "freq": 4
+          },
+          {
+            "word": "money",
+            "freq": 4
+          },
+          {
+            "word": "idn",
+            "freq": 4
+          },
+          {
+            "word": "gov",
+            "freq": 4
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "com2",
+            "freq": 4
+          }
+        ]
+      },
+      "patterns": [
+        {
+          "pattern": "^com\\.app\\..*",
+          "type": "prefix",
+          "count": 55
+        },
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 25
+        },
+        {
+          "pattern": "^id\\.go\\..*",
+          "type": "prefix",
+          "count": 23
+        },
+        {
+          "pattern": "^com\\.example\\..*",
+          "type": "prefix",
+          "count": 11
+        },
+        {
+          "pattern": "^com\\.andromo\\..*",
+          "type": "prefix",
+          "count": 10
+        },
+        {
+          "pattern": "^xyz\\.hermez\\..*",
+          "type": "prefix",
+          "count": 7
+        },
+        {
+          "pattern": "^com\\.otoreport\\..*",
+          "type": "prefix",
+          "count": 6
+        },
+        {
+          "pattern": "^com\\.sagadsg\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^co\\.id\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.rongrit\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.fxbl\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.wilmar\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.bm\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^id\\.or\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^cn\\.com\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.community\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^id\\.citigov\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.agincourtresources\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.trust\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^ngi\\.muchi\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 27
+        },
+        {
+          "name": "go",
+          "count": 25
+        },
+        {
+          "name": "example",
+          "count": 12
+        },
+        {
+          "name": "andromo",
+          "count": 11
+        },
+        {
+          "name": "id",
+          "count": 9
+        },
+        {
+          "name": "com",
+          "count": 6
+        },
+        {
+          "name": "hermez",
+          "count": 6
+        },
+        {
+          "name": "otoreport",
+          "count": 6
+        },
+        {
+          "name": "sagadsg",
+          "count": 5
+        },
+        {
+          "name": "rongrit",
+          "count": 4
+        },
+        {
+          "name": "fxbl",
+          "count": 4
+        },
+        {
+          "name": "diskominfo",
+          "count": 4
+        },
+        {
+          "name": "wilmar",
+          "count": 4
+        },
+        {
+          "name": "feiwin",
+          "count": 3
+        },
+        {
+          "name": "bm",
+          "count": 3
+        },
+        {
+          "name": "or",
+          "count": 3
+        },
+        {
+          "name": "gov",
+          "count": 3
+        },
+        {
+          "name": "pmi",
+          "count": 3
+        },
+        {
+          "name": "community",
+          "count": 3
+        },
+        {
+          "name": "citigov",
+          "count": 3
+        },
+        {
+          "name": "agincourtresources",
+          "count": 3
+        },
+        {
+          "name": "trust",
+          "count": 3
+        },
+        {
+          "name": "muchi",
+          "count": 3
+        },
+        {
+          "name": "srin",
+          "count": 3
+        },
+        {
+          "name": "mastar",
+          "count": 2
+        },
+        {
+          "name": "btcdana",
+          "count": 2
+        },
+        {
+          "name": "allianz",
+          "count": 2
+        },
+        {
+          "name": "danabaik",
+          "count": 2
+        },
+        {
+          "name": "afila",
+          "count": 2
+        },
+        {
+          "name": "bc",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 517
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 106
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 91
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 84
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 52
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 40
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 37
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 27
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 23
+        },
+        {
+          "structure": "id.[SHORT].[WORD].[WORD]",
+          "count": 18
+        },
+        {
+          "structure": "[SHORT].[WORD].[SHORT]",
+          "count": 15
+        },
+        {
+          "structure": "com.[SHORT].[SHORT]",
+          "count": 14
+        },
+        {
+          "structure": "id.[WORD].[SHORT]",
+          "count": 13
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 11
+        },
+        {
+          "structure": "id.co.[WORD].[WORD]",
+          "count": 10
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "food_delivery": {
+      "category": "food_delivery",
+      "sample_count": 34,
+      "confidence_threshold": 0.8411764705882353,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "gofood",
+            "freq": 2
+          },
+          {
+            "word": "indonesia",
+            "freq": 2
+          },
+          {
+            "word": "haidilao",
+            "freq": 1
+          },
+          {
+            "word": "intl",
+            "freq": 1
+          },
+          {
+            "word": "getplato",
+            "freq": 1
+          },
+          {
+            "word": "hb",
+            "freq": 1
+          },
+          {
+            "word": "hungryhub",
+            "freq": 1
+          },
+          {
+            "word": "wlf",
+            "freq": 1
+          },
+          {
+            "word": "gharelo",
+            "freq": 1
+          },
+          {
+            "word": "deliveryboy",
+            "freq": 1
+          },
+          {
+            "word": "cranium",
+            "freq": 1
+          },
+          {
+            "word": "sushiteiapps",
+            "freq": 1
+          },
+          {
+            "word": "burgerking",
+            "freq": 1
+          },
+          {
+            "word": "richeese",
+            "freq": 1
+          },
+          {
+            "word": "segari",
+            "freq": 1
+          },
+          {
+            "word": "customer",
+            "freq": 1
+          },
+          {
+            "word": "hokben",
+            "freq": 1
+          },
+          {
+            "word": "revamp",
+            "freq": 1
+          },
+          {
+            "word": "jagocoffee",
+            "freq": 1
+          },
+          {
+            "word": "flashcoffee",
+            "freq": 1
+          },
+          {
+            "word": "rsg",
+            "freq": 1
+          },
+          {
+            "word": "food",
+            "freq": 1
+          },
+          {
+            "word": "delivery",
+            "freq": 1
+          },
+          {
+            "word": "ph",
+            "freq": 1
+          },
+          {
+            "word": "mobext",
+            "freq": 1
+          },
+          {
+            "word": "mcdelivery",
+            "freq": 1
+          },
+          {
+            "word": "wiryamanta",
+            "freq": 1
+          },
+          {
+            "word": "wingstop",
+            "freq": 1
+          },
+          {
+            "word": "marugame",
+            "freq": 1
+          },
+          {
+            "word": "popeyes",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "eat2earn",
+            "freq": 1
+          }
+        ]
+      },
+      "patterns": [],
+      "brands": [
+        {
+          "name": "id",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 12
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].id",
+          "count": 3
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 3
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "[WORD].id.[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "cash_loan": {
+      "category": "cash_loan",
+      "sample_count": 262,
+      "confidence_threshold": 0.8748091603053436,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "pinjaman",
+            "freq": 23
+          },
+          {
+            "word": "loan",
+            "freq": 18
+          },
+          {
+            "word": "uang",
+            "freq": 15
+          },
+          {
+            "word": "dana",
+            "freq": 14
+          },
+          {
+            "word": "kredit",
+            "freq": 10
+          },
+          {
+            "word": "pinjam",
+            "freq": 10
+          },
+          {
+            "word": "cepat",
+            "freq": 5
+          },
+          {
+            "word": "kilat",
+            "freq": 3
+          },
+          {
+            "word": "pinjol",
+            "freq": 2
+          },
+          {
+            "word": "cair",
+            "freq": 2
+          },
+          {
+            "word": "duit",
+            "freq": 2
+          }
+        ],
+        "english": [
+          {
+            "word": "cash",
+            "freq": 8
+          },
+          {
+            "word": "rupiah",
+            "freq": 7
+          },
+          {
+            "word": "finance",
+            "freq": 6
+          },
+          {
+            "word": "google",
+            "freq": 6
+          },
+          {
+            "word": "fintech",
+            "freq": 6
+          },
+          {
+            "word": "online",
+            "freq": 6
+          },
+          {
+            "word": "tunai",
+            "freq": 5
+          },
+          {
+            "word": "credit",
+            "freq": 4
+          },
+          {
+            "word": "amanah",
+            "freq": 4
+          },
+          {
+            "word": "modal",
+            "freq": 4
+          },
+          {
+            "word": "money",
+            "freq": 4
+          },
+          {
+            "word": "indo",
+            "freq": 4
+          },
+          {
+            "word": "pinjamanonline",
+            "freq": 3
+          },
+          {
+            "word": "market",
+            "freq": 3
+          },
+          {
+            "word": "pintar",
+            "freq": 2
+          },
+          {
+            "word": "smart",
+            "freq": 2
+          },
+          {
+            "word": "hasimelehedev",
+            "freq": 2
+          },
+          {
+            "word": "kuy",
+            "freq": 2
+          },
+          {
+            "word": "mudah",
+            "freq": 2
+          },
+          {
+            "word": "sanlc",
+            "freq": 2
+          },
+          {
+            "word": "danarupiah",
+            "freq": 2
+          },
+          {
+            "word": "calculator",
+            "freq": 2
+          },
+          {
+            "word": "ouiea",
+            "freq": 2
+          },
+          {
+            "word": "lautan",
+            "freq": 2
+          },
+          {
+            "word": "now",
+            "freq": 2
+          },
+          {
+            "word": "info",
+            "freq": 2
+          },
+          {
+            "word": "mintq",
+            "freq": 2
+          },
+          {
+            "word": "kreditplus",
+            "freq": 2
+          },
+          {
+            "word": "yessscredit",
+            "freq": 2
+          },
+          {
+            "word": "pasti",
+            "freq": 2
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": ".*pinjaman.*",
+          "type": "special_structure",
+          "description": "包含pinjaman词",
+          "count": 49
+        },
+        {
+          "pattern": ".*pinjol.*",
+          "type": "special_structure",
+          "description": "包含pinjol词",
+          "count": 15
+        },
+        {
+          "pattern": "^com\\.id\\..*",
+          "type": "prefix",
+          "count": 9
+        },
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.loan\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.pinjam\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.kredit\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.fintech\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^app\\.market\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "id",
+          "count": 11
+        },
+        {
+          "name": "loan",
+          "count": 6
+        },
+        {
+          "name": "pinjam",
+          "count": 5
+        },
+        {
+          "name": "kredit",
+          "count": 4
+        },
+        {
+          "name": "pinjaman",
+          "count": 4
+        },
+        {
+          "name": "co",
+          "count": 4
+        },
+        {
+          "name": "fintech",
+          "count": 3
+        },
+        {
+          "name": "market",
+          "count": 3
+        },
+        {
+          "name": "hasimelehedev",
+          "count": 2
+        },
+        {
+          "name": "sanlc",
+          "count": 2
+        },
+        {
+          "name": "modal",
+          "count": 2
+        },
+        {
+          "name": "ouiea",
+          "count": 2
+        },
+        {
+          "name": "pinjamanonline",
+          "count": 2
+        },
+        {
+          "name": "mintq",
+          "count": 2
+        },
+        {
+          "name": "tunai",
+          "count": 2
+        },
+        {
+          "name": "kreditplus",
+          "count": 2
+        },
+        {
+          "name": "yessscredit",
+          "count": 2
+        },
+        {
+          "name": "pinjol",
+          "count": 2
+        },
+        {
+          "name": "cash",
+          "count": 2
+        },
+        {
+          "name": "indo",
+          "count": 2
+        },
+        {
+          "name": "flex",
+          "count": 2
+        },
+        {
+          "name": "asf",
+          "count": 2
+        },
+        {
+          "name": "indonesia",
+          "count": 2
+        },
+        {
+          "name": "cashcash",
+          "count": 2
+        },
+        {
+          "name": "dana",
+          "count": 2
+        },
+        {
+          "name": "jioh",
+          "count": 2
+        },
+        {
+          "name": "example",
+          "count": 2
+        },
+        {
+          "name": "dud",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 103
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 32
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD]",
+          "count": 17
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 11
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 7
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 5
+        },
+        {
+          "structure": "com.id.[WORD].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "id.[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 3
+        },
+        {
+          "structure": "co.[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD].[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "gambling": {
+      "category": "gambling",
+      "sample_count": 561,
+      "confidence_threshold": 0.8693404634581104,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "cerb",
+            "freq": 28
+          },
+          {
+            "word": "lucky",
+            "freq": 8
+          },
+          {
+            "word": "game",
+            "freq": 8
+          },
+          {
+            "word": "domino",
+            "freq": 8
+          },
+          {
+            "word": "games",
+            "freq": 8
+          },
+          {
+            "word": "higgs",
+            "freq": 6
+          },
+          {
+            "word": "mahjong",
+            "freq": 5
+          },
+          {
+            "word": "spin",
+            "freq": 5
+          },
+          {
+            "word": "ozzo",
+            "freq": 5
+          },
+          {
+            "word": "ad",
+            "freq": 5
+          },
+          {
+            "word": "hsp",
+            "freq": 4
+          },
+          {
+            "word": "yn",
+            "freq": 4
+          },
+          {
+            "word": "casino",
+            "freq": 4
+          },
+          {
+            "word": "win",
+            "freq": 4
+          },
+          {
+            "word": "self",
+            "freq": 3
+          },
+          {
+            "word": "bingo",
+            "freq": 3
+          },
+          {
+            "word": "dragon",
+            "freq": 3
+          },
+          {
+            "word": "oxplay",
+            "freq": 3
+          },
+          {
+            "word": "live",
+            "freq": 3
+          },
+          {
+            "word": "hiwin",
+            "freq": 3
+          },
+          {
+            "word": "gaple",
+            "freq": 3
+          },
+          {
+            "word": "olymptrade",
+            "freq": 3
+          },
+          {
+            "word": "jackpot",
+            "freq": 3
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "com2",
+            "freq": 21
+          },
+          {
+            "word": "ntla1",
+            "freq": 8
+          },
+          {
+            "word": "id5dan777",
+            "freq": 7
+          },
+          {
+            "word": "ntla2",
+            "freq": 7
+          },
+          {
+            "word": "id7qt777",
+            "freq": 5
+          },
+          {
+            "word": "id4x78",
+            "freq": 5
+          },
+          {
+            "word": "id6svip9",
+            "freq": 5
+          },
+          {
+            "word": "id3c8vip",
+            "freq": 5
+          },
+          {
+            "word": "id433zk",
+            "freq": 4
+          },
+          {
+            "word": "id2hp777",
+            "freq": 4
+          },
+          {
+            "word": "id6kakrp",
+            "freq": 4
+          },
+          {
+            "word": "ntla10",
+            "freq": 4
+          },
+          {
+            "word": "id7b8vip",
+            "freq": 4
+          },
+          {
+            "word": "id8ketua",
+            "freq": 4
+          },
+          {
+            "word": "id3777win",
+            "freq": 4
+          },
+          {
+            "word": "ntla30",
+            "freq": 4
+          },
+          {
+            "word": "id6v98",
+            "freq": 3
+          },
+          {
+            "word": "id8svip2",
+            "freq": 3
+          },
+          {
+            "word": "ntla38",
+            "freq": 3
+          },
+          {
+            "word": "id5l777",
+            "freq": 3
+          },
+          {
+            "word": "id7rr777",
+            "freq": 3
+          },
+          {
+            "word": "ntla27",
+            "freq": 3
+          },
+          {
+            "word": "ntla8",
+            "freq": 3
+          },
+          {
+            "word": "id3c8vip2",
+            "freq": 3
+          },
+          {
+            "word": "id5rpvip2",
+            "freq": 3
+          },
+          {
+            "word": "id3joyputar",
+            "freq": 3
+          },
+          {
+            "word": "id4evip3",
+            "freq": 3
+          },
+          {
+            "word": "id6yn777",
+            "freq": 3
+          },
+          {
+            "word": "ntla12",
+            "freq": 3
+          },
+          {
+            "word": "ntla5",
+            "freq": 3
+          }
+        ]
+      },
+      "patterns": [
+        {
+          "pattern": "^com\\.app\\..*",
+          "type": "prefix",
+          "count": 29
+        },
+        {
+          "pattern": ".*slot.*\\d+.*",
+          "type": "special_structure",
+          "description": "slot+数字",
+          "count": 9
+        },
+        {
+          "pattern": "^com\\.id5dan777\\..*",
+          "type": "prefix",
+          "count": 7
+        },
+        {
+          "pattern": "^com\\.higgs\\..*",
+          "type": "prefix",
+          "count": 6
+        },
+        {
+          "pattern": "^com\\.id7qt777\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.id4x78\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.id6svip9\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.ozzo\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.id3c8vip\\..*",
+          "type": "prefix",
+          "count": 5
+        },
+        {
+          "pattern": "^com\\.id433zk\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id2hp777\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id6kakrp\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.hsp\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id7b8vip\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id8ketua\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id3777win\\..*",
+          "type": "prefix",
+          "count": 4
+        },
+        {
+          "pattern": "^com\\.id6v98\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.id8svip2\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.id5l777\\..*",
+          "type": "prefix",
+          "count": 3
+        },
+        {
+          "pattern": "^com\\.id7rr777\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "id5dan777",
+          "count": 7
+        },
+        {
+          "name": "higgs",
+          "count": 6
+        },
+        {
+          "name": "id7qt777",
+          "count": 5
+        },
+        {
+          "name": "id4x78",
+          "count": 5
+        },
+        {
+          "name": "id6svip9",
+          "count": 5
+        },
+        {
+          "name": "ozzo",
+          "count": 5
+        },
+        {
+          "name": "id3c8vip",
+          "count": 5
+        },
+        {
+          "name": "id433zk",
+          "count": 4
+        },
+        {
+          "name": "id2hp777",
+          "count": 4
+        },
+        {
+          "name": "id6kakrp",
+          "count": 4
+        },
+        {
+          "name": "hsp",
+          "count": 4
+        },
+        {
+          "name": "id7b8vip",
+          "count": 4
+        },
+        {
+          "name": "id8ketua",
+          "count": 4
+        },
+        {
+          "name": "id3777win",
+          "count": 4
+        },
+        {
+          "name": "id6v98",
+          "count": 3
+        },
+        {
+          "name": "id8svip2",
+          "count": 3
+        },
+        {
+          "name": "id5l777",
+          "count": 3
+        },
+        {
+          "name": "id7rr777",
+          "count": 3
+        },
+        {
+          "name": "oxplay",
+          "count": 3
+        },
+        {
+          "name": "spin",
+          "count": 3
+        },
+        {
+          "name": "hiwin",
+          "count": 3
+        },
+        {
+          "name": "id3c8vip2",
+          "count": 3
+        },
+        {
+          "name": "id5rpvip2",
+          "count": 3
+        },
+        {
+          "name": "id3joyputar",
+          "count": 3
+        },
+        {
+          "name": "id4evip3",
+          "count": 3
+        },
+        {
+          "name": "id6yn777",
+          "count": 3
+        },
+        {
+          "name": "id4rajaclub",
+          "count": 3
+        },
+        {
+          "name": "id4rsnok",
+          "count": 3
+        },
+        {
+          "name": "id4rsnvip6",
+          "count": 3
+        },
+        {
+          "name": "id6hokihebat",
+          "count": 3
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 341
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 49
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 30
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 27
+        },
+        {
+          "structure": "[WORD].[WORD].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "com.[SHORT].[WORD]",
+          "count": 6
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 5
+        },
+        {
+          "structure": "com.[WORD].com",
+          "count": 5
+        },
+        {
+          "structure": "com.[SHORT].[SHORT].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].[SHORT].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 3
+        },
+        {
+          "structure": "[WORD].[WORD].[SHORT]",
+          "count": 3
+        },
+        {
+          "structure": "[SHORT].[WORD].[SHORT].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].id.[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].id",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": [
+        {
+          "keyword": "高风险",
+          "count": 2,
+          "ratio": 0.0035650623885918
+        },
+        {
+          "keyword": "老虎机",
+          "count": 114,
+          "ratio": 0.20320855614973263
+        },
+        {
+          "keyword": "扑克",
+          "count": 5,
+          "ratio": 0.008912655971479501
+        },
+        {
+          "keyword": "棋牌",
+          "count": 94,
+          "ratio": 0.16755793226381463
+        },
+        {
+          "keyword": "赌博",
+          "count": 251,
+          "ratio": 0.4474153297682709
+        }
+      ]
+    },
+    "clone_app": {
+      "category": "clone_app",
+      "sample_count": 28,
+      "confidence_threshold": 0.8928571428571429,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "clone",
+            "freq": 3
+          },
+          {
+            "word": "web",
+            "freq": 3
+          },
+          {
+            "word": "dual",
+            "freq": 3
+          },
+          {
+            "word": "parallel",
+            "freq": 3
+          },
+          {
+            "word": "smartswitch",
+            "freq": 2
+          },
+          {
+            "word": "easymover",
+            "freq": 2
+          },
+          {
+            "word": "phoneclone",
+            "freq": 2
+          },
+          {
+            "word": "cloneapp",
+            "freq": 2
+          },
+          {
+            "word": "scanner",
+            "freq": 2
+          },
+          {
+            "word": "appcloner",
+            "freq": 2
+          },
+          {
+            "word": "lbe",
+            "freq": 2
+          },
+          {
+            "word": "intl",
+            "freq": 2
+          },
+          {
+            "word": "ludashi",
+            "freq": 2
+          },
+          {
+            "word": "copymydata",
+            "freq": 1
+          },
+          {
+            "word": "filetransfer",
+            "freq": 1
+          },
+          {
+            "word": "hicloud",
+            "freq": 1
+          },
+          {
+            "word": "sendanywhere",
+            "freq": 1
+          },
+          {
+            "word": "mobiletransfer",
+            "freq": 1
+          },
+          {
+            "word": "py",
+            "freq": 1
+          },
+          {
+            "word": "huawei",
+            "freq": 1
+          },
+          {
+            "word": "pengyou",
+            "freq": 1
+          },
+          {
+            "word": "whatscan",
+            "freq": 1
+          },
+          {
+            "word": "whatsweb",
+            "freq": 1
+          },
+          {
+            "word": "excean",
+            "freq": 1
+          },
+          {
+            "word": "parallelspace",
+            "freq": 1
+          },
+          {
+            "word": "redfinger",
+            "freq": 1
+          },
+          {
+            "word": "global",
+            "freq": 1
+          },
+          {
+            "word": "bluesoft",
+            "freq": 1
+          },
+          {
+            "word": "clonappmessenger",
+            "freq": 1
+          },
+          {
+            "word": "blackbox",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "b32",
+            "freq": 1
+          }
+        ]
+      },
+      "patterns": [],
+      "brands": [
+        {
+          "name": "lbe",
+          "count": 2
+        },
+        {
+          "name": "ludashi",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 14
+        },
+        {
+          "structure": "com.[WORD].[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[SHORT].[WORD].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[WORD].[SHORT]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": [
+        {
+          "keyword": "克隆",
+          "count": 15,
+          "ratio": 0.5357142857142857
+        }
+      ]
+    },
+    "app_store": {
+      "category": "app_store",
+      "sample_count": 26,
+      "confidence_threshold": 0.8692307692307693,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "store",
+            "freq": 4
+          },
+          {
+            "word": "global",
+            "freq": 3
+          },
+          {
+            "word": "market",
+            "freq": 3
+          },
+          {
+            "word": "taptap",
+            "freq": 2
+          },
+          {
+            "word": "happymod",
+            "freq": 2
+          },
+          {
+            "word": "apktime",
+            "freq": 2
+          },
+          {
+            "word": "atapkita",
+            "freq": 1
+          },
+          {
+            "word": "ru",
+            "freq": 1
+          },
+          {
+            "word": "vk",
+            "freq": 1
+          },
+          {
+            "word": "cm",
+            "freq": 1
+          },
+          {
+            "word": "aptoide",
+            "freq": 1
+          },
+          {
+            "word": "pt",
+            "freq": 1
+          },
+          {
+            "word": "apkpure",
+            "freq": 1
+          },
+          {
+            "word": "aegon",
+            "freq": 1
+          },
+          {
+            "word": "playmods",
+            "freq": 1
+          },
+          {
+            "word": "happygo",
+            "freq": 1
+          },
+          {
+            "word": "vendingx",
+            "freq": 1
+          },
+          {
+            "word": "my",
+            "freq": 1
+          },
+          {
+            "word": "gov",
+            "freq": 1
+          },
+          {
+            "word": "onegovappstore",
+            "freq": 1
+          },
+          {
+            "word": "niise",
+            "freq": 1
+          },
+          {
+            "word": "pandada",
+            "freq": 1
+          },
+          {
+            "word": "tools",
+            "freq": 1
+          },
+          {
+            "word": "update",
+            "freq": 1
+          },
+          {
+            "word": "play",
+            "freq": 1
+          },
+          {
+            "word": "master",
+            "freq": 1
+          },
+          {
+            "word": "wgetmodsapk",
+            "freq": 1
+          },
+          {
+            "word": "idm",
+            "freq": 1
+          },
+          {
+            "word": "itc",
+            "freq": 1
+          },
+          {
+            "word": "comobile",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "18520246",
+            "freq": 1
+          }
+        ]
+      },
+      "patterns": [],
+      "brands": [
+        {
+          "name": "market",
+          "count": 3
+        },
+        {
+          "name": "taptap",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 9
+        },
+        {
+          "structure": "net.[SHORT].[WORD]",
+          "count": 2
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 2
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": [
+        {
+          "keyword": "第三方",
+          "count": 16,
+          "ratio": 0.6153846153846154
+        }
+      ]
+    },
+    "installment": {
+      "category": "installment",
+      "sample_count": 13,
+      "confidence_threshold": 0.9000000000000001,
+      "keywords": {
+        "indonesian": [
+          {
+            "word": "dana",
+            "freq": 1
+          },
+          {
+            "word": "kredit",
+            "freq": 1
+          }
+        ],
+        "english": [
+          {
+            "word": "cicil",
+            "freq": 2
+          },
+          {
+            "word": "paylater",
+            "freq": 2
+          },
+          {
+            "word": "installment",
+            "freq": 2
+          },
+          {
+            "word": "atome",
+            "freq": 1
+          },
+          {
+            "word": "cashier",
+            "freq": 1
+          },
+          {
+            "word": "paylaterapp",
+            "freq": 1
+          },
+          {
+            "word": "cashea",
+            "freq": 1
+          },
+          {
+            "word": "io",
+            "freq": 1
+          },
+          {
+            "word": "silvrr",
+            "freq": 1
+          },
+          {
+            "word": "adira",
+            "freq": 1
+          },
+          {
+            "word": "adiraku",
+            "freq": 1
+          },
+          {
+            "word": "bussanautofinance",
+            "freq": 1
+          },
+          {
+            "word": "dayagroup",
+            "freq": 1
+          },
+          {
+            "word": "alwaysdaya",
+            "freq": 1
+          },
+          {
+            "word": "dam",
+            "freq": 1
+          },
+          {
+            "word": "cicilan",
+            "freq": 1
+          },
+          {
+            "word": "creditcard",
+            "freq": 1
+          },
+          {
+            "word": "fifada",
+            "freq": 1
+          },
+          {
+            "word": "customer",
+            "freq": 1
+          },
+          {
+            "word": "dicicilaja",
+            "freq": 1
+          },
+          {
+            "word": "indodana",
+            "freq": 1
+          },
+          {
+            "word": "onsite",
+            "freq": 1
+          },
+          {
+            "word": "merchant",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": []
+      },
+      "patterns": [
+        {
+          "pattern": "^id\\.co\\..*",
+          "type": "prefix",
+          "count": 3
+        }
+      ],
+      "brands": [
+        {
+          "name": "co",
+          "count": 3
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 4
+        },
+        {
+          "structure": "com.[WORD].[SHORT]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": []
+    },
+    "fake_gps": {
+      "category": "fake_gps",
+      "sample_count": 29,
+      "confidence_threshold": 0.8931034482758622,
+      "keywords": {
+        "indonesian": [],
+        "english": [
+          {
+            "word": "fakegps",
+            "freq": 7
+          },
+          {
+            "word": "gps",
+            "freq": 5
+          },
+          {
+            "word": "location",
+            "freq": 3
+          },
+          {
+            "word": "fake",
+            "freq": 3
+          },
+          {
+            "word": "incorporateapps",
+            "freq": 2
+          },
+          {
+            "word": "webmajstr",
+            "freq": 2
+          },
+          {
+            "word": "fakelocation",
+            "freq": 2
+          },
+          {
+            "word": "silentlexx",
+            "freq": 1
+          },
+          {
+            "word": "gpslock",
+            "freq": 1
+          },
+          {
+            "word": "blazingappstudio",
+            "freq": 1
+          },
+          {
+            "word": "coordinates",
+            "freq": 1
+          },
+          {
+            "word": "jkfantasy",
+            "freq": 1
+          },
+          {
+            "word": "gpsmapcamera",
+            "freq": 1
+          },
+          {
+            "word": "locationchanger",
+            "freq": 1
+          },
+          {
+            "word": "fakegpslocation",
+            "freq": 1
+          },
+          {
+            "word": "kaisquare",
+            "freq": 1
+          },
+          {
+            "word": "fre",
+            "freq": 1
+          },
+          {
+            "word": "gpson",
+            "freq": 1
+          },
+          {
+            "word": "phongphan",
+            "freq": 1
+          },
+          {
+            "word": "gpsfaker",
+            "freq": 1
+          },
+          {
+            "word": "top",
+            "freq": 1
+          },
+          {
+            "word": "tinysoft",
+            "freq": 1
+          },
+          {
+            "word": "superspring",
+            "freq": 1
+          },
+          {
+            "word": "gpsid",
+            "freq": 1
+          },
+          {
+            "word": "ru",
+            "freq": 1
+          },
+          {
+            "word": "gavrikov",
+            "freq": 1
+          },
+          {
+            "word": "mocklocations",
+            "freq": 1
+          },
+          {
+            "word": "kliksob",
+            "freq": 1
+          },
+          {
+            "word": "black",
+            "freq": 1
+          },
+          {
+            "word": "taxsee",
+            "freq": 1
+          }
+        ],
+        "brand_names": [],
+        "numeric_patterns": [
+          {
+            "word": "hopefactory2021",
+            "freq": 1
+          },
+          {
+            "word": "forgswitch2",
+            "freq": 1
+          },
+          {
+            "word": "just4funtools",
+            "freq": 1
+          }
+        ]
+      },
+      "patterns": [],
+      "brands": [
+        {
+          "name": "incorporateapps",
+          "count": 2
+        },
+        {
+          "name": "webmajstr",
+          "count": 2
+        }
+      ],
+      "domain_structures": [
+        {
+          "structure": "com.[WORD].[WORD]",
+          "count": 18
+        },
+        {
+          "structure": "[SHORT].[WORD].[WORD]",
+          "count": 2
+        }
+      ],
+      "high_risk_indicators": [
+        {
+          "keyword": "伪造",
+          "count": 7,
+          "ratio": 0.2413793103448276
+        },
+        {
+          "keyword": "虚拟定位",
+          "count": 15,
+          "ratio": 0.5172413793103449
+        }
+      ]
+    }
+  }
+}

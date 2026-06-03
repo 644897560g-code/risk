@@ -1,0 +1,579 @@
+{
+  "results": {
+    "overall_accuracy": 4.987341772151899,
+    "category_metrics": {
+      "app_store": {
+        "precision": 100.0,
+        "recall": 7.6923076923076925,
+        "f1": 14.285714285714286,
+        "precision_count": 2,
+        "recall_count": 2,
+        "total": 26,
+        "count_predicted": 2
+      },
+      "banking": {
+        "precision": 94.5945945945946,
+        "recall": 15.086206896551724,
+        "f1": 26.022304832713754,
+        "precision_count": 35,
+        "recall_count": 35,
+        "total": 232,
+        "count_predicted": 37
+      },
+      "cash_loan": {
+        "precision": 95.23809523809523,
+        "recall": 15.267175572519085,
+        "f1": 26.315789473684212,
+        "precision_count": 40,
+        "recall_count": 40,
+        "total": 262,
+        "count_predicted": 42
+      },
+      "clone_app": {
+        "precision": 100.0,
+        "recall": 21.428571428571427,
+        "f1": 35.29411764705882,
+        "precision_count": 6,
+        "recall_count": 6,
+        "total": 28,
+        "count_predicted": 6
+      },
+      "ewallet": {
+        "precision": 26.436781609195403,
+        "recall": 77.52808988764045,
+        "f1": 39.42857142857143,
+        "precision_count": 69,
+        "recall_count": 69,
+        "total": 89,
+        "count_predicted": 261
+      },
+      "fake_gps": {
+        "precision": 100.0,
+        "recall": 31.03448275862069,
+        "f1": 47.368421052631575,
+        "precision_count": 9,
+        "recall_count": 9,
+        "total": 29,
+        "count_predicted": 9
+      },
+      "fintech_lending": {
+        "precision": 75.0,
+        "recall": 5.172413793103448,
+        "f1": 9.67741935483871,
+        "precision_count": 6,
+        "recall_count": 6,
+        "total": 116,
+        "count_predicted": 8
+      },
+      "food_delivery": {
+        "precision": 83.33333333333334,
+        "recall": 14.705882352941178,
+        "f1": 25.000000000000004,
+        "precision_count": 5,
+        "recall_count": 5,
+        "total": 34,
+        "count_predicted": 6
+      },
+      "gambling": {
+        "precision": 100.0,
+        "recall": 13.01247771836007,
+        "f1": 23.028391167192428,
+        "precision_count": 73,
+        "recall_count": 73,
+        "total": 561,
+        "count_predicted": 73
+      },
+      "installment": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "precision_count": 0,
+        "recall_count": 0,
+        "total": 13,
+        "count_predicted": 0
+      },
+      "other": {
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "precision_count": 0,
+        "recall_count": 0,
+        "total": 1383,
+        "count_predicted": 0
+      },
+      "productivity": {
+        "precision": 33.95061728395062,
+        "recall": 7.142857142857142,
+        "f1": 11.802575107296137,
+        "precision_count": 55,
+        "recall_count": 55,
+        "total": 770,
+        "count_predicted": 162
+      },
+      "religious": {
+        "precision": 97.1830985915493,
+        "recall": 26.037735849056602,
+        "f1": 41.07142857142857,
+        "precision_count": 69,
+        "recall_count": 69,
+        "total": 265,
+        "count_predicted": 71
+      },
+      "shopping": {
+        "precision": 81.13207547169812,
+        "recall": 19.196428571428573,
+        "f1": 31.046931407942242,
+        "precision_count": 43,
+        "recall_count": 43,
+        "total": 224,
+        "count_predicted": 53
+      },
+      "social_entertainment": {
+        "precision": 97.76119402985076,
+        "recall": 3.438320209973753,
+        "f1": 6.643002028397565,
+        "precision_count": 131,
+        "recall_count": 131,
+        "total": 3810,
+        "count_predicted": 134
+      },
+      "transportation": {
+        "precision": 50.0,
+        "recall": 4.705882352941177,
+        "f1": 8.60215053763441,
+        "precision_count": 8,
+        "recall_count": 8,
+        "total": 170,
+        "count_predicted": 16
+      },
+      "utility": {
+        "precision": 93.02325581395348,
+        "recall": 1.0422094841063054,
+        "f1": 2.061324400927596,
+        "precision_count": 40,
+        "recall_count": 40,
+        "total": 3838,
+        "count_predicted": 43
+      }
+    },
+    "total_samples": 11850,
+    "correct_predictions": 591,
+    "category_stats": {
+      "shopping": {
+        "tp": 43,
+        "fp": 10,
+        "fn": 181
+      },
+      "unknown": {
+        "tp": 0,
+        "fp": 10927,
+        "fn": 0
+      },
+      "utility": {
+        "tp": 40,
+        "fp": 3,
+        "fn": 3798
+      },
+      "social_entertainment": {
+        "tp": 131,
+        "fp": 3,
+        "fn": 3679
+      },
+      "productivity": {
+        "tp": 55,
+        "fp": 107,
+        "fn": 715
+      },
+      "banking": {
+        "tp": 35,
+        "fp": 2,
+        "fn": 197
+      },
+      "fintech_lending": {
+        "tp": 6,
+        "fp": 2,
+        "fn": 110
+      },
+      "transportation": {
+        "tp": 8,
+        "fp": 8,
+        "fn": 162
+      },
+      "ewallet": {
+        "tp": 69,
+        "fp": 192,
+        "fn": 20
+      },
+      "religious": {
+        "tp": 69,
+        "fp": 2,
+        "fn": 196
+      },
+      "other": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1383
+      },
+      "food_delivery": {
+        "tp": 5,
+        "fp": 1,
+        "fn": 29
+      },
+      "cash_loan": {
+        "tp": 40,
+        "fp": 2,
+        "fn": 222
+      },
+      "gambling": {
+        "tp": 73,
+        "fp": 0,
+        "fn": 488
+      },
+      "clone_app": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 22
+      },
+      "app_store": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 24
+      },
+      "installment": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13
+      },
+      "fake_gps": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 20
+      }
+    }
+  },
+  "confusion_matrix": {
+    "app_store": {
+      "app_store": 2,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "banking": {
+      "app_store": 0,
+      "banking": 35,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 1,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 1,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "cash_loan": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 40,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 1,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 1,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "clone_app": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 6,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "ewallet": {
+      "app_store": 1,
+      "banking": 5,
+      "cash_loan": 64,
+      "clone_app": 2,
+      "ewallet": 69,
+      "fake_gps": 0,
+      "fintech_lending": 15,
+      "food_delivery": 0,
+      "gambling": 16,
+      "installment": 3,
+      "other": 38,
+      "productivity": 15,
+      "religious": 1,
+      "shopping": 0,
+      "social_entertainment": 16,
+      "transportation": 0,
+      "utility": 16
+    },
+    "fake_gps": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 9,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "fintech_lending": {
+      "app_store": 0,
+      "banking": 1,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 6,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 1,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "food_delivery": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 5,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 1,
+      "transportation": 0,
+      "utility": 0
+    },
+    "gambling": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 73,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "installment": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "other": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 0,
+      "transportation": 0,
+      "utility": 0
+    },
+    "productivity": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 3,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 55,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 5,
+      "transportation": 0,
+      "utility": 99
+    },
+    "religious": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 69,
+      "shopping": 0,
+      "social_entertainment": 2,
+      "transportation": 0,
+      "utility": 0
+    },
+    "shopping": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 2,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 1,
+      "gambling": 0,
+      "installment": 0,
+      "other": 2,
+      "productivity": 1,
+      "religious": 0,
+      "shopping": 43,
+      "social_entertainment": 2,
+      "transportation": 0,
+      "utility": 2
+    },
+    "social_entertainment": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 3,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 131,
+      "transportation": 0,
+      "utility": 0
+    },
+    "transportation": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 1,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 0,
+      "religious": 0,
+      "shopping": 2,
+      "social_entertainment": 5,
+      "transportation": 8,
+      "utility": 0
+    },
+    "utility": {
+      "app_store": 0,
+      "banking": 0,
+      "cash_loan": 0,
+      "clone_app": 0,
+      "ewallet": 0,
+      "fake_gps": 0,
+      "fintech_lending": 0,
+      "food_delivery": 0,
+      "gambling": 0,
+      "installment": 0,
+      "other": 0,
+      "productivity": 2,
+      "religious": 0,
+      "shopping": 0,
+      "social_entertainment": 1,
+      "transportation": 0,
+      "utility": 40
+    }
+  }
+}

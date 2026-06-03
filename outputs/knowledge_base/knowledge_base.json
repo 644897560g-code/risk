@@ -1,0 +1,148 @@
+{
+  "knowledge_base": {
+    "summary": {
+      "total_samples": 2272,
+      "overdue_rate": 0.7245,
+      "analysis_date": "2026-04-26",
+      "total_apps_classified": 11850
+    },
+    "base_analysis": {
+      "gender_risk": {
+        "male_overdue_rate": 0.4286,
+        "female_overdue_rate": 0.2308,
+        "risk_ratio": 1.8571
+      },
+      "age_risk_bins": [
+        {"bin": "18-25", "overdue_rate": 0.0},
+        {"bin": "26-30", "overdue_rate": 0.0},
+        {"bin": "31-35", "overdue_rate": 0.3333},
+        {"bin": "36-40", "overdue_rate": 0.6667},
+        {"bin": "41-50", "overdue_rate": 0.25},
+        {"bin": "51+", "overdue_rate": 0.4}
+      ],
+      "income_risk_correlation": -0.1495,
+      "job_risk_distribution": {
+        "16": 0.1111,
+        "12": 0.5,
+        "2": 1.0,
+        "5": 0.0,
+        "13": 0.0,
+        "7": 0.0
+      },
+      "marriage_risk": {
+        "1": 0.1429,
+        "2": 0.3846
+      },
+      "children_risk": {
+        "0": 0.3
+      },
+      "work_years_risk_correlation": 0.0
+    },
+    "app_analysis": {
+      "avg_app_count": 47.65,
+      "max_app_count": 123.0,
+      "min_app_count": 12.0,
+      "finance_app_ratio": 0.0916,
+      "llm_classification": {
+        "method": "LLM_SCIENCE_CLASSIFICATION",
+        "model": "qwen/qwen3.6-plus",
+        "classification_date": "2026-04-26",
+        "total_classified_apps": 11850,
+        "batch_config": {
+          "batch_size": 200,
+          "total_batches": 60,
+          "retry_mechanism": "3次重试，指数退避"
+        },
+        "category_system": {
+          "high_risk": ["cash_loan", "fintech_lending", "gambling", "fake_gps", "app_store", "clone_app"],
+          "financial": ["banking", "ewallet"],
+          "consumer": ["installment", "shopping"],
+          "lifestyle_tools": ["transportation", "food_delivery", "utility", "productivity", "religious", "other"]
+        },
+        "priority_rules": "高风险类别 > 金融/消费类别 > 通用类别 > other兜底",
+        "category_distribution": {
+          "utility": 3838,
+          "social_entertainment": 3810,
+          "other": 1383,
+          "productivity": 770,
+          "gambling": 561,
+          "religious": 265,
+          "cash_loan": 262,
+          "banking": 232,
+          "shopping": 224,
+          "transportation": 170,
+          "fintech_lending": 116,
+          "ewallet": 89,
+          "food_delivery": 34,
+          "fake_gps": 29,
+          "clone_app": 28,
+          "app_store": 26,
+          "installment": 13
+        },
+        "high_risk_summary": {
+          "total_high_risk_apps": 1022,
+          "high_risk_ratio": 0.086,
+          "categories": {
+            "gambling": {"count": 561, "description": "赌博/棋牌/老虎机"},
+            "cash_loan": {"count": 262, "description": "现金贷应用"},
+            "fintech_lending": {"count": 116, "description": "金融科技借贷"},
+            "fake_gps": {"count": 29, "description": "虚拟定位工具"},
+            "clone_app": {"count": 28, "description": "应用克隆工具"},
+            "app_store": {"count": 26, "description": "第三方应用商店"}
+          }
+        },
+        "output_files": {
+          "complete_classification": "outputs/app_analysis/classification_complete_11850.json",
+          "statistics": "outputs/app_analysis/classification_statistics.json",
+          "csv_list": "outputs/app_analysis/app_classification_complete.csv"
+        }
+      }
+    },
+    "fdc_analysis": {
+      "query_freq_risk": {
+        "last_3days_avg": 4.25,
+        "last_7days_avg": 9.4,
+        "last_30days_avg": 20.05
+      },
+      "loan_record_stats": {
+        "avg_loan_count": 41.6,
+        "max_loan_count": 325.0,
+        "avg_outstanding_balance": 8092993.1,
+        "avg_active_platforms": 3.35
+      },
+      "dpd_analysis": {
+        "avg_max_dpd": 317.3,
+        "dpd_30plus_ratio": 0.2,
+        "dpd_60plus_ratio": 0.2,
+        "dpd_90plus_ratio": 0.2
+      }
+    },
+    "risk_rules": [
+      {
+        "rule": "FDC近30天查询次数>20",
+        "description": "短期多头借贷风险极高",
+        "risk_level": "high"
+      },
+      {
+        "rule": "整体逾期率>0.7",
+        "description": "资产质量严重恶化",
+        "risk_level": "critical"
+      },
+      {
+        "rule": "高风险APP安装比例>0.09",
+        "description": "共债与多头风险显著",
+        "risk_level": "high"
+      },
+      {
+        "rule": "FDC最大逾期天数>300",
+        "description": "历史严重违约记录",
+        "risk_level": "critical"
+      },
+      {
+        "rule": "安装高风险类别应用>=2个",
+        "description": "多重借贷倾向明显",
+        "risk_level": "high"
+      }
+    ]
+  }
+}

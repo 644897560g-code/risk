@@ -1,0 +1,2292 @@
+{
+  "total_evaluated": 0,
+  "thresholds": {},
+  "metrics": {},
+  "version": "v7",
+  "timestamp": "2026-06-03T10:48:41.306062",
+  "passed_features": [
+    {
+      "feature_name": "cnt_fdciq_3d",
+      "iv": 0.060176,
+      "psi": 0.01059,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdciq_7d",
+      "iv": 0.097772,
+      "psi": 0.027456,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdciq_30d",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdciq_90d",
+      "iv": 0.049634,
+      "psi": 0.01051,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdciq_180d",
+      "iv": 0.048301,
+      "psi": 0.032099,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_7d",
+      "iv": 0.025878,
+      "psi": 0.026804,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_15d",
+      "iv": 0.049989,
+      "psi": 0.032762,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_30d",
+      "iv": 0.045469,
+      "psi": 0.029322,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_60d",
+      "iv": 0.039023,
+      "psi": 0.035315,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_90d",
+      "iv": 0.021282,
+      "psi": 0.023746,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_180d",
+      "iv": 0.020719,
+      "psi": 0.00785,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_app_360d",
+      "iv": 0.02445,
+      "psi": 0.013199,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_7d",
+      "iv": 0.06563,
+      "psi": 0.009951,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_15d",
+      "iv": 0.068216,
+      "psi": 0.004762,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_30d",
+      "iv": 0.121122,
+      "psi": 0.00972,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_60d",
+      "iv": 0.09694,
+      "psi": 0.016288,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_90d",
+      "iv": 0.083512,
+      "psi": 0.011499,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_180d",
+      "iv": 0.077243,
+      "psi": 0.018827,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_360d",
+      "iv": 0.044628,
+      "psi": 0.023883,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_7d",
+      "iv": 0.036653,
+      "psi": 0.014668,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_15d",
+      "iv": 0.05012,
+      "psi": 0.005829,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_30d",
+      "iv": 0.069669,
+      "psi": 0.012742,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_60d",
+      "iv": 0.065427,
+      "psi": 0.021152,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_90d",
+      "iv": 0.047016,
+      "psi": 0.027322,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_180d",
+      "iv": 0.042278,
+      "psi": 0.027301,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_o_360d",
+      "iv": 0.047063,
+      "psi": 0.019278,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_15d",
+      "iv": 0.068953,
+      "psi": 0.011724,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_30d",
+      "iv": 0.072754,
+      "psi": 0.000579,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_60d",
+      "iv": 0.078856,
+      "psi": 0.009783,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_90d",
+      "iv": 0.057284,
+      "psi": 0.011364,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_180d",
+      "iv": 0.060261,
+      "psi": 0.016215,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_status_pinjaman_l_360d",
+      "iv": 0.038164,
+      "psi": 0.011749,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_7d",
+      "iv": 0.06563,
+      "psi": 0.009951,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_15d",
+      "iv": 0.068216,
+      "psi": 0.004903,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_30d",
+      "iv": 0.123593,
+      "psi": 0.010634,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_60d",
+      "iv": 0.096619,
+      "psi": 0.01636,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_90d",
+      "iv": 0.084274,
+      "psi": 0.014248,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_180d",
+      "iv": 0.079404,
+      "psi": 0.026427,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_1_360d",
+      "iv": 0.074171,
+      "psi": 0.02154,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_3_360d",
+      "iv": 0.02613,
+      "psi": 0.010571,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_7d",
+      "iv": 0.064072,
+      "psi": 0.012113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_15d",
+      "iv": 0.068646,
+      "psi": 0.006338,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_30d",
+      "iv": 0.11845,
+      "psi": 0.008558,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_60d",
+      "iv": 0.106089,
+      "psi": 0.023493,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_90d",
+      "iv": 0.091942,
+      "psi": 0.016536,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_180d",
+      "iv": 0.074184,
+      "psi": 0.013866,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_tipe_pinjaman_multiguna_360d",
+      "iv": 0.04668,
+      "psi": 0.02284,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_7d",
+      "iv": 0.06563,
+      "psi": 0.009951,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_15d",
+      "iv": 0.068216,
+      "psi": 0.004762,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_30d",
+      "iv": 0.121122,
+      "psi": 0.00972,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_60d",
+      "iv": 0.097253,
+      "psi": 0.016148,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_90d",
+      "iv": 0.083503,
+      "psi": 0.011438,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_180d",
+      "iv": 0.076893,
+      "psi": 0.019129,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_pendanaan_syariah_false_360d",
+      "iv": 0.044762,
+      "psi": 0.023793,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdciq_360d",
+      "iv": 0.036973,
+      "psi": 0.028709,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cnt_fdcpin_kualitas_pinjaman_2_360d",
+      "iv": 0.02752,
+      "psi": 0.002125,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_lender_30d",
+      "iv": 0.145325,
+      "psi": 0.020461,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_lender_60d",
+      "iv": 0.123634,
+      "psi": 0.064389,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_lender_90d",
+      "iv": 0.096512,
+      "psi": 0.025113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_lender_180d",
+      "iv": 0.093772,
+      "psi": 0.022521,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_type_30d",
+      "iv": 0.06388,
+      "psi": 0.014748,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_type_60d",
+      "iv": 0.069913,
+      "psi": 0.007229,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_type_90d",
+      "iv": 0.071389,
+      "psi": 0.000524,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_type_180d",
+      "iv": 0.045408,
+      "psi": 8.5e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_status_30d",
+      "iv": 0.119235,
+      "psi": 0.003978,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_status_60d",
+      "iv": 0.096201,
+      "psi": 0.005788,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_status_90d",
+      "iv": 0.085368,
+      "psi": 0.007546,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_loan_status_180d",
+      "iv": 0.05537,
+      "psi": 0.014825,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_kualitas_pinjaman_30d",
+      "iv": 0.063494,
+      "psi": 0.000272,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_kualitas_pinjaman_60d",
+      "iv": 0.070515,
+      "psi": 0.00274,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_kualitas_pinjaman_90d",
+      "iv": 0.07363,
+      "psi": 0.001426,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_kualitas_pinjaman_180d",
+      "iv": 0.084793,
+      "psi": 0.005367,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_pendanaan_syariah_30d",
+      "iv": 0.063449,
+      "psi": 0.000489,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_pendanaan_syariah_60d",
+      "iv": 0.06885,
+      "psi": 0.003581,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_pendanaan_syariah_90d",
+      "iv": 0.070814,
+      "psi": 0.003756,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "uniq_fdcpin_pendanaan_syariah_180d",
+      "iv": 0.044592,
+      "psi": 0.003613,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_30d_r005",
+      "iv": 0.119467,
+      "psi": 0.008217,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_60d_r005",
+      "iv": 0.129008,
+      "psi": 0.006453,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_90d_r005",
+      "iv": 0.13724,
+      "psi": 0.006352,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_180d_r005",
+      "iv": 0.13724,
+      "psi": 0.006352,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_30d_r002",
+      "iv": 0.112083,
+      "psi": 0.004826,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_60d_r002",
+      "iv": 0.112214,
+      "psi": 0.007344,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_90d_r002",
+      "iv": 0.121615,
+      "psi": 0.007962,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_180d_r002",
+      "iv": 0.121615,
+      "psi": 0.007962,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_30d_r01",
+      "iv": 0.136094,
+      "psi": 0.009277,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_60d_r01",
+      "iv": 0.147012,
+      "psi": 0.007257,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_90d_r01",
+      "iv": 0.146606,
+      "psi": 0.011123,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_180d_r01",
+      "iv": 0.14308,
+      "psi": 0.011649,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_30d_r05",
+      "iv": 0.137499,
+      "psi": 0.007113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_60d_r05",
+      "iv": 0.14594,
+      "psi": 0.01194,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_90d_r05",
+      "iv": 0.125082,
+      "psi": 0.031666,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_amt_180d_r05",
+      "iv": 0.104132,
+      "psi": 0.02563,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_30d_r005",
+      "iv": 0.082902,
+      "psi": 0.010825,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_60d_r005",
+      "iv": 0.097647,
+      "psi": 0.007583,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_90d_r005",
+      "iv": 0.095747,
+      "psi": 0.007881,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_180d_r005",
+      "iv": 0.103708,
+      "psi": 0.012305,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_30d_r002",
+      "iv": 0.095469,
+      "psi": 0.010938,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_60d_r002",
+      "iv": 0.098362,
+      "psi": 0.010741,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_90d_r002",
+      "iv": 0.098362,
+      "psi": 0.010802,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_180d_r002",
+      "iv": 0.109924,
+      "psi": 0.013481,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_30d_r01",
+      "iv": 0.090632,
+      "psi": 0.014868,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_60d_r01",
+      "iv": 0.102193,
+      "psi": 0.020905,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_90d_r01",
+      "iv": 0.099701,
+      "psi": 0.01899,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_180d_r01",
+      "iv": 0.107662,
+      "psi": 0.025086,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_30d_r05",
+      "iv": 0.096818,
+      "psi": 0.017613,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_60d_r05",
+      "iv": 0.088223,
+      "psi": 0.011754,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_90d_r05",
+      "iv": 0.088535,
+      "psi": 0.016328,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_bal_180d_r05",
+      "iv": 0.082173,
+      "psi": 0.007459,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_30d_r005",
+      "iv": 0.083455,
+      "psi": 0.004879,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_60d_r005",
+      "iv": 0.111063,
+      "psi": 0.007526,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_90d_r005",
+      "iv": 0.118537,
+      "psi": 0.006968,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_180d_r005",
+      "iv": 0.118537,
+      "psi": 0.007063,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_30d_r002",
+      "iv": 0.085439,
+      "psi": 0.007255,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_60d_r002",
+      "iv": 0.103979,
+      "psi": 0.006124,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_90d_r002",
+      "iv": 0.109138,
+      "psi": 0.006094,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_180d_r002",
+      "iv": 0.109138,
+      "psi": 0.006094,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_30d_r01",
+      "iv": 0.08686,
+      "psi": 0.014072,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_60d_r01",
+      "iv": 0.105549,
+      "psi": 0.01071,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_90d_r01",
+      "iv": 0.110751,
+      "psi": 0.010912,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_180d_r01",
+      "iv": 0.110751,
+      "psi": 0.010011,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_30d_r05",
+      "iv": 0.079098,
+      "psi": 0.009952,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_60d_r05",
+      "iv": 0.102136,
+      "psi": 0.010776,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_90d_r05",
+      "iv": 0.109848,
+      "psi": 0.012281,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "decay_fdcpin_inc_180d_r05",
+      "iv": 0.093674,
+      "psi": 0.007782,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_7d",
+      "iv": 0.02389,
+      "psi": 0.011963,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_30d",
+      "iv": 0.062223,
+      "psi": 0.012369,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_60d",
+      "iv": 0.05167,
+      "psi": 0.01227,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_90d",
+      "iv": 0.057302,
+      "psi": 0.01054,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_banking_60d",
+      "iv": 0.021027,
+      "psi": 0.002773,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_ewallet_60d",
+      "iv": 0.025411,
+      "psi": 0.005341,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_7d",
+      "iv": 0.022321,
+      "psi": 0.004973,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_30d",
+      "iv": 0.05646,
+      "psi": 0.006605,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_60d",
+      "iv": 0.048985,
+      "psi": 0.013097,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_90d",
+      "iv": 0.057702,
+      "psi": 0.02007,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_gambling_cash_loan_fintech_lending_30d",
+      "iv": 0.044532,
+      "psi": 0.004954,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_gambling_cash_loan_fintech_lending_60d",
+      "iv": 0.047523,
+      "psi": 0.014775,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_gambling_cash_loan_fintech_lending_90d",
+      "iv": 0.054594,
+      "psi": 0.006703,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_kualitas_pinjaman_1_90d",
+      "iv": 0.097018,
+      "psi": 6e-06,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_kualitas_pinjaman_1_180d",
+      "iv": 0.07908,
+      "psi": 0.003915,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_o_30d",
+      "iv": 0.038289,
+      "psi": 3.9e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_o_60d",
+      "iv": 0.073279,
+      "psi": 0.007421,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_o_90d",
+      "iv": 0.03142,
+      "psi": 0.006071,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_o_180d",
+      "iv": 0.0389,
+      "psi": 0.012971,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_30d",
+      "iv": 0.073462,
+      "psi": 0.002136,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_60d",
+      "iv": 0.098506,
+      "psi": 0.009926,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_90d",
+      "iv": 0.064317,
+      "psi": 0.004272,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_180d",
+      "iv": 0.073995,
+      "psi": 0.015641,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_tipe_pinjaman_multiguna_90d",
+      "iv": 0.062162,
+      "psi": 9e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_tipe_pinjaman_multiguna_180d",
+      "iv": 0.023152,
+      "psi": 0.000148,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_30d",
+      "iv": 0.063449,
+      "psi": 0.000489,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_60d",
+      "iv": 0.069793,
+      "psi": 0.001285,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_90d",
+      "iv": 0.070814,
+      "psi": 0.001911,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_180d",
+      "iv": 0.044592,
+      "psi": 0.001768,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_3d",
+      "iv": 0.032141,
+      "psi": 0.007209,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_15d",
+      "iv": 0.090688,
+      "psi": 0.013929,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_3d",
+      "iv": 0.02575,
+      "psi": 0.005901,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_cash_loan_fintech_lending_15d",
+      "iv": 0.054153,
+      "psi": 0.01318,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_gambling_cash_loan_fintech_lending_3d",
+      "iv": 0.025902,
+      "psi": 0.009741,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_app_gambling_cash_loan_fintech_lending_15d",
+      "iv": 0.054957,
+      "psi": 0.011079,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_kualitas_pinjaman_1_7d",
+      "iv": 0.036494,
+      "psi": 1.6e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_kualitas_pinjaman_1_15d",
+      "iv": 0.0553,
+      "psi": 0.000483,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_o_7d",
+      "iv": 0.052696,
+      "psi": 0.0,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_7d",
+      "iv": 0.035735,
+      "psi": 0.0,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_status_pinjaman_l_15d",
+      "iv": 0.041888,
+      "psi": 0.00121,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_tipe_pinjaman_multiguna_7d",
+      "iv": 0.037192,
+      "psi": 0.002068,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_tipe_pinjaman_multiguna_15d",
+      "iv": 0.067728,
+      "psi": 0.009483,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_7d",
+      "iv": 0.036494,
+      "psi": 1.6e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "prop_fdcpin_pendanaan_syariah_false_15d",
+      "iv": 0.056051,
+      "psi": 5e-06,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_gini_30d",
+      "iv": 0.09931,
+      "psi": 0.00497,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_gini_60d",
+      "iv": 0.076634,
+      "psi": 0.007635,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_gini_90d",
+      "iv": 0.060589,
+      "psi": 0.005628,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_gini_180d",
+      "iv": 0.04453,
+      "psi": 0.007763,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_entropy_30d",
+      "iv": 0.101987,
+      "psi": 0.005298,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_entropy_60d",
+      "iv": 0.090539,
+      "psi": 0.007736,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_entropy_90d",
+      "iv": 0.090696,
+      "psi": 0.014113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_entropy_180d",
+      "iv": 0.087098,
+      "psi": 0.013451,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_cv_30d",
+      "iv": 0.096689,
+      "psi": 0.003316,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_cv_60d",
+      "iv": 0.073747,
+      "psi": 0.014809,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_cv_90d",
+      "iv": 0.069877,
+      "psi": 0.01263,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_fdcpin_penyelenggara_cv_180d",
+      "iv": 0.048411,
+      "psi": 0.006421,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_entropy_30d",
+      "iv": 0.077286,
+      "psi": 0.014174,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_entropy_60d",
+      "iv": 0.0735,
+      "psi": 0.018665,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_entropy_90d",
+      "iv": 0.05989,
+      "psi": 0.00582,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_gini_30d",
+      "iv": 0.034077,
+      "psi": 0.015995,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_gini_60d",
+      "iv": 0.060527,
+      "psi": 0.01984,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "conc_app_cat_gini_90d",
+      "iv": 0.048951,
+      "psi": 0.012942,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdciq_3v7d",
+      "iv": 0.034907,
+      "psi": 0.031989,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdciq_7v30d",
+      "iv": 0.047049,
+      "psi": 0.023084,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdcpin_7v30d",
+      "iv": 0.041107,
+      "psi": 0.008375,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdcpin_30v90d",
+      "iv": 0.093943,
+      "psi": 0.018081,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdcpin_30v180d",
+      "iv": 0.076889,
+      "psi": 0.011323,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_app_7v30d",
+      "iv": 0.022429,
+      "psi": 0.038304,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_app_15v60d",
+      "iv": 0.048009,
+      "psi": 0.035333,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdciq_30v90d",
+      "iv": 0.073605,
+      "psi": 0.021521,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdciq_7v90d",
+      "iv": 0.070125,
+      "psi": 0.017239,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdcpin_7v90d",
+      "iv": 0.044314,
+      "psi": 0.00403,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_fdcpin_15v90d",
+      "iv": 0.0441,
+      "psi": 0.017719,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "perc_app_30v90d",
+      "iv": 0.031615,
+      "psi": 0.019537,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdciq_7_15_30d",
+      "iv": 0.088958,
+      "psi": 0.017759,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdciq_3_7_30d",
+      "iv": 0.064626,
+      "psi": 0.012881,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdcpin_7_30_60d",
+      "iv": 0.068556,
+      "psi": 0.01516,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdcpin_30_60_90d",
+      "iv": 0.129951,
+      "psi": 0.016548,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdcpin_60_90_180d",
+      "iv": 0.113114,
+      "psi": 0.011531,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_app_7_15_30d",
+      "iv": 0.037867,
+      "psi": 0.028797,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_app_30_60_90d",
+      "iv": 0.035063,
+      "psi": 0.030347,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdcpin_3_7_30d",
+      "iv": 0.115777,
+      "psi": 0.009224,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdcpin_7_30_90d",
+      "iv": 0.056801,
+      "psi": 0.007378,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_app_3_7_30d",
+      "iv": 0.029894,
+      "psi": 0.023048,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "trend_fdciq_7_30_90d",
+      "iv": 0.082909,
+      "psi": 0.024789,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_fdcpin_60d_2x0",
+      "iv": 0.02017,
+      "psi": 0.01099,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_app_15d_1x5",
+      "iv": 0.028679,
+      "psi": 0.00783,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_app_30d_1x5",
+      "iv": 0.027256,
+      "psi": 0.010982,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_fdcpin_15d_1x5",
+      "iv": 0.031893,
+      "psi": 0.000682,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_fdcpin_30d_1x5",
+      "iv": 0.074694,
+      "psi": 0.003266,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "spike_fdcpin_60d_1x5",
+      "iv": 0.059083,
+      "psi": 0.011435,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "pctl_salary_pop",
+      "iv": 0.063686,
+      "psi": 0.015625,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "pctl_loan_amount_pop",
+      "iv": 0.039254,
+      "psi": 0.005723,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "pctl_inquiry_count_pop",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "pctl_applist_count_pop",
+      "iv": 0.034796,
+      "psi": 0.029493,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "dev_salary_peer",
+      "iv": 0.063686,
+      "psi": 0.015625,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "dev_loan_amount_peer",
+      "iv": 0.039254,
+      "psi": 0.005723,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "dev_inquiry_count_peer",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "dev_applist_count_peer",
+      "iv": 0.034796,
+      "psi": 0.029493,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "anom_loan",
+      "iv": 0.022767,
+      "psi": 0.006927,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "da_salary_loan_ratio",
+      "iv": 0.083926,
+      "psi": 0.01266,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "da_salary_loan_gap",
+      "iv": 0.075862,
+      "psi": 0.01176,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "da_salary_loan_abs_diff",
+      "iv": 0.043761,
+      "psi": 0.032014,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "cluster_device_penyelenggara",
+      "iv": 0.038639,
+      "psi": 0.027405,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_7d",
+      "iv": 0.025878,
+      "psi": 0.026804,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_15d",
+      "iv": 0.049989,
+      "psi": 0.032762,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_30d",
+      "iv": 0.045469,
+      "psi": 0.029322,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_60d",
+      "iv": 0.039023,
+      "psi": 0.035315,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_90d",
+      "iv": 0.021282,
+      "psi": 0.023746,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_app_180d",
+      "iv": 0.020719,
+      "psi": 0.00785,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_7d",
+      "iv": 0.06563,
+      "psi": 0.009951,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_15d",
+      "iv": 0.068216,
+      "psi": 0.004762,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_30d",
+      "iv": 0.121122,
+      "psi": 0.00972,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_60d",
+      "iv": 0.09694,
+      "psi": 0.016288,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_90d",
+      "iv": 0.083512,
+      "psi": 0.011499,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdcpin_180d",
+      "iv": 0.077243,
+      "psi": 0.018827,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdciq_3d",
+      "iv": 0.060176,
+      "psi": 0.01059,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdciq_7d",
+      "iv": 0.097772,
+      "psi": 0.027456,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdciq_30d",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdciq_90d",
+      "iv": 0.049634,
+      "psi": 0.01051,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_dens_fdciq_180d",
+      "iv": 0.048301,
+      "psi": 0.032099,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_highrisk_banking_90d",
+      "iv": 0.027669,
+      "psi": 0.008613,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_activeloan_30d",
+      "iv": 0.038289,
+      "psi": 3.9e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_loans_per_lender_30d",
+      "iv": 0.086648,
+      "psi": 0.001067,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_loans_per_lender_90d",
+      "iv": 0.063295,
+      "psi": 0.008925,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_amt_30d",
+      "iv": 0.079764,
+      "psi": 0.014893,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_amt_180d",
+      "iv": 0.114254,
+      "psi": 0.003701,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_spending_conc_30v180",
+      "iv": 0.065051,
+      "psi": 0.013957,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_highrisk_loan_30d",
+      "iv": 0.128161,
+      "psi": 0.006472,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_highrisk_loan_90d",
+      "iv": 0.103188,
+      "psi": 0.01084,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_app_7v90d",
+      "iv": 0.034577,
+      "psi": 0.02068,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdcpin_7v30d",
+      "iv": 0.041107,
+      "psi": 0.008375,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdcpin_15v90d",
+      "iv": 0.046035,
+      "psi": 0.017753,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdcpin_7v180d",
+      "iv": 0.036394,
+      "psi": 0.005547,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdciq_3v30d",
+      "iv": 0.026085,
+      "psi": 0.002589,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdciq_7v90d",
+      "iv": 0.072428,
+      "psi": 0.01832,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdciq_3v90d",
+      "iv": 0.045838,
+      "psi": 0.007064,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_lender_30v90d",
+      "iv": 0.066626,
+      "psi": 0.005821,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdcpin_30d",
+      "iv": 0.121122,
+      "psi": 0.00972,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdcpin_90d",
+      "iv": 0.083512,
+      "psi": 0.011499,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdcpin_180d",
+      "iv": 0.077243,
+      "psi": 0.018827,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_app_30d",
+      "iv": 0.045469,
+      "psi": 0.029322,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_app_90d",
+      "iv": 0.021282,
+      "psi": 0.023746,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdciq_30d",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdciq_90d",
+      "iv": 0.049634,
+      "psi": 0.01051,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_uniq_fdcpin_lender_30d",
+      "iv": 0.145325,
+      "psi": 0.020461,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_uniq_fdcpin_lender_90d",
+      "iv": 0.096512,
+      "psi": 0.025113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdcpin_30d",
+      "iv": 0.121122,
+      "psi": 0.00972,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdcpin_90d",
+      "iv": 0.083512,
+      "psi": 0.011499,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdcpin_180d",
+      "iv": 0.077243,
+      "psi": 0.018827,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_app_30d",
+      "iv": 0.045469,
+      "psi": 0.029322,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_app_90d",
+      "iv": 0.021282,
+      "psi": 0.023746,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdciq_30d",
+      "iv": 0.101153,
+      "psi": 0.015662,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdciq_90d",
+      "iv": 0.049634,
+      "psi": 0.01051,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_uniq_fdcpin_lender_30d",
+      "iv": 0.145325,
+      "psi": 0.020461,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_uniq_fdcpin_lender_90d",
+      "iv": 0.096512,
+      "psi": 0.025113,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_amt_30d_r005",
+      "iv": 0.119467,
+      "psi": 0.008217,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_amt_180d_r005",
+      "iv": 0.13724,
+      "psi": 0.006352,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_loan_per_lender_30d",
+      "iv": 0.086648,
+      "psi": 0.001067,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_avg_loan_per_lender_90d",
+      "iv": 0.063295,
+      "psi": 0.008925,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_perc_active_30d",
+      "iv": 0.038289,
+      "psi": 3.9e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_perc_active_90d",
+      "iv": 0.03142,
+      "psi": 0.006071,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_new_ratio_30d",
+      "iv": 0.08105,
+      "psi": 0.016212,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_ratio_new_ratio_90d",
+      "iv": 0.045792,
+      "psi": 0.024019,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_highrisk_dpd30_30d",
+      "iv": 0.128161,
+      "psi": 0.006472,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_highrisk_dpd30_90d",
+      "iv": 0.103188,
+      "psi": 0.01084,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_loanvol_lender_30d",
+      "iv": 0.12251,
+      "psi": 0.014292,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_loanvol_lender_90d",
+      "iv": 0.087812,
+      "psi": 0.015515,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_risk_balance_30d",
+      "iv": 0.088447,
+      "psi": 0.011889,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_wcomb_risk_balance_90d",
+      "iv": 0.097643,
+      "psi": 0.017065,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdcpin_7v90d",
+      "iv": 0.044314,
+      "psi": 0.00403,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_vel_fdciq_7v30d",
+      "iv": 0.047049,
+      "psi": 0.023084,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdcpin_360d",
+      "iv": 0.044628,
+      "psi": 0.023883,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_app_360d",
+      "iv": 0.02445,
+      "psi": 0.013199,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_cnt_fdciq_360d",
+      "iv": 0.036973,
+      "psi": 0.028709,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_uniq_fdcpin_lender_180d",
+      "iv": 0.093772,
+      "psi": 0.022521,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_prop_app_gambling_cash_loan_fintech_lending_30d",
+      "iv": 0.044532,
+      "psi": 0.004954,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_prop_app_gambling_cash_loan_fintech_lending_90d",
+      "iv": 0.054594,
+      "psi": 0.006703,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_perc_fdciq_3v7d",
+      "iv": 0.041292,
+      "psi": 0.017463,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_perc_app_7v30d",
+      "iv": 0.028416,
+      "psi": 0.034587,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_trend_fdcpin_30_60_90d",
+      "iv": 0.086346,
+      "psi": 0.02619,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_trend_fdciq_7_15_30d",
+      "iv": 0.122236,
+      "psi": 0.018737,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_decay_fdcpin_bal_30d_r005",
+      "iv": 0.082902,
+      "psi": 0.010825,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_sq_decay_fdcpin_inc_90d_r005",
+      "iv": 0.118537,
+      "psi": 0.006968,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_fdcpin_360d",
+      "iv": 0.044628,
+      "psi": 0.023883,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_cnt_app_360d",
+      "iv": 0.02445,
+      "psi": 0.013199,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_uniq_fdcpin_lender_180d",
+      "iv": 0.093772,
+      "psi": 0.022521,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_prop_app_gambling_cash_loan_fintech_lending_30d",
+      "iv": 0.044532,
+      "psi": 0.004954,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_bal_30d_r005",
+      "iv": 0.082902,
+      "psi": 0.010825,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_bal_90d_r005",
+      "iv": 0.095747,
+      "psi": 0.007881,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_inc_30d_r005",
+      "iv": 0.083455,
+      "psi": 0.004879,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_log_decay_fdcpin_inc_90d_r005",
+      "iv": 0.118537,
+      "psi": 0.006968,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_diff_amt_vs_bal_60d",
+      "iv": 0.159087,
+      "psi": 0.009925,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_diff_amt_vs_bal_180d",
+      "iv": 0.150317,
+      "psi": 0.010351,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_diff_bal_vs_inc_60d",
+      "iv": 0.100923,
+      "psi": 0.008216,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_diff_bal_vs_inc_90d",
+      "iv": 0.099676,
+      "psi": 0.01145,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_uniq_fdcpin_lender_30d",
+      "iv": 0.063449,
+      "psi": 0.00011,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_uniq_fdcpin_lender_90d",
+      "iv": 0.07046,
+      "psi": 0.000124,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_decay_fdcpin_amt_30d_r005",
+      "iv": 0.063449,
+      "psi": 0.00011,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_decay_fdcpin_amt_90d_r005",
+      "iv": 0.07046,
+      "psi": 0.000124,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_decay_fdcpin_bal_30d_r005",
+      "iv": 0.053655,
+      "psi": 1.2e-05,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_conc_fdcpin_penyelenggara_gini_90d",
+      "iv": 0.068476,
+      "psi": 0.002953,
+      "coverage": 1.0,
+      "status": "passed"
+    }
+  ],
+  "total_features": 326
+}

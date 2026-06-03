@@ -1,0 +1,17 @@
+api:
+  rate_limit:
+    enterprise: 100000
+    pro: 10000
+    trial: 100
+batch_processing:
+  default_batch_size: 100
+  max_batch_size: 10000
+  result_ttl_seconds: 3600
+feature_calculator:
+  category_config_path: core/category_config.json
+  code_path: core/feature_calculator.py
+server:
+  host: 0.0.0.0
+  log_level: info
+  port: 8000
+  workers: 2

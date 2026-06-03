@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#3a7bd5"/>
+    </linearGradient>
+    <linearGradient id="hexGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7f00ff"/>
+      <stop offset="100%" stop-color="#e100ff"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Outer hexagon -->
+  <polygon points="60,8 104,34 104,86 60,112 16,86 16,34"
+    fill="url(#bg)" stroke="url(#hexGrad)" stroke-width="2.5" filter="url(#glow)"/>
+  <!-- Inner hexagon -->
+  <polygon points="60,22 90,37 90,83 60,98 30,83 30,37"
+    fill="none" stroke="url(#hexGrad2)" stroke-width="1.5" opacity="0.6"/>
+  <!-- Neural network nodes and connections -->
+  <circle cx="60" cy="34" r="4" fill="#00d2ff" filter="url(#glow)"/>
+  <circle cx="80" cy="48" r="3.5" fill="#3a7bd5" filter="url(#glow)"/>
+  <circle cx="80" cy="72" r="3.5" fill="#3a7bd5" filter="url(#glow)"/>
+  <circle cx="60" cy="86" r="4" fill="#00d2ff" filter="url(#glow)"/>
+  <circle cx="40" cy="72" r="3.5" fill="#3a7bd5" filter="url(#glow)"/>
+  <circle cx="40" cy="48" r="3.5" fill="#3a7bd5" filter="url(#glow)"/>
+  <circle cx="60" cy="60" r="3" fill="#e100ff" filter="url(#glow)"/>
+  <!-- Connections -->
+  <line x1="60" y1="34" x2="80" y2="48" stroke="#00d2ff" stroke-width="1" opacity="0.5"/>
+  <line x1="80" y1="48" x2="80" y2="72" stroke="#3a7bd5" stroke-width="1" opacity="0.5"/>
+  <line x1="80" y1="72" x2="60" y2="86" stroke="#00d2ff" stroke-width="1" opacity="0.5"/>
+  <line x1="60" y1="86" x2="40" y2="72" stroke="#3a7bd5" stroke-width="1" opacity="0.5"/>
+  <line x1="40" y1="72" x2="40" y2="48" stroke="#00d2ff" stroke-width="1" opacity="0.5"/>
+  <line x1="40" y1="48" x2="60" y2="34" stroke="#3a7bd5" stroke-width="1" opacity="0.5"/>
+  <line x1="60" y1="34" x2="60" y2="60" stroke="#e100ff" stroke-width="0.8" opacity="0.4"/>
+  <line x1="80" y1="48" x2="60" y2="60" stroke="#e100ff" stroke-width="0.8" opacity="0.4"/>
+  <line x1="60" y1="60" x2="80" y2="72" stroke="#e100ff" stroke-width="0.8" opacity="0.4"/>
+  <line x1="60" y1="60" x2="40" y2="72" stroke="#e100ff" stroke-width="0.8" opacity="0.4"/>
+  <line x1="40" y1="48" x2="60" y2="60" stroke="#e100ff" stroke-width="0.8" opacity="0.4"/>
+  <!-- Center pulse ring -->
+  <circle cx="60" cy="60" r="12" fill="none" stroke="#e100ff" stroke-width="0.5" opacity="0.3"/>
+  <text x="60" y="64" font-size="14" fill="white" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" opacity="0.9">AI</text>
+</svg>

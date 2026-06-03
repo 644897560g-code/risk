@@ -1,0 +1,47 @@
+{
+  "extraction_version": "1.0",
+  "extracted_at": "2026-06-02T17:35:22.008782",
+  "filename": "sample_doc.md",
+  "file_type": "doc",
+  "file_size": 1684,
+  "templates": [
+    {
+      "template_name": "incremental_count",
+      "template_name_cn": "窗口内新增数量",
+      "dimension": "behavior",
+      "complexity": "L2",
+      "description": "计算在指定短期窗口内出现，但在长期窗口之前未出现的目标实体去重数量。用于衡量近期新增行为或实体的绝对增量，有效剥离历史存量干扰，适用于评估用户近期活跃度或负债扩张速度。",
+      "dsl": "count(distinct_field, short_window) - count(distinct_field, long_window)",
+      "dsl_description": "分别统计短期窗口和长期窗口内的去重数量，两者相减得到纯新增数量。",
+      "parameter_space": {
+        "source": {
+          "type": "string",
+          "description": "数据源标识，如fdc_inquiry/applist"
+        },
+        "short_window": {
+          "type": "int",
+          "description": "短期回溯窗口天数，如7/15"
+        },
+        "long_window": {
+          "type": "int",
+          "description": "长期回溯窗口天数，如30/90"
+        },
+        "distinct_field": {
+          "type": "string",
+          "description": "用于去重计数的字段名，如institution_id/packageName"
+        },
+        "time_field": {
+          "type": "string",
+          "description": "事件时间字段名"
+        }
+      },
+      "python_function": "calc_incremental_count(data, apply_time_dt, short_window=7, long_window=30, distinct_field='institution_id', time_field='event_time', source='fdc_inquiry')",
+      "python_code": "from datetime import datetime, timedelta\n\ndef calc_incremental_count(data, apply_time_dt, short_window=7, long_window=30, distinct_field='institution_id', time_field='event_time', source='fdc_inquiry'):\n    records = data.get(source, [])\n    if not records:\n        return 0.0\n    \n    short_start = apply_time_dt - timedelta(days=short_window)\n    long_start = apply_time_dt - timedelta(days=long_window)\n    \n    short_set = set()\n    long_set = set()\n    \n    for rec in records:\n        t_str = rec.get(time_field)\n        if not t_str:\n            continue\n        try:\n            t = datetime.fromisoformat(t_str)\n        except ValueError:\n            continue\n            \n        # 防穿越逻辑：严格过滤申请时间之后的数据\n        if t > apply_time_dt:\n            continue\n            \n        val = rec.get(distinct_field)\n        if val is None:\n            continue\n            \n        if t >= short_start:\n            short_set.add(val)\n        if t >= long_start:\n            long_set.add(val)\n            \n    return float(len(short_set - long_set))",
+      "formula_template": "近{short_window}天{distinct_field}去重数 - 近{long_window}天{distinct_field}去重数",
+      "examples": [
+        "近7天新增FDC查询机构数",
+        "近30天新增安装APP包名数"
+      ]
+    }
+  ]
+}

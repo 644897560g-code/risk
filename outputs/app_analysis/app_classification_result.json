@@ -1,0 +1,1224 @@
+{
+  "classifications": {
+    "id.co.hypermart.hicard": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Hypermart loyalty/retail app"
+    },
+    "com.plusphone.android": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Phone dialer/manager tool"
+    },
+    "id.motioncredit.app": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "MotionCredit lending platform"
+    },
+    "com.netflix.NGP.FootballManagerMobile": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Sports simulation game"
+    },
+    "co.id.mtf.one": {
+      "category": "shopping",
+      "confidence": "medium",
+      "reason": "Retail/loyalty app (MTF)"
+    },
+    "com.programato.binarweb": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "Web development/learning tool"
+    },
+    "com.games.bus.arrival": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Casual mobile game"
+    },
+    "com.electroniccity.ecm": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Electronics retail app"
+    },
+    "com.armada.ksafleetdriverapp": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Fleet/driver management app"
+    },
+    "com.weberdo.apps.serviceinfo": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "System info/service tool"
+    },
+    "net.fileminer.android": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "File manager/cleaner"
+    },
+    "com.finance.money.manageexpense": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Personal finance/expense tracker"
+    },
+    "com.mdiwebma.screenshot": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Screenshot capture tool"
+    },
+    "com.finnet.finpaymoney": {
+      "category": "fintech_lending",
+      "confidence": "high",
+      "reason": "FinPay digital finance/lending"
+    },
+    "id.co.acehardware.acerewards": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Ace Hardware loyalty app"
+    },
+    "com.sdmc.iot.android": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "IoT device controller"
+    },
+    "id.tirtabenteng.siganteng": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Local water/utility service app"
+    },
+    "com.jb.theme.gokeyboard": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Keyboard theme plugin"
+    },
+    "com.hotplay.petexplosion": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Casual pet game"
+    },
+    "com.snowcorp.soda.android": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "SODA camera/photo editor"
+    },
+    "com.gsm.customer": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Telecom customer service app"
+    },
+    "id.co.bri.biz.app.token": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "BRI corporate token app"
+    },
+    "com.mirror.hsn": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Mirror/camera utility"
+    },
+    "com.hg.cupcakebaking.cakemaker.bakinggames.icecreamcake": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Cooking simulation game"
+    },
+    "com.skydot.docxreader.docx.docxviewer.document.doc.office.viewer.reader.word": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Document viewer/reader"
+    },
+    "com.puzzle.fun.free.blockpuzzle": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Puzzle game"
+    },
+    "com.billiards.city.pool.nation.club": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Billiards game"
+    },
+    "com.bach.ball.charge": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Arcade game"
+    },
+    "com.fdtradev.wish": {
+      "category": "shopping",
+      "confidence": "medium",
+      "reason": "E-commerce/Wish clone"
+    },
+    "my.trevo.trevoapp": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Car rental/ride-hailing"
+    },
+    "com.compassfree.digitalcompass.forandroid.app": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Digital compass tool"
+    },
+    "com.xs2theworld.cxmobile": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Utility/finance helper"
+    },
+    "com.otoreport.tokotax": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Tax reporting/accounting"
+    },
+    "com.lightricks.quickshot": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Photo/video editor"
+    },
+    "com.erm.dzikir.pagipetang": {
+      "category": "religious",
+      "confidence": "high",
+      "reason": "Islamic prayer/dzikir app"
+    },
+    "com.mirrorapp.magnifier.camera.mirror.mirrorcam.editor": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Camera/magnifier tool"
+    },
+    "com.boostedproductivity.app": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Task/productivity manager"
+    },
+    "com.kredit.isaya": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Isaya lending platform"
+    },
+    "com.time_management_studio.my_daily_planner": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Daily planner/scheduler"
+    },
+    "com.gametion.snakesladders": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Board game"
+    },
+    "business.card.game": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Card/board game"
+    },
+    "com.amb.draw.to.childhoods": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Drawing/casual game"
+    },
+    "com.mocoo.hang.rtprinter": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Printer driver/manager"
+    },
+    "com.kumon.mykumon": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Education/learning app"
+    },
+    "com.haidilao.intl": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Restaurant/food ordering"
+    },
+    "com.animator": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "Animation/creative tool"
+    },
+    "net.xnano.android.photoexifeditor": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Photo EXIF editor"
+    },
+    "com.appovo.bmicalculator": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Health/BMI calculator"
+    },
+    "com.firsttouchgames.dls3": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Dream League Soccer game"
+    },
+    "com.digiphoto.android": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Photo editing app"
+    },
+    "com.olenwuckert.judehyatt.martyschaden": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "Random package name, likely adware/spam"
+    },
+    "com.kci.access": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "KRL Commuterline access app"
+    },
+    "idm.internet.download.manager": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Download manager"
+    },
+    "mam.reader.ipusnas": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "National library e-book reader"
+    },
+    "com.xiaomi.mi_connect_service": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Xiaomi system service"
+    },
+    "com.lpdpp.sikasep": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Bike sharing/rental app"
+    },
+    "com.lemurbrowser.exts": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Third-party browser (high risk)"
+    },
+    "com.defianttech.diskdigger": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "File recovery tool"
+    },
+    "com.yondroid.kalenderjawa": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Javanese calendar"
+    },
+    "com.cooking.world.chef.craze.restaurant.fever.free": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Cooking simulation game"
+    },
+    "com.galasoft2013.shipinfo": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Maritime tracking tool"
+    },
+    "id.bions.bnis.android": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "BNI banking app (typo variant)"
+    },
+    "com.qidafcl.sl054": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Qidaf lending platform"
+    },
+    "com.ilyabogdanovich.geotracker": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "GPS tracking tool"
+    },
+    "com.samsung.android.spdclient": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung system service"
+    },
+    "com.best.uninstall.apps.uninstaller": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "App cleaner/uninstaller"
+    },
+    "com.higame.par.bubble.tea": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Casual game"
+    },
+    "com.puzzlegame.match.jewels.adventure": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Match-3 puzzle game"
+    },
+    "com.dmn.kvisionvoucher": {
+      "category": "shopping",
+      "confidence": "medium",
+      "reason": "Voucher/rewards app"
+    },
+    "com.vectorunit.purple.googleplay": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Racing game (Riptide GP)"
+    },
+    "id.co.hokben.revamp": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Hokben food ordering"
+    },
+    "zombie.survival.craft.z": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Survival game"
+    },
+    "com.hundred.qibla.finder": {
+      "category": "religious",
+      "confidence": "high",
+      "reason": "Qibla direction finder"
+    },
+    "com.dreame.reader": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Web novel reader"
+    },
+    "com.BallGames.Woodturning": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Simulation game"
+    },
+    "ir.ilmili.telegraph": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Telegram mod client"
+    },
+    "com.drama.happy.look": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Short drama streaming"
+    },
+    "co.populix": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "Survey/rewards platform"
+    },
+    "net.gigne.tafsirmimpi": {
+      "category": "religious",
+      "confidence": "high",
+      "reason": "Dream interpretation app"
+    },
+    "com.hopefactory2021.fakegpslocation": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Fake GPS location spoofer (HIGH RISK)"
+    },
+    "stickerwhatsapp.com.stickers": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "WhatsApp sticker pack"
+    },
+    "com.iquotes.app.anzhuo": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Quotes/wallpaper app"
+    },
+    "com.transfer.app.help": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "File transfer helper"
+    },
+    "com.grill.sorting.food.match.puzzle": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Sorting puzzle game"
+    },
+    "com.Hadiz.Pillowchase": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Casual game"
+    },
+    "com.shortbox.tv": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Short video streaming"
+    },
+    "com.id5dan777.ntdan777cm2": {
+      "category": "gambling",
+      "confidence": "high",
+      "reason": "Slot/gambling app (777 keyword)"
+    },
+    "com.vipcsea.nanodrama": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Drama streaming app"
+    },
+    "com.google.android.apps.kids.familylinkhelper": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Google parental control"
+    },
+    "me.zepeto.main": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "ZEPETO avatar social app"
+    },
+    "com.belva.browser": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Third-party browser"
+    },
+    "com.touchtype.swiftkey": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "SwiftKey keyboard"
+    },
+    "com.mobso.photoreducer": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Image compressor"
+    },
+    "com.workday.workdroidapp": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Workday HR/enterprise app"
+    },
+    "com.pop.animals.block": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Block puzzle game"
+    },
+    "com.apkpure.aegon": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "APKPure third-party store (HIGH RISK)"
+    },
+    "ru.startandroid.smsactivate": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "SMS activation/receiver (HIGH RISK)"
+    },
+    "xyz.aethersx2.android": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "PS2 emulator"
+    },
+    "com.shutterstock.consumer": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Stock photo platform"
+    },
+    "com.bibas.realdarbuka": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Music/drum simulator"
+    },
+    "com.google.android.gm": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Gmail email client"
+    },
+    "com.seagames.dominoqq": {
+      "category": "gambling",
+      "confidence": "high",
+      "reason": "Domino QQ gambling game"
+    },
+    "com.JindoBlu.Antistress": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Relaxation game"
+    },
+    "com.pupuk_indonesia.lapordpcs": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "Corporate reporting app"
+    },
+    "com.campmobile.snow": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "SNOW camera app"
+    },
+    "com.aricode.application_indopsiko_hr": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "HR/psychology assessment"
+    },
+    "com.novel.novelah": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Novel reading app"
+    },
+    "com.dominoQQ.desktop.id": {
+      "category": "gambling",
+      "confidence": "high",
+      "reason": "Domino QQ gambling"
+    },
+    "com.toki.android": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Toki food delivery"
+    },
+    "com.hg.paperdeliveryboy": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Delivery simulation game"
+    },
+    "com.higgs.domino": {
+      "category": "gambling",
+      "confidence": "high",
+      "reason": "Higgs Domino gambling"
+    },
+    "id.kirimpulsa": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Pulsa/top-up service"
+    },
+    "com.vibeflow.music": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Music player"
+    },
+    "com.badak178": {
+      "category": "gambling",
+      "confidence": "high",
+      "reason": "Slot/gambling app (178 keyword)"
+    },
+    "app.bpjs.mobilefaskes": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "BPJS healthcare facility app"
+    },
+    "com.valbury.app": {
+      "category": "fintech_lending",
+      "confidence": "medium",
+      "reason": "Valbury investment/securities"
+    },
+    "com.pdfreader.pdfviewer.fastpdfreader.pdf": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "PDF viewer"
+    },
+    "com.fxbl.ssse.vivo": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "Unknown utility/system app"
+    },
+    "zeal.app.manage": {
+      "category": "productivity",
+      "confidence": "medium",
+      "reason": "Task/management app"
+    },
+    "com.bunbunstudio.magicblocktiles": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Tile matching game"
+    },
+    "com.befaster.bfbrowser": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Third-party browser"
+    },
+    "com.aman.milov": {
+      "category": "social_entertainment",
+      "confidence": "low",
+      "reason": "Unknown entertainment app"
+    },
+    "com.cassette.aquapark": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Water park game"
+    },
+    "com.sdpgames.sculptpeople": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Sculpting game"
+    },
+    "com.topgamesinc.evony": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Strategy game"
+    },
+    "com.ene.games.idn": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Game platform"
+    },
+    "io.safepal.wallet": {
+      "category": "fintech_lending",
+      "confidence": "high",
+      "reason": "Crypto wallet (high risk)"
+    },
+    "com.anhlt.identranslator": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Translation tool"
+    },
+    "com.community.short.tv": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Short video app"
+    },
+    "com.photo.android.camera": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Camera app"
+    },
+    "com.documentreader.free.viewer.all": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Document viewer"
+    },
+    "video.downloader.videodownloader": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Video downloader"
+    },
+    "com.richeese.id": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Richeese Factory ordering"
+    },
+    "com.hso.motorku": {
+      "category": "transportation",
+      "confidence": "medium",
+      "reason": "Motorcycle service/finance"
+    },
+    "com.pdfscanner.documentscan.camerascanner": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Document scanner"
+    },
+    "com.jagocoffee.app": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Jago Coffee ordering"
+    },
+    "com.microsoft.windowsintune.companyportal": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Enterprise MDM app"
+    },
+    "com.ecffri.arrows": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Casual game"
+    },
+    "app.assistant.quran": {
+      "category": "religious",
+      "confidence": "high",
+      "reason": "Quran assistant app"
+    },
+    "it.censa.scoreboardsimple": {
+      "category": "social_entertainment",
+      "confidence": "medium",
+      "reason": "Scoreboard/sports app"
+    },
+    "com.pointsculture.fundrama": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Drama streaming"
+    },
+    "com.hizima.zimaemnew": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "Unknown utility app"
+    },
+    "in.playsimple.wordsearch": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Word puzzle game"
+    },
+    "com.clearblast.android": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Puzzle game"
+    },
+    "com.lianhezhuli.laxasfit": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Fitness tracker"
+    },
+    "com.rongrit.mtrans": {
+      "category": "transportation",
+      "confidence": "medium",
+      "reason": "Transport/logistics app"
+    },
+    "com.cosmicray.moneymate": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Finance tracker"
+    },
+    "com.bangsawan.powerbank": {
+      "category": "utility",
+      "confidence": "medium",
+      "reason": "Power bank/utility tool"
+    },
+    "com.whatscan.web.scanner.dual.app.whatsweb": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "WhatsApp web scanner (privacy risk)"
+    },
+    "com.brain.logic.joygame": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Logic puzzle game"
+    },
+    "com.whatsapp": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "WhatsApp messenger"
+    },
+    "com.flex.rupiah.trusta.flexrupiah": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "FlexRupiah lending app"
+    },
+    "com.ss.android.ugc.trill": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "TikTok (Trill)"
+    },
+    "com.facebook.katana": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Facebook app"
+    },
+    "id.dana": {
+      "category": "ewallet",
+      "confidence": "high",
+      "reason": "DANA e-wallet"
+    },
+    "com.shopee.id": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Shopee e-commerce"
+    },
+    "com.google.android.apps.docs": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Google Docs"
+    },
+    "com.instagram.android": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Instagram app"
+    },
+    "com.telkomsel.telkomselcm": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "MyTelkomsel telecom app"
+    },
+    "com.facebook.orca": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Facebook Messenger"
+    },
+    "com.google.android.videos": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Google Play Movies/TV"
+    },
+    "com.lemon.lvoverseas": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "CapCut video editor"
+    },
+    "com.gojek.gopay": {
+      "category": "ewallet",
+      "confidence": "high",
+      "reason": "GoPay e-wallet"
+    },
+    "id.co.bri.brimo": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "BRImo banking app"
+    },
+    "com.spotify.music": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Spotify music streaming"
+    },
+    "id.co.bankbkemobile.digitalbank": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "Bank BKE digital banking"
+    },
+    "com.loan.cash.credit.easy.kilat.cepat.pinjam.uang.dana.rupiah": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Keyword-heavy cash loan app"
+    },
+    "com.shopeepay.id": {
+      "category": "ewallet",
+      "confidence": "high",
+      "reason": "ShopeePay e-wallet"
+    },
+    "io.silvrr.installment": {
+      "category": "installment",
+      "confidence": "high",
+      "reason": "Installment/paylater platform"
+    },
+    "app.bpjs.mobile": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "BPJS Kesehatan app"
+    },
+    "com.gojek.app": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Gojek super-app"
+    },
+    "com.google.android.apps.youtube.music": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "YouTube Music"
+    },
+    "org.telegram.messenger": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Telegram messenger"
+    },
+    "com.whatsapp.w4b": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "WhatsApp Business"
+    },
+    "com.grabtaxi.passenger": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Grab ride-hailing"
+    },
+    "id.bmri.livin": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "Livin' by Mandiri"
+    },
+    "com.bca": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "BCA Mobile banking"
+    },
+    "cn.wps.moffice_eng": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "WPS Office suite"
+    },
+    "com.linkedin.android": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "LinkedIn professional network"
+    },
+    "com.google.android.apps.photos": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Google Photos"
+    },
+    "com.sahabatmikro": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Micro-lending platform"
+    },
+    "com.fintopia.idnEasycash.google": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "EasyCash lending app"
+    },
+    "com.lazada.android": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Lazada e-commerce"
+    },
+    "com.google.android.apps.subscriptions.red": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Google One subscription"
+    },
+    "com.facebook.lite": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Facebook Lite"
+    },
+    "com.bpjstku": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "BPJSTKU employment insurance"
+    },
+    "com.asf.singa": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Singa lending platform"
+    },
+    "com.google.android.safetycore": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Android safety services"
+    },
+    "com.tokopedia.tkpd": {
+      "category": "shopping",
+      "confidence": "high",
+      "reason": "Tokopedia e-commerce"
+    },
+    "com.netflix.mediaclient": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Netflix streaming"
+    },
+    "com.worldance.drama": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Drama streaming app"
+    },
+    "com.coloros.onekeylockscreen": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "OPPO lock screen tool"
+    },
+    "com.sec.android.app.popupcalculator": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung calculator"
+    },
+    "com.mobile.legends": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Mobile Legends game"
+    },
+    "com.stanfordtek.pinjamduit": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "PinjamDuit lending app"
+    },
+    "com.kkii": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "KKII lending platform"
+    },
+    "com.google.android.apps.tachyon": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Google Duo"
+    },
+    "id.bni.wondr": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "BNI Wondr banking"
+    },
+    "com.id.kredi360": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Kredi360 lending app"
+    },
+    "com.finaccel.android": {
+      "category": "fintech_lending",
+      "confidence": "high",
+      "reason": "Kredivo fintech lending"
+    },
+    "com.yinshan.program.banda": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Banda lending platform"
+    },
+    "com.intsig.camscanner": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "CamScanner document app"
+    },
+    "com.google.android.apps.chromecast.app": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Google Home/Chromecast"
+    },
+    "com.indosk.sensid": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "SensiD lending app"
+    },
+    "com.bca.mybca.omni.android": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "myBCA Omni banking"
+    },
+    "app.source.getcontact": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "GetContact caller ID"
+    },
+    "com.sec.android.app.voicenote": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung voice recorder"
+    },
+    "com.kwai.bulldog": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Kwai short video"
+    },
+    "com.block.juggle": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Block puzzle game"
+    },
+    "us.zoom.videomeetings": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Zoom meetings"
+    },
+    "com.taxsee.taxsee": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Taxsee taxi app"
+    },
+    "com.samsung.android.app.notes": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Samsung Notes"
+    },
+    "com.sec.android.app.sbrowser": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung Internet browser"
+    },
+    "com.finplus.android": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "FinPlus lending app"
+    },
+    "com.google.android.apps.adm": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Android Device Manager"
+    },
+    "com.traveloka.android": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Traveloka booking app"
+    },
+    "com.iss.client.cairin": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Cairin lending app"
+    },
+    "com.google.android.apps.magazines": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Google Play Magazines"
+    },
+    "com.mintq.gocash": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "GoCash lending app"
+    },
+    "com.rsupport.rs.activity.rsupport.aas2": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Remote support tool"
+    },
+    "com.instagram.barcelona": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Threads app"
+    },
+    "com.uatas.android": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Uatas lending platform"
+    },
+    "com.adakami.dana.kredit.pinjaman": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Adakami lending app"
+    },
+    "com.agoda.mobile.consumer": {
+      "category": "transportation",
+      "confidence": "high",
+      "reason": "Agoda travel booking"
+    },
+    "id.co.bankfama.android": {
+      "category": "banking",
+      "confidence": "high",
+      "reason": "Bank Fama digital banking"
+    },
+    "com.google.android.apps.podcasts": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "Google Podcasts"
+    },
+    "com.kreditpintar": {
+      "category": "fintech_lending",
+      "confidence": "high",
+      "reason": "Kredit Pintar lending"
+    },
+    "com.samsung.android.voc": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung Members app"
+    },
+    "com.coloros.backuprestore": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "OPPO backup tool"
+    },
+    "com.srin.fakfak": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "Local government/utility app"
+    },
+    "com.srin.garut": {
+      "category": "utility",
+      "confidence": "low",
+      "reason": "Local government/utility app"
+    },
+    "com.twitter.android": {
+      "category": "social_entertainment",
+      "confidence": "high",
+      "reason": "X/Twitter app"
+    },
+    "com.samsung.android.oneconnect": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "SmartThings IoT app"
+    },
+    "com.coloros.note": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "OPPO Notes app"
+    },
+    "com.smartec.ft": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Smartec fintech lending"
+    },
+    "com.qm.adi": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "ADI lending platform"
+    },
+    "premium.gotube.adblock.utube": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "YouTube adblocker"
+    },
+    "com.microsoft.office.outlook": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Microsoft Outlook email"
+    },
+    "com.seekforpinjaman.pinjampasti": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "PinjamPasti lending app"
+    },
+    "com.microsoft.office.officehubrow": {
+      "category": "productivity",
+      "confidence": "high",
+      "reason": "Microsoft Office suite"
+    },
+    "com.kredito.fintek": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "Kredito lending app"
+    },
+    "com.cmcm.uangme": {
+      "category": "cash_loan",
+      "confidence": "high",
+      "reason": "UangMe lending app"
+    },
+    "com.sec.android.app.shealth": {
+      "category": "utility",
+      "confidence": "high",
+      "reason": "Samsung Health"
+    }
+  },
+  "summary": {
+    "good_only_summary": "偏好正规银行、零售会员、生产力工具及轻度娱乐，体现稳定消费与财务规划习惯。",
+    "bad_apps_summary": "充斥第三方浏览器、清理工具、模拟器、赌博及伪装定位应用，存在多头借贷与欺诈风险。",
+    "key_insights": "好客户应用生态偏向正规金融与实用工具，反映信用意识强；坏客户高频使用第三方商店、FakeGPS、短信接码及赌博应用，是典型的多头借贷、设备伪装与高风险行为特征，需重点拦截。"
+  }
+}

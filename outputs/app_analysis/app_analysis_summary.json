@@ -1,0 +1,737 @@
+{
+  "total_samples": 2914,
+  "good_customers": 626,
+  "bad_customers": 1646,
+  "good_app_records": 33732,
+  "bad_app_records": 83959,
+  "unique_apps": {
+    "total": 11851,
+    "good_only": 2147,
+    "bad_only": 6892,
+    "common": 2812
+  },
+  "top_high_risk_apps": [
+    {
+      "app": "com.olenwuckert.judehyatt.martyschaden",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.kci.access",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "idm.internet.download.manager",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "mam.reader.ipusnas",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.xiaomi.mi_connect_service",
+      "good_count": 0,
+      "bad_count": 13,
+      "total_count": 13,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0155,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.lpdpp.sikasep",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.lemurbrowser.exts",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.defianttech.diskdigger",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.yondroid.kalenderjawa",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.cooking.world.chef.craze.restaurant.fever.free",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.galasoft2013.shipinfo",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "id.bions.bnis.android",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.qidafcl.sl054",
+      "good_count": 0,
+      "bad_count": 8,
+      "total_count": 8,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0095,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.ilyabogdanovich.geotracker",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.samsung.android.spdclient",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.best.uninstall.apps.uninstaller",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.higame.par.bubble.tea",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.puzzlegame.match.jewels.adventure",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.dmn.kvisionvoucher",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.vectorunit.purple.googleplay",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "id.co.hokben.revamp",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "zombie.survival.craft.z",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.hundred.qibla.finder",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.dreame.reader",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.BallGames.Woodturning",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "ir.ilmili.telegraph",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.drama.happy.look",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "co.populix",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "net.gigne.tafsirmimpi",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.hopefactory2021.fakegpslocation",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "stickerwhatsapp.com.stickers",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.iquotes.app.anzhuo",
+      "good_count": 0,
+      "bad_count": 5,
+      "total_count": 5,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.006,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.transfer.app.help",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.grill.sorting.food.match.puzzle",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.Hadiz.Pillowchase",
+      "good_count": 0,
+      "bad_count": 9,
+      "total_count": 9,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0107,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.shortbox.tv",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.id5dan777.ntdan777cm2",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.vipcsea.nanodrama",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.google.android.apps.kids.familylinkhelper",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "me.zepeto.main",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.belva.browser",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.touchtype.swiftkey",
+      "good_count": 0,
+      "bad_count": 7,
+      "total_count": 7,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0083,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.mobso.photoreducer",
+      "good_count": 0,
+      "bad_count": 4,
+      "total_count": 4,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0048,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.workday.workdroidapp",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.pop.animals.block",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.apkpure.aegon",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "ru.startandroid.smsactivate",
+      "good_count": 0,
+      "bad_count": 8,
+      "total_count": 8,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0095,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "xyz.aethersx2.android",
+      "good_count": 0,
+      "bad_count": 6,
+      "total_count": 6,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0071,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.shutterstock.consumer",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    },
+    {
+      "app": "com.bibas.realdarbuka",
+      "good_count": 0,
+      "bad_count": 3,
+      "total_count": 3,
+      "good_rate_pct": 0.0,
+      "bad_rate_pct": 0.0036,
+      "risk_ratio": 999.99
+    }
+  ],
+  "top_good_only_apps": [
+    {
+      "app": "id.co.hypermart.hicard",
+      "good_count": 5,
+      "bad_count": 0,
+      "total_count": 5,
+      "good_rate_pct": 0.0148,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.plusphone.android",
+      "good_count": 4,
+      "bad_count": 0,
+      "total_count": 4,
+      "good_rate_pct": 0.0119,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "id.motioncredit.app",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.netflix.NGP.FootballManagerMobile",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "co.id.mtf.one",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.programato.binarweb",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.games.bus.arrival",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.electroniccity.ecm",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.armada.ksafleetdriverapp",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.weberdo.apps.serviceinfo",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "net.fileminer.android",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.finance.money.manageexpense",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.mdiwebma.screenshot",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.finnet.finpaymoney",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "id.co.acehardware.acerewards",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.sdmc.iot.android",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "id.tirtabenteng.siganteng",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.jb.theme.gokeyboard",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.hotplay.petexplosion",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.snowcorp.soda.android",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.gsm.customer",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "id.co.bri.biz.app.token",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.mirror.hsn",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.hg.cupcakebaking.cakemaker.bakinggames.icecreamcake",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.skydot.docxreader.docx.docxviewer.document.doc.office.viewer.reader.word",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.puzzle.fun.free.blockpuzzle",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.billiards.city.pool.nation.club",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.bach.ball.charge",
+      "good_count": 3,
+      "bad_count": 0,
+      "total_count": 3,
+      "good_rate_pct": 0.0089,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "com.fdtradev.wish",
+      "good_count": 2,
+      "bad_count": 0,
+      "total_count": 2,
+      "good_rate_pct": 0.0059,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    },
+    {
+      "app": "my.trevo.trevoapp",
+      "good_count": 2,
+      "bad_count": 0,
+      "total_count": 2,
+      "good_rate_pct": 0.0059,
+      "bad_rate_pct": 0.0,
+      "risk_ratio": 0.0
+    }
+  ]
+}

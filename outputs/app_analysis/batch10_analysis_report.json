@@ -1,0 +1,107 @@
+{
+  "batch_info": {
+    "batches_completed": 10,
+    "apps_classified": 2000,
+    "analysis_timestamp": "2026-04-26 16:35:48"
+  },
+  "category_distribution": {
+    "utility": 605,
+    "social_entertainment": 586,
+    "other": 280,
+    "productivity": 164,
+    "gambling": 74,
+    "religious": 71,
+    "banking": 53,
+    "shopping": 49,
+    "cash_loan": 33,
+    "fintech_lending": 25,
+    "ewallet": 24,
+    "transportation": 22,
+    "food_delivery": 6,
+    "app_store": 4,
+    "clone_app": 3,
+    "installment": 1
+  },
+  "confidence_distribution": {
+    "high": 1058,
+    "medium": 670,
+    "low": 272
+  },
+  "high_risk_analysis": {
+    "total_high_risk": 139,
+    "percentage": 6.950000000000001,
+    "category_breakdown": {
+      "gambling": 74,
+      "cash_loan": 33,
+      "fintech_lending": 25,
+      "app_store": 4,
+      "clone_app": 3
+    },
+    "sample_apps": [
+      {
+        "app": "id.motioncredit.app",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "金融科技信贷平台"
+      },
+      {
+        "app": "com.dana.kredit.navigator",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "DANA信贷导航"
+      },
+      {
+        "app": "id.capitalnet.finance",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "网络金融借贷"
+      },
+      {
+        "app": "id.co.homecredit.tippers",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "Home Credit信贷"
+      },
+      {
+        "app": "com.btpns.individualfinancing",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "BTPN个人信贷"
+      },
+      {
+        "app": "com.pasukanlangit.cashplus",
+        "category": "cash_loan",
+        "confidence": "high",
+        "reason": "现金贷应用"
+      },
+      {
+        "app": "com.kredit.isaya",
+        "category": "cash_loan",
+        "confidence": "high",
+        "reason": "现金贷应用"
+      },
+      {
+        "app": "com.kredete.app",
+        "category": "cash_loan",
+        "confidence": "high",
+        "reason": "现金贷应用"
+      },
+      {
+        "app": "com.alami_funder",
+        "category": "fintech_lending",
+        "confidence": "high",
+        "reason": "金融科技借贷"
+      },
+      {
+        "app": "lucky.slotplus.hypertap",
+        "category": "gambling",
+        "confidence": "high",
+        "reason": "老虎机赌博"
+      }
+    ]
+  },
+  "quality_check": {
+    "valid_categories": true,
+    "unknown_categories": []
+  }
+}

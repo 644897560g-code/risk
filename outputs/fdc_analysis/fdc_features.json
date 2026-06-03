@@ -1,0 +1,98 @@
+[
+  {
+    "name": "count_pinjaman_total",
+    "type": "count",
+    "source": "pinjaman",
+    "formula": "len(pinjaman)",
+    "description": "总贷款笔数",
+    "business_value": "贷款次数越多，风险可能越高"
+  },
+  {
+    "name": "count_pinjaman_platforms",
+    "type": "count_unique",
+    "source": "pinjaman",
+    "formula": "len(unique(platform_name))",
+    "description": "贷款平台数量",
+    "business_value": "多平台借贷风险更高"
+  },
+  {
+    "name": "ratio_pinjaman_overdue",
+    "type": "ratio",
+    "source": "pinjaman",
+    "formula": "count(overdue) / count(pinjaman)",
+    "description": "逾期比例",
+    "business_value": "历史逾期比例高的用户风险更高"
+  },
+  {
+    "name": "amt_pinjaman_avg",
+    "type": "avg",
+    "source": "pinjaman",
+    "formula": "avg(loan_amount)",
+    "description": "平均贷款金额",
+    "business_value": "贷款金额大的用户需要关注"
+  },
+  {
+    "name": "days_since_last_loan",
+    "type": "days_diff",
+    "source": "pinjaman",
+    "formula": "max(loan_date)到申请日的天数",
+    "description": "距最近贷款的天数",
+    "business_value": "最近有贷款的用户可能更急需资金"
+  },
+  {
+    "name": "count_inquiry_total",
+    "type": "count",
+    "source": "history_inquiry",
+    "formula": "len(history_inquiry)",
+    "description": "总查询次数",
+    "business_value": "频繁查询可能预示资金紧张"
+  },
+  {
+    "name": "count_inquiry_3d",
+    "type": "count_time_window",
+    "source": "history_inquiry",
+    "formula": "count(inquiry where date >= now - 3 days)",
+    "description": "近3天查询次数",
+    "business_value": "短期内密集查询风险更高"
+  },
+  {
+    "name": "count_inquiry_7d",
+    "type": "count_time_window",
+    "source": "history_inquiry",
+    "formula": "count(inquiry where date >= now - 7 days)",
+    "description": "近7天查询次数",
+    "business_value": "近一周查询活跃度"
+  },
+  {
+    "name": "count_inquiry_institutions_7d",
+    "type": "count_unique",
+    "source": "history_inquiry",
+    "formula": "len(unique(institution where date >= now - 7 days))",
+    "description": "近7天查询机构数",
+    "business_value": "多机构查询风险更高"
+  },
+  {
+    "name": "ratio_inquiry_fintech",
+    "type": "ratio",
+    "source": "history_inquiry",
+    "formula": "count(fintech_institutions) / count(all_institutions)",
+    "description": "金融科技公司查询占比",
+    "business_value": "Fintech查询占比高可能风险更高"
+  },
+  {
+    "name": "count_platform_active",
+    "type": "count",
+    "source": "platform_aktif",
+    "formula": "len(platform_aktif)",
+    "description": "活跃平台数量",
+    "business_value": "活跃平台多，可能有多头借贷"
+  },
+  {
+    "name": "amt_platform_active_total",
+    "type": "sum",
+    "source": "platform_aktif",
+    "formula": "sum(active_loan_amount)",
+    "description": "在贷总金额",
+    "business_value": "在贷金额大的用户负债高"
+  }
+]
