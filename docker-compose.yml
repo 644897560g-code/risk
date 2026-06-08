@@ -28,6 +28,8 @@ services:
       - API_KEY=${API_KEY:-}
       - DEBUG=${DEBUG:-false}
       - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-qwen/qwen3.6-plus}
 
   frontend:
     build:

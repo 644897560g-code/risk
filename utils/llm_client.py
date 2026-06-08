@@ -39,7 +39,10 @@ class LLMClient:
         self.retry_delay = 2
 
         if not self.api_key:
-            logger.warning("OPENROUTER_API_KEY 未配置，请检查 .env 文件")
+            raise ValueError(
+                "OPENROUTER_API_KEY 未配置。请在后端进程环境变量或 .env 中设置；"
+                "如果使用 Docker Compose，请确保 docker-compose.yml 将 OPENROUTER_API_KEY 传给 backend。"
+            )
 
         self.client = OpenAI(
             api_key=self.api_key,

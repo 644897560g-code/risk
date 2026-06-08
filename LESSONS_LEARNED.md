@@ -1419,3 +1419,48 @@ for f in [state_file, registry_file]:
 - 文档: `LESSONS_LEARNED.md`
 - 代码: `backend/routers/tasks.py`
 - 代码: `agents/feature_orchestrator.py`
+
+---
+
+## 2026-06-08: Docker 后端必须显式传递 OpenRouter 凭证
+
+### 问题描述
+
+前端页面创建“模板生成”任务后，后端日志报错：
+
+```text
+❌ 模板生成异常: Missing credentials. Please pass an `api_key`, `workload_identity`, `admin_api_key`, or set the `OPENAI_API_KEY` or `OPENAI_ADMIN_KEY` environment variable.
+```
+
+代码实际使用 `utils/llm_client.py` 通过 OpenRouter 调用 `qwen/qwen3.6-plus`，需要的是 `OPENROUTER_API_KEY`，不是 `OPENAI_API_KEY`。本地 `.env` 中存在 key，但 Docker Compose 的 backend service 没有把 `OPENROUTER_API_KEY` 注入容器，导致容器内 OpenAI SDK 初始化时拿不到凭证。
+
+### 解决方案
+
+1. 在 `docker-compose.yml` 和 `docker-compose.prod.yml` 的 backend `environment` 中显式传递：
+
+```yaml
+- OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+- LLM_MODEL=${LLM_MODEL:-qwen/qwen3.6-plus}
+```
+
+2. 将 `.env.example` 改为 Docker Compose 兼容的 `KEY=value` 格式，不使用 `export KEY=value`。
+
+3. 在 `utils/llm_client.py` 中提前检查 `OPENROUTER_API_KEY`，缺失时抛出项目语义明确的错误，而不是让 OpenAI SDK 抛出误导性的 `OPENAI_API_KEY` 错误。
+
+### 验证结果
+
+- 确认仓库根目录 `.env` 可被 `python-dotenv` 读取到 `OPENROUTER_API_KEY`。
+- 确认 Docker Compose backend 环境变量列表包含 `OPENROUTER_API_KEY` 和 `LLM_MODEL`。
+- 缺 key 时 `LLMClient` 会直接提示配置 `OPENROUTER_API_KEY`，定位更清晰。
+
+### 设计原则
+
+容器环境不会因为 `.env` 存在就自动把所有变量注入 service。Compose 的 `.env` 默认主要用于变量替换；运行时需要的 LLM 凭证必须在 backend service 的 `environment` 或 `env_file` 中显式传递。
+
+### 影响范围
+
+- 修改文件: `docker-compose.yml`
+- 修改文件: `docker-compose.prod.yml`
+- 修改文件: `.env.example`
+- 修改文件: `utils/llm_client.py`
+- 相关文档: `LESSONS_LEARNED.md`
