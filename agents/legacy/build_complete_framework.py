@@ -12,7 +12,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.llm_client import LLMClient
-from feature_design_deep_prompt_helpers import format_age_risk_dynamic
+from agents.legacy.feature_design_deep_prompt_helpers import format_age_risk_dynamic
 
 
 def analyze_fdc_patterns(fdc_variables: list) -> str:

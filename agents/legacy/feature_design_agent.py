@@ -563,7 +563,7 @@ class FeatureDesignAgent:
 
         # 调用stepwise框架设计脚本
         import subprocess
-        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'stepwise_framework_design.py')
+        script_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'stepwise_framework_design.py')
         result = subprocess.run(['python', script_path], capture_output=True, text=True, timeout=600)
 
         if result.returncode != 0:

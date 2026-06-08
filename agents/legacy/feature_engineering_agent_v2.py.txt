@@ -1,9 +1,9 @@
-#DOCSTRING
+"""
 Feature Engineering Agent - Generate feature calculation code dynamically
 
 Based on feature design document (JSON), dynamically generates Python calculation code.
 Implements anti-time-travel mechanism.
-#DOCSTRING
+"""
 
 import json
 import os

@@ -36,6 +36,11 @@
 - `agents/feature_orchestrator.py` - 主协调Agent（v2.0重构）
 - `agents/stepwise_framework_design.py` - 三阶段设计框架（保留复用）
 
+**代码整理说明（2026-06-08）**：
+- 历史一次性数据处理/调试脚本已归档到 `scripts/one_off/`
+- 旧版分离式Agent实现已归档到 `agents/legacy/`
+- 在线/离线APP分类模块仍保留在 `data/`，详见 `data/APP_CLASSIFICATION_README.md`
+
 ---
 
 ## 第一阶段：基础设施与数据准备（Week 1）
@@ -170,9 +175,9 @@
 - [x] 包含15个类别定义、优先级规则、高风险类别统计
 
 **交付物**:
-- `agents/data_analysis_agent.py`
+- `agents/legacy/data_analysis_agent.py`（2026-06-08已归档，历史数据分析Agent）
 - `outputs/knowledge_base/knowledge_base.json`
-- `batch_classify_all_apps.py` (新增)
+- `scripts/one_off/batch_classify_all_apps.py` (2026-06-08已归档，历史全量APP分类脚本)
 - `outputs/app_analysis/good_customer_apps_complete.csv` (新增)
 - `outputs/app_analysis/bad_customer_apps_complete.csv` (新增)
 - `outputs/app_analysis/common_apps_complete.csv` (新增)
@@ -249,7 +254,7 @@
 - [x] 每个特征：名称、业务解释、设计理由
 
 **交付物**:
-- `agents/feature_design_agent.py` - 特征设计Agent
+- `agents/legacy/feature_design_agent.py` - 旧版特征设计Agent（2026-06-08已归档）
 - `outputs/feature_design/feature_design_doc.json` - 20个特征设计
 - `outputs/feature_design/FEATURE_DESIGN_SUMMARY.md` - 设计总结
 
@@ -457,4 +462,3 @@
 4. **模型**: 统一使用qwen3.6-plus
 5. **异步任务**: 所有Agent任务通过Celery执行
 6. **实时更新**: 前端需要实时显示任务进度
-

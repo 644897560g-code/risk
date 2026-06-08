@@ -2,14 +2,19 @@
 
 ## 项目目标
 
-开发一个面向**印尼市场短期现金贷业务**的风险特征挖掘Agent系统，包含六个核心Agent：
+开发一个面向**印尼市场短期现金贷业务**的风险特征挖掘Agent系统。
 
-1. **数据分析Agent** - 分析客户申请信息（base信息、applist、FDC数据）和贷后好坏表现，形成业务专有领域知识
-2. **特征设计Agent** - 基于数据分析结果、印尼现金贷常识和FDC特征变量清单，设计新增特征指标
-3. **特征工程Agent** - 根据特征设计结果开发特征计算代码
-4. **特征工程审核Agent** - 审核特征代码语法合法性和逻辑正确性
-5. **特征评估Agent** - 计算IV、PSI、覆盖率，筛选优质特征，输出HTML报告
-6. **特征部署Agent** - 将保留的特征代码打包供风控团队部署
+当前主流程已经从早期六Agent串行架构演进为：
+
+```
+FeatureOrchestrator
+  → FeatureDevelopmentAgent(设计+工程+self-review)
+  → FeatureEvaluator
+  → Feedback Aggregation
+  → FeatureDeploymentAgent
+```
+
+早期的数据分析、特征设计、特征工程、审核等分离式Agent仍保留在 `agents/legacy/`，仅用于历史复现和参考。
 
 ## 技术栈
 
@@ -22,24 +27,29 @@
 ## 项目结构
 
 ```
-risk-agent-cc-indo/
-├── agents/                     # Agent核心代码
-│   ├── base_agent.py          # Agent基类
-│   ├── data_analysis_agent.py # 数据分析Agent
-│   ├── feature_design_agent.py # 特征设计Agent
-│   ├── feature_engineering_agent.py # 特征工程Agent
-│   ├── feature_review_agent.py # 特征审核Agent
-│   └── feature_evaluation_agent.py # 特征评估Agent
-├── data/                       # 数据处理
-│   └── data_loader.py         # 数据加载器
-├── utils/                      # 工具类
-│   └── llm_client.py          # LLM客户端
-├── configs/                    # 配置文件
-│   └── model_config.yaml      # LLM配置
-├── outputs/                    # 输出目录
-├── tests/                      # 测试
-├── requirements.txt            # 依赖
-└── main.py                     # 主入口
+riskforge-ai/
+├── backend/                         # FastAPI + Celery 管理后台
+├── agents/
+│   ├── feature_orchestrator.py      # 当前主协调Agent
+│   ├── feature_development_agent.py # 当前特征开发Agent
+│   ├── feature_mass_producer.py     # 确定性批量特征生产
+│   ├── feature_evaluation_agent.py  # IV/PSI/覆盖率评估
+│   ├── feature_deployment_agent.py  # 部署包生成器
+│   ├── template_generation_agent.py # 模板生成
+│   ├── stepwise_framework_design.py # 保留复用的三阶段设计框架
+│   └── legacy/                      # 旧版分离式Agent和历史实验
+├── data/
+│   ├── data_loader.py               # 数据加载器
+│   ├── rule_engine_classifier.py    # 在线APP规则分类器
+│   ├── batch_classify_new_apps.py   # 夜间未知APP批量分类
+│   └── APP_CLASSIFICATION_README.md # APP分类模块边界说明
+├── scripts/
+│   ├── run_batch_classification.sh  # APP分类定时任务
+│   └── one_off/                     # 一次性数据处理/debug/历史生成脚本
+├── outputs/                         # 运行产物、评估报告、部署包快照
+├── tests/                           # 测试
+├── utils/                           # 工具类
+└── DEV_PLAN.md                      # 当前开发计划和断点续做文档
 ```
 
 ## 快速开始
@@ -53,8 +63,10 @@ pip install -r requirements.txt
 ### 运行系统
 
 ```bash
-python main.py
+python -m backend.app.main
 ```
+
+批量特征生产入口以 `agents/feature_orchestrator.py` 和 Web/Celery 任务为准；根目录 `main.py` 是早期框架入口，不再代表当前完整主流程。
 
 ## 关键业务规则
 

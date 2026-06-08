@@ -94,7 +94,7 @@
 | 步骤 | 模块 | 输入 | 输出 | LLM调用 |
 |------|------|------|------|---------|
 | 1.创建任务 | 用户/后端 | 任务参数(名称,数据路径,模式) | task DB记录 | 否 |
-| 2.数据分析 | data_analysis_agent | 样本数据+标签 | 业务知识结构 | 是 |
+| 2.数据/知识准备 | 离线数据产物/历史`agents/legacy/data_analysis_agent.py` | 样本数据+标签 | 业务知识结构 | 可选/历史 |
 | 3.特征开发 | feature_development_agent | 业务知识+历史反馈 | 特征计算代码 | 部分(通道2/自审) |
 | 4.特征评估 | feature_evaluation_agent | 特征计算器+样本 | IV/PSI报告+反馈 | 否(纯计算) |
 | 5.打包部署 | feature_deployment_agent | 通过的特征代码 | 部署包(v9.tar.gz) | 否 |
@@ -263,11 +263,16 @@ risk-agent-cc-indo/
 │   ├── risk_rules/                      APP分类规则库
 │   └── knowledge_base/                 知识库文件
 │
-├── data/                                数据文件
+├── data/                                数据文件 + APP分类基础设施
 │   ├── all_samples/                     2916个订单JSON样本
 │   ├── feature_mining.db                SQLite主数据库
 │   ├── data_loader.py                   数据加载工具
-│   └── rule_engine_classifier.py        APP规则引擎分类器
+│   ├── rule_engine_classifier.py        APP规则引擎分类器
+│   ├── batch_classify_new_apps.py       夜间未知APP批量分类
+│   └── APP_CLASSIFICATION_README.md     APP分类模块边界说明
+│
+├── agents/legacy/                       旧版分离式Agent和历史实验(只作参考)
+├── scripts/one_off/                     一次性数据处理/debug/历史生成脚本
 │
 ├── utils/llm_client.py                  LLM调用封装(OpenRouter + qwen3.6-plus)
 ├── configs/                             模型配置

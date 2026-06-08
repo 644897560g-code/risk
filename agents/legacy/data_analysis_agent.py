@@ -21,7 +21,7 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from agents.base_agent import BaseAgent
+from agents.legacy.base_agent import BaseAgent
 from data.data_loader import DataLoader, ShortLinkFetcher
 from utils.json_utils import custom_json_dumps
 

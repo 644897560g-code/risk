@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## ⚠️ 重要：开发规范
 
@@ -9,16 +9,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 📋 **开发计划**: 查看 `DEV_PLAN.md` 了解整体开发进度和当前任务
 - 🔄 **状态更新**: 每完成一个模块，必须立即更新 `DEV_PLAN.md` 中对应的任务状态（将 `[ ]` 改为 `[x]`，状态改为 `✅ 已完成`）
 - 📝 **记录交付物**: 完成后在 `DEV_PLAN.md` 中记录实际交付的文件路径
-- 🚀 **断点续做**: 用户重启对话后，Claude Code会读取 `DEV_PLAN.md` 了解下一步要做什么
+- 🚀 **断点续做**: 用户重启对话后，Codex会读取 `DEV_PLAN.md` 了解下一步要做什么
 - ⚠️ **避免踩坑**: 阅读 `LESSONS_LEARNED.md` 了解已踩过的坑和关键设计原则
 - 📖 **主Agent流程指南**: `AGENT_ORCHESTRATOR_LESSONS.md` - 主Agent专用知识库（重启后必读！）
 - 📝 **知识积累**: **遇到重要问题时，必须立即更新 `LESSONS_LEARNED.md`**（详见下方"知识更新流程"）
 
 ## 📖 必读文档（重启后必读）
 
-每次重启Claude Code后，请按顺序阅读以下4个文档快速恢复上下文：
+每次重启Codex后，请按顺序阅读以下4个文档快速恢复上下文：
 
-1. **CLAUDE.md** - 项目整体说明和架构设计（本文档）
+1. **AGENTS.md** - 项目整体说明和架构设计（本文档）
 2. **DEV_PLAN.md** - 当前开发进度和下一步任务
 3. **AGENT_ORCHESTRATOR_LESSONS.md** - 🤖 主Agent专用流程指南（新！）
 4. **LESSONS_LEARNED.md** - ⚠️ 已踩过的坑和关键教训

@@ -8,6 +8,39 @@
 
 ## 一、流程依赖关系图
 
+### 当前v2/v3主流程（2026-06-08归档后）
+
+```
+数据准备/知识缓存（离线或历史产物）
+  ↓
+┌─ FeatureOrchestrator ─────────────────────────────┐
+│  入口: agents/feature_orchestrator.py              │
+│  状态: outputs/feature_code/orchestrator_state.json │
+└────────────┬──────────────────────────────────────┘
+             ▼
+┌─ FeatureDevelopmentAgent ─────────────────────────┐
+│  合并: 特征设计 + 特征工程 + self-review            │
+│  依赖: SkillRegistry + 通道1模板 + 通道2推理         │
+└────────────┬──────────────────────────────────────┘
+             ▼
+┌─ FeatureMassProducer / FeatureEvaluator ──────────┐
+│  产出: features_calculator_v2.py + IV/PSI报告       │
+└────────────┬──────────────────────────────────────┘
+             ▼
+┌─ Feedback Aggregation + FeatureDeploymentAgent ───┐
+│  反馈: iv_psi_feedback_rN.json                     │
+│  部署: outputs/deployment/v*/                       │
+└───────────────────────────────────────────────────┘
+```
+
+目录边界：
+- 当前主链路在 `agents/feature_orchestrator.py`、`agents/feature_development_agent.py`、`agents/feature_mass_producer.py`、`agents/feature_evaluation_agent.py`、`agents/feature_deployment_agent.py`
+- 旧版分离式Agent已归档到 `agents/legacy/`
+- 一次性数据处理/debug脚本已归档到 `scripts/one_off/`
+- APP分类基础设施仍保留在 `data/`，详见 `data/APP_CLASSIFICATION_README.md`
+
+### 历史v1流程（仅供理解旧文档和旧代码）
+
 ```
 数据准备（离线，不在此流程）
   ↓
@@ -106,9 +139,10 @@
 
 ---
 
-### 2.3 审核不通过的循环重试机制
+### 2.3 审核不通过的循环重试机制（历史v1）
 
 > **来源**: `REVIEW_FEEDBACK_LOOP.md`
+> 当前v2/v3流程已移除独立 `FeatureReviewAgent`，改由 `FeatureDevelopmentAgent` self-review、`agents/code_ast_verifier.py` 和post_hook校验承接。
 
 #### 重试流程
 ```

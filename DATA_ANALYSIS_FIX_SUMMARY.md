@@ -1,5 +1,7 @@
 # 数据分析Agent关键修复说明
 
+> 归档说明（2026-06-08）：本文档记录的是历史数据分析Agent修复过程。相关旧代码已从 `agents/data_analysis_agent.py` 归档到 `agents/legacy/data_analysis_agent.py`，当前主流程请以 `agents/feature_orchestrator.py` 和 `agents/feature_development_agent.py` 为准。
+
 ## 问题背景
 
 **用户发现问题**: "请你检查下送给llm做分析总结的数据是否统计分析后的结果，不能送原始json数据给到llm做分析，如果这里有问题请修改"

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     """主函数"""
-    from agents.data_analysis_agent import DataAnalysisAgent
+    from agents.legacy.data_analysis_agent import DataAnalysisAgent
     from data.data_loader import DataLoader
 
     logger.info("="*60)

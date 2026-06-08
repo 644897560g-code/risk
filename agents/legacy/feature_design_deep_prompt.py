@@ -12,7 +12,7 @@ from typing import Dict, List, Any
 
 # Add current directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from feature_design_deep_prompt_helpers import format_age_risk_dynamic
+from agents.legacy.feature_design_deep_prompt_helpers import format_age_risk_dynamic
 
 
 def build_deep_business_prompt(knowledge_base: Dict, fdc_variables: List[str]) -> str:

@@ -386,9 +386,10 @@ class TaskResponse(BaseModel):
 # tasks/agent_tasks.py
 
 from celery import Celery
-from agents.data_analysis_agent import DataAnalysisAgent
-from agents.feature_design_agent import FeatureDesignAgent
-# ... 其他Agent
+# 历史示例：旧版分离式Agent已归档到 agents/legacy/
+from agents.legacy.data_analysis_agent import DataAnalysisAgent
+from agents.legacy.feature_design_agent import FeatureDesignAgent
+# 当前主流程请优先使用 agents.feature_orchestrator.FeatureOrchestrator
 
 celery_app = Celery('risk_agent', broker='redis://localhost:6379/0')
 

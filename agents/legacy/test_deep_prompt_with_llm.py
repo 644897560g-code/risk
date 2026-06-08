@@ -2,7 +2,7 @@ import sys
 import os
 import json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from agents.feature_design_deep_prompt import build_deep_business_prompt
+from agents.legacy.feature_design_deep_prompt import build_deep_business_prompt
 from utils.llm_client import LLMClient
 
 

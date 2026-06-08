@@ -1464,3 +1464,43 @@ for f in [state_file, registry_file]:
 - 修改文件: `.env.example`
 - 修改文件: `utils/llm_client.py`
 - 相关文档: `LESSONS_LEARNED.md`
+
+---
+
+## 2026-06-08: 一次性脚本和旧版Agent必须归档隔离
+
+### 问题描述
+
+仓库根目录和 `agents/` 中混有大量历史数据处理脚本、debug脚本、旧版分离式Agent和当前主链路代码。继续把这些文件放在同一级目录，会导致后续开发误判运行入口，例如把旧 `feature_review_agent.py` 当作当前审核流程，或把 `batch_classify_all_apps.py` 当作线上APP分类模块。
+
+### 解决方案
+
+1. 将历史一次性数据处理、debug、产物生成脚本归档到 `scripts/one_off/`。
+2. 将旧版分离式Agent和历史实验归档到 `agents/legacy/`。
+3. 保留 `agents/stepwise_framework_design.py` 在原位，因为 `DEV_PLAN.md` 明确标注它仍被保留复用。
+4. 保留 `data/rule_engine_classifier.py`、`data/batch_classify_new_apps.py`、`data/rule_learner*.py` 和 `data/validate_rule_engine.py` 在 `data/`，因为它们属于APP分类基础设施，而不是一次性脚本。
+5. 新增目录说明文档：`scripts/one_off/README.md`、`agents/legacy/README.md`、`data/APP_CLASSIFICATION_README.md`。
+
+### 验证结果
+
+- 当前主链路语法检查通过：`backend`、核心 `agents`、`data`、`utils`。
+- 归档目录语法检查通过：`agents/legacy`、`scripts/one_off`。
+- 旧路径 Python import 检查无命中。
+- `outputs/deployment/v1` 到 `v9` 未参与本次归档，部署快照保持原样。
+
+### 设计原则
+
+清理仓库时先区分“当前主链路源码”、“离线基础设施”、“历史可复现脚本”和“生成产物”。不要因为某个 `.py` 没有被后端 import 就直接删除；APP分类定时任务、部署包生成器模板和 `outputs/feature_code/features_calculator_v2.py` 这类文件可能通过调度器、动态加载或产物路径被使用。
+
+### 影响范围
+
+- 修改目录: `scripts/one_off/`
+- 修改目录: `agents/legacy/`
+- 修改文档: `AGENTS.md`
+- 修改文档: `CLAUDE.md`
+- 修改文档: `DEV_PLAN.md`
+- 修改文档: `README.md`
+- 修改文档: `HANDOVER.md`
+- 修改文档: `AGENT_ORCHESTRATOR_LESSONS.md`
+- 修改文档: `WEB_ARCHITECTURE.md`
+- 新增文档: `data/APP_CLASSIFICATION_README.md`
