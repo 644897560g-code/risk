@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from backend.app.config import get_settings
 from backend.models.task import Task, TaskLog
 from backend.models.feature import FeatureVersion, FeatureMetric
+from backend.services.template_library import PENDING_STATUS, list_templates
 
 
 def create_task(db: Session, name: str, mode: str, config: dict = None,
@@ -177,18 +178,8 @@ def _trigger_template_task(db: Session, normal_task_id: int):
 
 def _run_template_evaluation(db: Session, tmpl_task_id: int):
     """模板任务的实际执行逻辑 — 通道2模板评估"""
-    settings = get_settings()
-
     add_task_log(db, tmpl_task_id, "info", "检查通道2待审批模板...")
-    channel2_path = os.path.join(
-        settings.output_dir, "feature_design", "channel2_pending.json"
-    )
-    if not os.path.exists(channel2_path):
-        add_task_log(db, tmpl_task_id, "info", "暂无待审批通道2模板，跳过")
-        return
-
-    with open(channel2_path, "r", encoding="utf-8") as f:
-        pending = json.load(f)
+    pending = list_templates(db, status=PENDING_STATUS)
 
     if not pending:
         add_task_log(db, tmpl_task_id, "info", "暂无待审批通道2模板，跳过")
@@ -203,22 +194,26 @@ def _run_template_evaluation(db: Session, tmpl_task_id: int):
     passed = 0
 
     for idx, tmpl in enumerate(pending):
-        name = tmpl.get("name", f"模板{idx}")
+        name = tmpl.template_name_cn or tmpl.template_name or f"模板{idx}"
         add_task_log(db, tmpl_task_id, "info",
                      f"评估模板 [{idx+1}/{total}]: {name}")
         try:
             # 提取模板中的特征代码进行 IV/PSI 评估
-            dsl = tmpl.get("dsl", "")
-            python_code = tmpl.get("python_function", "")
+            python_code = tmpl.python_code or tmpl.python_function
             if not python_code:
                 add_task_log(db, tmpl_task_id, "warning", f"{name}: 无Python代码，跳过")
                 continue
 
             result = evaluator.evaluate_single_feature(python_code)
-            tmpl["iv"] = result.get("iv", 0)
-            tmpl["psi"] = result.get("psi", 0)
-            tmpl["coverage"] = result.get("coverage", 0)
-            tmpl["evaluated"] = True
+            tmpl.quality_checks = {
+                **(tmpl.quality_checks or {}),
+                "iv": result.get("iv", 0),
+                "psi": result.get("psi", 0),
+                "coverage": result.get("coverage", 0),
+                "evaluated": True,
+                "evaluated_at": datetime.utcnow().isoformat(),
+                "template_task_id": tmpl_task_id,
+            }
 
             passed += 1
             add_task_log(db, tmpl_task_id, "info",
@@ -228,10 +223,7 @@ def _run_template_evaluation(db: Session, tmpl_task_id: int):
         except Exception as e:
             add_task_log(db, tmpl_task_id, "error", f"{name}: 评估失败 — {e}")
 
-    # 写回 channel2_pending.json（带 IV/PSI 数据）
-    os.makedirs(os.path.dirname(channel2_path), exist_ok=True)
-    with open(channel2_path, "w", encoding="utf-8") as f:
-        json.dump(pending, f, ensure_ascii=False, indent=2)
+    db.commit()
 
     add_task_log(db, tmpl_task_id, "info",
                  f"模板评估完成: {passed}/{total} 个已评估")

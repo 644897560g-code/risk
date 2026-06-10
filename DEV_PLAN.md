@@ -41,6 +41,48 @@
 - 旧版分离式Agent实现已归档到 `agents/legacy/`
 - 在线/离线APP分类模块仍保留在 `data/`，详见 `data/APP_CLASSIFICATION_README.md`
 
+### PostgreSQL 18 测试环境迁移（2026-06-09）
+
+**状态**: ✅ 已完成
+
+- [x] 明确迁移策略：完全去掉 SQLite，不迁移本地 SQLite 历史数据，用户重新注册
+- [x] 新增迁移计划文档：`docs/POSTGRESQL_18_MIGRATION_PLAN.md`
+- [x] 后端数据库连接改为必须从 `DATABASE_URL` 环境变量或 `.env` 读取：`backend/app/config.py`
+- [x] 移除 SQLite 专用初始化逻辑：`backend/app/database.py`
+- [x] 新增 PostgreSQL 依赖和 Alembic 依赖：`backend/requirements.txt`、`requirements.txt`
+- [x] 新增 Alembic 配置和初始 schema migration：`alembic.ini`、`backend/migrations/`
+- [x] 更新本地/生产 Docker 启动方式，后端启动前执行 `alembic upgrade head`
+- [x] 在本机 `pg18` 容器执行 `alembic upgrade head` 验证
+- [x] 验证后端 import、健康检查、用户重新注册链路
+
+**验证结果**:
+- PostgreSQL 版本: `PostgreSQL 18.4`
+- Alembic 当前版本: `20260609_0001`
+- 已创建表: `users`、`tasks`、`task_logs`、`feature_versions`、`feature_metrics`、`chat_sessions`、`chat_messages`、`alembic_version`
+- 临时后端端口 `18000` 健康检查通过
+- 测试用户 `pg_test_user` 注册和登录通过，数据写入 PostgreSQL
+
+### 模板库数据库建模与初始化（2026-06-09）
+
+**状态**: ✅ 已完成
+
+- [x] 新增模板维度表模型：`TemplateDimension`
+- [x] 新增模板生命周期表模型：`Template`
+- [x] 新增模板审批历史模型：`TemplateReviewHistory`
+- [x] 新增被拒模板记忆模型：`TemplateRejectedMemory`
+- [x] 新增第二版 Alembic migration：`20260609_0002_template_library_schema.py`
+- [x] 新增平台初始化入口：`scripts/init_project_data.py`
+- [x] 新增模板库 seed：`scripts/seeds/seed_template_library.py`
+- [x] Docker 后端启动链路增加 `python scripts/init_project_data.py`
+- [x] 在本机 PostgreSQL 18 测试库执行第二版 migration 验证
+- [x] 执行平台初始化，确认 7 个维度和 16 个 active 模板入库
+
+**验证结果**:
+- Alembic 当前版本: `20260609_0002`
+- 新增表: `template_dimensions`、`templates`、`template_review_histories`、`template_rejected_memories`
+- 初始化导入: 7 个模板维度、16 个 `active` 模板
+- 重复执行初始化脚本验证幂等: 第二次执行为 0 新增、7 个维度更新、16 个模板更新
+
 ---
 
 ## 第一阶段：基础设施与数据准备（Week 1）
@@ -442,6 +484,21 @@
 | 性能优化 | ⏳ | 代码分割 + 懒加载 |
 | API认证 | ⏳ | API Key 鉴权 |
 | Docker部署 | ⏳ | docker-compose 全栈 |
+
+### Week 6.5: PostgreSQL 与模板库改造 ✅ 已完成 (2026-06-09)
+
+| 模块 | 状态 | 交付物 |
+|------|------|--------|
+| PostgreSQL 18 迁移 | ✅ | `alembic.ini`, `backend/migrations/versions/20260609_0001_initial_postgresql_schema.py` |
+| 模板库表结构 | ✅ | `backend/models/template.py`, `backend/migrations/versions/20260609_0002_template_library_schema.py`, `backend/migrations/versions/20260609_0003_add_template_python_code.py` |
+| 项目初始化数据 | ✅ | `scripts/init_project_data.py`, `scripts/seeds/seed_template_library.py`；支持 active 模板和历史 channel2 pending 模板幂等导入 |
+| 模板库运行时单写 DB | ✅ | `backend/services/template_library.py`, `backend/routers/templates.py`, `backend/routers/agents.py`, `backend/routers/agent_chat.py`, `backend/services/knowledge_extractor.py`, `backend/services/task_service.py`, `agents/feature_development_agent.py`, `agents/feature_orchestrator.py`, `agents/template_generation_agent.py` |
+
+**说明**:
+- `outputs/feature_templates/channel1_templates.json` 只作为初始化 seed 来源，不再作为运行时模板库。
+- 历史通道2待审批 seed 已归档到 `scripts/seeds/fixtures/channel2_pending.seed.json`，只作为一次性迁移输入。
+- 通道2待审批、审批通过、拒绝记忆、知识抽取入库、AgentChat 触发模板创建，均统一写入 PostgreSQL。
+- 不再维护运行时 `channel2_pending.json` / `promoted_templates.json` 这类模板生命周期双写文件。
 
 ---
 

@@ -4,6 +4,41 @@
 
 ---
 
+## 2026-06-10: Active模板必须声明执行模式
+
+### 问题描述
+
+模板库迁移到 PostgreSQL 后，T016 衍生算术模板已是 `active`，但它历史上在 `feature_mass_producer.py` 里是内联展开的“纯算术衍生特征”，并不需要 `channel1_calculators.py` 中存在 `derived_arithmetic()` 外部函数。若只按 `python_function/python_module` 判断，会误以为代码缺失，甚至补出一个普通函数，改变后续生成器对 T016 的理解。
+
+### 解决方案
+
+1. T016 不补 `derived_arithmetic()`，不加入 `FUNCTION_MAP`，继续由 `agents/feature_mass_producer.py::_compose_T016()` 内联展开。
+2. 在 `scripts/seeds/seed_template_library.py` 中导入 T016 时，将其标记为 `execution_mode=inline`、`requires_external_function=false`，并清空 `python_function/python_module/python_code`。
+3. 在 `backend/services/template_library.py` 中对 inline 模板做特殊处理：前端可看到执行模式，`find_template_code()` 不再去算子文件里硬找源码。
+4. 在 `FeatureDevelopmentAgent.compose_code_deterministic()` 中补充 inline 生成逻辑，避免未来从 DB 读取 T016 时生成空函数调用。
+
+### 验证结果
+
+- `python3 -m py_compile agents/feature_development_agent.py backend/services/template_library.py scripts/seeds/seed_template_library.py outputs/feature_code/channel1_calculators.py` 通过。
+- `find_template_code()` 对 inline T016 返回空字符串，这是预期行为，因为代码由生成器内联展开，不是外部函数源码。
+
+### 设计原则
+
+active 模板不能只靠 `python_function/python_module` 解释运行方式，必须满足以下至少一种路径：
+
+- 普通函数模板：`templates.python_code` 非空，或 `python_module + python_function` 能抽取到函数源码；
+- 内联生成模板：必须显式声明 `execution_mode=inline` 和 `requires_external_function=false`；
+- 前端/接口展示时应区分“代码缺失”和“无需外部函数”。
+
+### 影响范围
+
+- 修改文件: `scripts/seeds/seed_template_library.py`
+- 修改文件: `backend/services/template_library.py`
+- 修改文件: `agents/feature_development_agent.py`
+- 相关模板: `T016 / derived`
+
+---
+
 ## 2026-05-04: 特征设计Agent的Prompt必须包含完整业务数据
 
 ### 问题描述
@@ -1504,3 +1539,229 @@ for f in [state_file, registry_file]:
 - 修改文档: `AGENT_ORCHESTRATOR_LESSONS.md`
 - 修改文档: `WEB_ARCHITECTURE.md`
 - 新增文档: `data/APP_CLASSIFICATION_README.md`
+
+---
+
+## 2026-06-09: PostgreSQL 18 Docker 镜像不要挂载到 /var/lib/postgresql/data
+
+### 问题描述
+
+用户按旧习惯把 PostgreSQL 18 Docker volume 挂载到 `/var/lib/postgresql/data`，容器报错提示 18+ 官方镜像使用兼容 `pg_ctlcluster` 的主版本目录结构，建议把单个 mount 放在 `/var/lib/postgresql`。
+
+### 解决方案
+
+PostgreSQL 18 本机测试环境使用以下挂载方式:
+
+```bash
+docker run -d \
+  --name pg18 \
+  -e POSTGRES_USER=riskforge \
+  -e POSTGRES_PASSWORD=123456 \
+  -e POSTGRES_DB=riskforge_ai \
+  -p 5432:5432 \
+  -v pg18_data:/var/lib/postgresql \
+  postgres:18
+```
+
+### 验证结果
+
+本机 `pg18` 容器已使用 `/var/lib/postgresql` 挂载方式成功运行，PostgreSQL 版本为 18.4。
+
+### 设计原则
+
+数据库 Docker volume 路径不能沿用旧版本经验。PostgreSQL 18+ 镜像为了支持主版本目录和 `pg_upgrade --link`，推荐挂载父目录 `/var/lib/postgresql`。
+
+### 影响范围
+
+- 修改文档: `docs/POSTGRESQL_18_MIGRATION_PLAN.md`
+- 相关环境: 本机 Docker PostgreSQL 18
+- 后续注意: `docker-compose.yml` 中 postgres 服务也必须挂载到 `/var/lib/postgresql`
+
+---
+
+## 2026-06-09: Web后端数据库完全切换到 PostgreSQL
+
+### 问题描述
+
+项目原先使用 SQLite 作为 Web 后端数据库，入口在 `backend/app/config.py` 和 `backend/app/database.py`，并依赖 `data/feature_mining.db`、SQLite PRAGMA、`check_same_thread=False` 以及启动时手写 `ALTER TABLE`。用户明确当前 SQLite 中只有一个用户数据，可以重新创建，因此不需要做 SQLite 历史数据迁移。
+
+### 解决方案
+
+1. 移除代码中的数据库连接串默认值，要求通过 `DATABASE_URL` 环境变量或 `.env` 提供:
+
+```bash
+postgresql+psycopg://riskforge:123456@127.0.0.1:5432/riskforge_ai
+```
+
+2. 移除 `backend/app/database.py` 中所有 SQLite 专用逻辑。
+3. 新增 `psycopg[binary]` 和 `alembic` 依赖。
+4. 新增 Alembic 配置和初始 schema migration。
+5. Docker 后端启动前执行:
+
+```bash
+alembic upgrade head
+```
+
+### 验证结果
+
+- 本机 `pg18` 容器版本: PostgreSQL 18.4。
+- `alembic upgrade head` 成功执行到 `20260609_0001`。
+- PostgreSQL 中创建了 `users`、`tasks`、`task_logs`、`feature_versions`、`feature_metrics`、`chat_sessions`、`chat_messages`、`alembic_version`。
+- 临时后端端口 `18000` 健康检查通过。
+- 测试用户 `pg_test_user` 注册和登录通过，确认写入 PostgreSQL。
+
+### 设计原则
+
+既然决定 PostgreSQL 是唯一运行数据库，就不要保留 SQLite fallback。否则后续模板库、审批历史、项目隔离等新表容易出现“开发连 SQLite、部署连 PostgreSQL”的双库漂移问题。表结构演进统一交给 Alembic，应用启动不再偷偷 `create_all` 或手写 `ALTER TABLE`。
+
+### 影响范围
+
+- 修改文件: `backend/app/config.py`
+- 修改文件: `backend/app/database.py`
+- 修改文件: `backend/requirements.txt`
+- 修改文件: `requirements.txt`
+- 新增文件: `alembic.ini`
+- 新增目录: `backend/migrations/`
+- 修改文件: `docker-compose.yml`
+- 修改文件: `docker-compose.prod.yml`
+- 修改文件: `Dockerfile.backend`
+- 修改文档: `docs/POSTGRESQL_18_MIGRATION_PLAN.md`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-09: 模板库基础数据使用幂等初始化脚本
+
+### 问题描述
+
+`outputs/feature_templates/channel1_templates.json` 中既包含 7 个模板维度，也包含 16 个已生效 channel1 模板。用户询问是否应该像表结构迁移一样单独做项目初始化，在迁移之后填充这些平台基础数据。
+
+### 解决方案
+
+表结构和平台基础数据分层处理:
+
+1. Alembic migration 只负责建表:
+   - `template_dimensions`
+   - `templates`
+   - `template_review_histories`
+   - `template_rejected_memories`
+2. 平台基础数据通过统一初始化入口导入:
+
+```bash
+python scripts/init_project_data.py
+```
+
+3. 模板库 seed 读取 `outputs/feature_templates/channel1_templates.json`，幂等 upsert:
+   - 顶层 `dimensions` -> `template_dimensions`
+   - 顶层 `templates` -> `templates`
+   - 当前 channel1 模板状态统一设为 `active`
+
+### 验证结果
+
+- Alembic 成功升级到 `20260609_0002`。
+- 初始化脚本导入 7 个模板维度和 16 个 active 模板。
+- 重复执行初始化脚本不会重复插入，第二次执行结果为 0 新增、7 个维度更新、16 个模板更新。
+
+### 设计原则
+
+不要把业务初始数据硬编码进 schema migration。migration 管结构，seed 管平台基础数据。seed 必须幂等，生产环境、本地测试环境和 Docker 后端启动链路都可以重复执行同一套初始化脚本。
+
+### 影响范围
+
+- 新增文件: `backend/models/template.py`
+- 修改文件: `backend/models/__init__.py`
+- 新增文件: `backend/migrations/versions/20260609_0002_template_library_schema.py`
+- 新增文件: `scripts/init_project_data.py`
+- 新增目录: `scripts/seeds/`
+- 修改文件: `Dockerfile.backend`
+- 修改文件: `docker-compose.yml`
+- 修改文件: `docker-compose.prod.yml`
+- 修改文档: `docs/POSTGRESQL_18_MIGRATION_PLAN.md`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-09: 模板生命周期禁止 JSON 双写
+
+### 问题描述
+
+模板库迁移到 PostgreSQL 后，运行时仍有多条旧路径会读写 `channel1_templates.json`、`channel2_pending.json` 或 `promoted_templates.json`。如果继续保留这些双写路径，本地、Docker、生产数据库之间很容易出现模板状态不一致，尤其是通道2待审批、审批通过、拒绝记忆和知识抽取自动入库这些生命周期状态。
+
+### 解决方案
+
+将 PostgreSQL 作为模板库唯一事实来源:
+
+1. `backend/services/template_library.py` 提供统一模板查询、待审批 upsert、审批通过、拒绝记忆和计算函数追加能力。
+2. `FeatureDevelopmentAgent`、`FeatureOrchestrator`、`TemplateGenerationAgent`、`AgentChat`、`KnowledgeExtractor`、模板审核 API 和模板评估任务全部改为读写 DB。
+3. `outputs/feature_templates/channel1_templates.json` 只作为 `scripts/init_project_data.py` 的 seed 输入，不再参与运行时读写。
+4. 历史 pending seed 归档到 `scripts/seeds/fixtures/channel2_pending.seed.json`，不放在运行时输出目录。
+5. 不再写回 `channel2_pending.json` 和 `promoted_templates.json`。
+
+### 验证结果
+
+- `python -m py_compile` 覆盖模板库 service、models、routers 和三个 agent 文件，语法检查通过。
+- `git diff --check` 通过。
+- FastAPI app、`FeatureDevelopmentAgent`、`TemplateGenerationAgent` 导入验证通过。
+- 由于本次 Codex 提权受用量限制拦截，`alembic upgrade head` 和初始化脚本需要在本机手动执行。
+
+### 设计原则
+
+模板生命周期状态必须单写 PostgreSQL。JSON 可以作为初始化或历史素材，但不能作为运行时读写路径；否则审批状态、模板函数代码、拒绝原因和知识抽取结果会变成多个事实来源。
+
+### 影响范围
+
+- 修改文件: `backend/services/template_library.py`
+- 修改文件: `backend/routers/templates.py`
+- 修改文件: `backend/routers/agents.py`
+- 修改文件: `backend/routers/agent_chat.py`
+- 修改文件: `backend/services/knowledge_extractor.py`
+- 修改文件: `backend/services/task_service.py`
+- 修改文件: `agents/feature_development_agent.py`
+- 修改文件: `agents/feature_orchestrator.py`
+- 修改文件: `agents/template_generation_agent.py`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-10: 项目初始化必须导入历史 channel2 pending 模板
+
+### 问题描述
+
+用户发现 `channel2-pending` 中的历史数据没有进入 PostgreSQL，`templates` 表里没有非 active 数据。原因是 `scripts/init_project_data.py` 只导入了 `outputs/feature_templates/channel1_templates.json` 中的 active 模板，没有导入旧的历史 pending seed。
+
+### 解决方案
+
+在 `scripts/seeds/seed_template_library.py` 中新增 `seed_pending_templates()`，并接入 `scripts/init_project_data.py`:
+
+```bash
+DATABASE_URL=postgresql+psycopg://riskforge:123456@127.0.0.1:5432/riskforge_ai python scripts/init_project_data.py
+```
+
+该导入逻辑保持幂等:
+
+1. 已经是 active 的模板不会被降级回 pending。
+2. 同 `template_id` 的 pending/rejected 记录会更新。
+3. 缺失的历史 pending 模板会插入 `templates.status='pending'`。
+
+历史 pending seed 后续固定放在 `scripts/seeds/fixtures/channel2_pending.seed.json`，避免 `outputs/feature_design/channel2_pending.json` 被误认为仍是运行时审批队列。
+
+### 验证结果
+
+- `python -m py_compile scripts/init_project_data.py scripts/seeds/seed_template_library.py` 通过。
+- `git diff --check scripts/init_project_data.py scripts/seeds/seed_template_library.py` 通过。
+- 本机 PostgreSQL 初始化输出:
+  - active 模板更新 16 条
+  - pending 模板新增 6 条
+- `templates` 表状态分布确认:
+  - `active`: 16
+  - `pending`: 6
+
+### 设计原则
+
+从 JSON 切到 DB 时，不仅要迁移 active 主数据，也要迁移生命周期中的中间态数据。否则 API 看起来已经 DB 化，但历史 pending 审批队列会丢失。
+
+### 影响范围
+
+- 修改文件: `scripts/init_project_data.py`
+- 修改文件: `scripts/seeds/seed_template_library.py`
+- 修改文档: `DEV_PLAN.md`

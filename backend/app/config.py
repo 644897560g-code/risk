@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """Application settings, loaded from .env or environment variables"""
 
     # --- Database ---
-    database_url: str = "sqlite:///./data/feature_mining.db"
+    database_url: str
 
     # --- Celery / Redis ---
     redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")

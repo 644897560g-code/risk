@@ -1,8 +1,8 @@
 """
-Knowledge extraction service — upload a file → LLM extracts template(s) → push to channel2_pending.json.
+Knowledge extraction service — upload a file → LLM extracts template(s) → store pending templates.
 
 Each file may yield 0..N template records aligned with the channel2 pending template schema.
-Templates are written to channel2_pending.json with source="知识".
+Templates are written to PostgreSQL templates with status="pending" and source="知识".
 """
 import json
 import logging
@@ -12,6 +12,12 @@ from datetime import datetime
 from typing import List, Optional
 
 from backend.app.config import get_settings
+from backend.app.database import SessionLocal
+from backend.services.template_library import (
+    active_dsl_set,
+    format_active_templates_for_prompt,
+    upsert_template_from_payload,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,21 +59,12 @@ _CHANNEL2_EXAMPLE = json.dumps(
 # ---------------------------------------------------------------------------
 
 def _load_channel1_dsls() -> set:
-    """Load channel1 template DSLs as a normalized set for dedup checking."""
-    settings = get_settings()
-    # Try output_dir/feature_templates first, then data/templates
-    primary = os.path.join(settings.output_dir, "feature_templates", "channel1_templates.json")
-    fallback = os.path.join(settings.data_dir, "templates", "channel1_templates.json")
-    path = primary if os.path.exists(primary) else fallback
-    if not os.path.exists(path):
-        return set()
+    """Load active template DSLs as a normalized set for dedup checking."""
+    db = SessionLocal()
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        items = data if isinstance(data, list) else data.get("templates", data.get("items", []))
-        return {_normalize_dsl(item.get("dsl", "")) for item in items if item.get("dsl")}
-    except (json.JSONDecodeError, OSError):
-        return set()
+        return active_dsl_set(db)
+    finally:
+        db.close()
 
 
 def _format_channel1_for_prompt() -> str:
@@ -76,26 +73,11 @@ def _format_channel1_for_prompt() -> str:
     Returns a string listing each template's ID, name, normalized DSL, and description,
     so the LLM can judge whether a new extraction is redundant.
     """
-    settings = get_settings()
-    primary = os.path.join(settings.output_dir, "feature_templates", "channel1_templates.json")
-    fallback = os.path.join(settings.data_dir, "templates", "channel1_templates.json")
-    path = primary if os.path.exists(primary) else fallback
-    if not os.path.exists(path):
-        return "（暂无已生效模板）"
+    db = SessionLocal()
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        items = data if isinstance(data, list) else data.get("templates", data.get("items", []))
-        lines = []
-        for t in items:
-            tid = t.get("template_id", "?")
-            name = t.get("template_name", "")
-            dsl = t.get("dsl", "")
-            desc = t.get("description", "").split("。")[0]  # first sentence only
-            lines.append(f"  - {tid} {name}: DSL={dsl} → {desc}")
-        return "\n".join(lines) if lines else "（暂无已生效模板）"
-    except (json.JSONDecodeError, OSError):
-        return "（暂无已生效模板）"
+        return format_active_templates_for_prompt(db)
+    finally:
+        db.close()
 
 
 def _normalize_dsl(dsl: str) -> str:
@@ -161,7 +143,7 @@ def trigger_extraction(filename: str) -> dict:
     2. Classify file type
     3. Build LLM prompt & call (outputs template-aligned JSON)
     4. Parse & persist extraction result
-    5. Push each returned template to channel2_pending.json with source="知识"
+    5. Store each returned template as pending in PostgreSQL
     """
     settings = get_settings()
     knowledge_dir = os.path.join(settings.data_dir, "user_knowledge")
@@ -193,10 +175,10 @@ def trigger_extraction(filename: str) -> dict:
     # Always persist raw extraction result for debugging
     _write_extraction(filename, extracted)
 
-    # Push each template to channel2_pending.json
+    # Store each template as pending in PostgreSQL
     templates = extracted.get("templates", [])
     if templates:
-        _push_to_channel2_pending(filename, templates)
+        _push_to_template_library(filename, templates)
 
     return extracted
 
@@ -221,40 +203,37 @@ def delete_extraction(filename: str):
 
 
 # ---------------------------------------------------------------------------
-# Push to channel2 pending
+# Push to template library pending
 # ---------------------------------------------------------------------------
 
-def _push_to_channel2_pending(source_filename: str, templates: list):
-    """Write extracted template records into channel2_pending.json with source='知识'."""
-    settings = get_settings()
-    pending_dir = os.path.join(settings.output_dir, "feature_design")
-    os.makedirs(pending_dir, exist_ok=True)
-    pending_path = os.path.join(pending_dir, "channel2_pending.json")
-
-    # Read existing
-    existing = []
-    if os.path.exists(pending_path):
-        try:
-            with open(pending_path, "r", encoding="utf-8") as f:
-                existing = json.load(f)
-        except (json.JSONDecodeError, OSError):
-            existing = []
-
+def _push_to_template_library(source_filename: str, templates: list):
+    """Write extracted template records into PostgreSQL as pending templates."""
     now = datetime.now()
     ts = now.strftime("%Y%m%d%H%M%S")
+    db = SessionLocal()
+    try:
+        for i, tpl in enumerate(templates):
+            tpl["template_id"] = tpl.get("template_id") or f"K_{ts}_{i + 1}"
+            tpl["source"] = "知识"
+            tpl["_promotion_status"] = "pending"
+            tpl["created_at"] = now.isoformat()
+            tpl["_source_file"] = source_filename
+            upsert_template_from_payload(
+                db,
+                tpl,
+                status="pending",
+                source_channel=3,
+                source="知识",
+                commit=False,
+            )
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
-    for i, tpl in enumerate(templates):
-        tpl["template_id"] = tpl.get("template_id") or f"K_{ts}_{i + 1}"
-        tpl["source"] = "知识"
-        tpl["_promotion_status"] = "pending"
-        tpl["created_at"] = now.isoformat()
-        tpl["_source_file"] = source_filename
-        existing.append(tpl)
-
-    with open(pending_path, "w", encoding="utf-8") as f:
-        json.dump(existing, f, ensure_ascii=False, indent=2)
-
-    logger.info("Pushed %d template(s) from '%s' to channel2 pending", len(templates), source_filename)
+    logger.info("Pushed %d template(s) from '%s' to template library pending", len(templates), source_filename)
 
 
 # ---------------------------------------------------------------------------
@@ -324,7 +303,7 @@ def _build_extraction_prompt(filename: str, file_type: str, content: str) -> lis
 {{
   "template_name": "英文snake_case命名，如 recency_days",
   "template_name_cn": "中文名称，如 最近事件距今天数",
-  "dimension": "维度分类: applist | fdc | base | behavior",
+  "dimension": "模板计算维度: volume | structure | change | position | consistency | relation | derived",
   "complexity": "复杂度: L1(简单) | L2(中等) | L3(复杂)",
   "description": "详细描述该模板的计算逻辑和业务含义",
   "dsl": "DSL表达式，描述计算公式，如 apply_time_dt - max(time_field, window)",
@@ -344,7 +323,7 @@ def _build_extraction_prompt(filename: str, file_type: str, content: str) -> lis
 1. **只为确实可以作为风险特征的内容创建模板，且该计算逻辑尚未被已生效模板覆盖**。不要强行提取。
 2. **防穿越原则**：所有时间相关计算必须基于申请时间（apply_time_dt）之前的数据。
 3. 每个模板的 python_code 必须包含完整可运行的函数。
-4. dimension 取值：applist(APP安装信息相关), fdc(FDC征信数据相关), base(用户基础信息), behavior(行为派生)。
+4. dimension 取值必须是平台模板计算维度之一：volume(数量统计), structure(结构占比), change(变化趋势), position(位置排名), consistency(一致性校验), relation(关系识别), derived(衍生计算)。
 5. templates 数组为空表示没提取到任何模板。
 6. 输出必须是合法的 JSON，不要包含额外的markdown标记或说明文字。
 7. **模板必须剥离业务含义**：从文件中识别出的风险信号（如"赌博应用占比高"、"现金贷多头借贷"）应该抽象为通用计算结构（如 count(filter(source, category==target), window) / count(source, window)），把具体的业务值（赌博、现金贷等）放到 parameter_space 中。模板名和描述不能包含具体业务词（如 high_risk、gambling、loan）。

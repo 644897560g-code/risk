@@ -11,7 +11,17 @@ from sqlalchemy.orm import Session
 
 from backend.app.config import get_settings
 from backend.app.database import get_db
+from backend.auth.deps import get_current_user
+from backend.models.user import User
 from backend.services.task_service import create_task, add_task_log, update_task_status, save_task_result
+from backend.services.template_library import (
+    PENDING_STATUS,
+    append_template_python_code,
+    approve_template,
+    list_templates,
+    reject_template,
+    template_to_pending_item,
+)
 
 router = APIRouter()
 
@@ -141,88 +151,41 @@ class RejectBody(BaseModel):
 
 
 @router.get("/reviews/channel2-pending")
-def api_channel2_pending():
+def api_channel2_pending(db: Session = Depends(get_db)):
     """获取待审批的通道2模板列表"""
-    path = _channel2_pending_path()
-    if not os.path.exists(path):
-        return {"items": []}
-    with open(path, "r", encoding="utf-8") as f:
-        try:
-            items = json.load(f)
-        except json.JSONDecodeError:
-            items = []
-    return {"items": items}
+    items = list_templates(db, status=PENDING_STATUS)
+    return {"items": [template_to_pending_item(t) for t in items]}
 
 
 @router.post("/reviews/channel2-pending/{template_id}/approve")
-def api_channel2_approve(template_id: str):
+def api_channel2_approve(
+    template_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """审批通过通道2模板（晋升为通道1）"""
-    path = _channel2_pending_path()
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail="没有待审批的模板")
-
-    with open(path, "r", encoding="utf-8") as f:
-        try:
-            pending = json.load(f)
-        except json.JSONDecodeError:
-            pending = []
-
-    template = None
-    remaining = []
-    for t in pending:
-        if t.get("template_id") == template_id:
-            template = t
-        else:
-            remaining.append(t)
-
-    if template is None:
+    try:
+        template = approve_template(db, template_id, reviewer=current_user.username)
+        append_template_python_code(template)
+    except ValueError:
         raise HTTPException(status_code=404, detail=f"模板 {template_id} 不存在")
-
-    # 执行晋升逻辑 — 复用 FeatureDevelopmentAgent._do_promote()
-    import sys
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-    from agents.feature_development_agent import FeatureDevelopmentAgent
-    agent = FeatureDevelopmentAgent()
-    agent.auto_promote = True
-    success = agent._do_promote(template)
-
-    if not success:
-        raise HTTPException(status_code=500, detail=f"模板 {template_id} 晋升失败")
-
-    # 从 pending 列表移除
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(remaining, f, ensure_ascii=False, indent=2)
-
     return {"status": "approved", "template_id": template_id}
 
 
 @router.post("/reviews/channel2-pending/{template_id}/reject")
-def api_channel2_reject(template_id: str, body: RejectBody = RejectBody()):
-    """拒绝通道2模板（从 pending 移除）"""
-    path = _channel2_pending_path()
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail="没有待审批的模板")
-
-    with open(path, "r", encoding="utf-8") as f:
-        try:
-            pending = json.load(f)
-        except json.JSONDecodeError:
-            pending = []
-
-    removed = False
-    remaining = []
-    for t in pending:
-        if t.get("template_id") == template_id:
-            removed = True
-        else:
-            remaining.append(t)
-
-    if not removed:
+def api_channel2_reject(
+    template_id: str,
+    body: RejectBody = RejectBody(),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """拒绝通道2模板，并写入审批历史和被拒记忆"""
+    if not body.reason:
+        raise HTTPException(status_code=400, detail="驳回原因必填")
+    try:
+        reject_template(db, template_id, reason=body.reason, reviewer=current_user.username)
+    except ValueError:
         raise HTTPException(status_code=404, detail=f"模板 {template_id} 不存在")
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(remaining, f, ensure_ascii=False, indent=2)
-
     return {"status": "rejected", "template_id": template_id}
 
 
@@ -289,11 +252,6 @@ def api_feature_review_reject(body: RejectBody = RejectBody()):
 # ============================================================
 #  Helpers
 # ============================================================
-
-
-def _channel2_pending_path() -> str:
-    settings = get_settings()
-    return os.path.join(settings.output_dir, "feature_design", "channel2_pending.json")
 
 
 def _feature_review_path() -> str:

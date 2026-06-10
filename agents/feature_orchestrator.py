@@ -23,6 +23,8 @@ sys.path.insert(0, project_root)
 from agents.feature_development_agent import FeatureDevelopmentAgent, create_feature_development_agent
 from agents.feature_evaluation_agent import FeatureEvaluator
 from agents.feature_deployment_agent import FeatureDeploymentAgent
+from backend.app.database import SessionLocal
+from backend.services.template_library import ACTIVE_STATUS, list_templates
 
 
 class DataFlowRegistry:
@@ -711,18 +713,18 @@ class FeatureOrchestrator:
 
         try:
             # 1. 加载通道1模板映射（获取template_id→名称/维度映射）
-            channel1_path = 'outputs/feature_templates/channel1_templates.json'
             template_map = {}
-            if os.path.exists(channel1_path):
-                with open(channel1_path, 'r', encoding='utf-8') as f:
-                    ch1 = json.load(f)
-                for t in ch1.get('templates', []):
-                    template_map[t['template_id']] = {
-                        'template_name': t['template_name'],
-                        'template_name_cn': t.get('template_name_cn', ''),
-                        'dimension': t.get('dimension', ''),
+            db = SessionLocal()
+            try:
+                for t in list_templates(db, status=ACTIVE_STATUS):
+                    template_map[t.template_id] = {
+                        'template_name': t.template_name,
+                        'template_name_cn': t.template_name_cn or '',
+                        'dimension': t.dimension.dimension_code if t.dimension else '',
                         'channel': 'channel1'
                     }
+            finally:
+                db.close()
 
             # 2. 构建特征名→template_id映射表（从特征设计文档中读取）
             design_doc_path = 'outputs/feature_design/feature_design_doc.json'

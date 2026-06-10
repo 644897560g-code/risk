@@ -21,6 +21,17 @@ sys.path.insert(0, project_root)
 
 from utils.llm_client import LLMClient
 from agents.skill_registry import SkillResult
+from backend.app.database import SessionLocal
+from backend.services.template_library import (
+    ACTIVE_STATUS,
+    PENDING_STATUS,
+    append_template_python_code,
+    approve_template,
+    get_template,
+    list_templates,
+    template_to_channel1_item,
+    upsert_template_from_payload,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +48,7 @@ class FeatureDevelopmentAgent:
         self.generated_code = None
         self.self_review_passed = False
 
-        # 通道1模板库路径（冷启动DSL模板）
-        self.channel1_templates_path = 'outputs/feature_templates/channel1_templates.json'
+        # 通道1模板库由 PostgreSQL 承载；JSON 文件仅作为 scripts/init_project_data.py 的 seed 来源。
         self.channel1_calculators_path = 'outputs/feature_code/channel1_calculators.py'
         # 旧版模板系统（用于兼容过渡）
         self.legacy_templates_path = 'outputs/feature_design/stepwise/phase3_template_system.json'
@@ -155,55 +165,33 @@ class FeatureDevelopmentAgent:
         """通道1模板召回：根据维度(dimension)和DSL类型匹配模板
 
         通道1模板是业务无关的纯计算模式抽象，
-        从5个风控视角维度（volume/structure/change/position/consistency）中召回。
+        从 PostgreSQL 模板库中按维度和 DSL 类型召回。
 
         Args:
-            dimension: 维度名（volume/structure/change/position/consistency）
+            dimension: 维度名（volume/structure/change/position/consistency/relation/derived）
             dsl_type: DSL类型名（如 count/proportion/trend 等template_name）
 
         Returns:
             匹配的模板列表
         """
-        if not os.path.exists(self.channel1_templates_path):
-            # 降级到旧版模板路径
-            fallback = self.legacy_templates_path
-            if os.path.exists(fallback):
-                return self._skill_recall_legacy(dimension, dsl_type, fallback)
-            return SkillResult(success=False, data=[], error="通道1模板库不存在")
+        db = SessionLocal()
+        try:
+            templates = list_templates(db, status=ACTIVE_STATUS, dimension=dimension)
+            matched = []
 
-        with open(self.channel1_templates_path, 'r', encoding='utf-8') as f:
-            template_system = json.load(f)
+            for tmpl in templates:
+                item = template_to_channel1_item(tmpl)
+                if dsl_type and item.get('template_name') != dsl_type:
+                    continue
+                matched.append(item)
 
-        templates = template_system.get('templates', [])
-        matched = []
-
-        for tmpl in templates:
-            tmpl_dim = tmpl.get('dimension', '')
-            tmpl_name = tmpl.get('template_name', '')
-
-            # 匹配维度
-            if dimension and tmpl_dim != dimension:
-                continue
-            # 匹配DSL类型
-            if dsl_type and tmpl_name != dsl_type:
-                continue
-
-            matched.append({
-                'template_id': tmpl.get('template_id'),
-                'template_name': tmpl_name,
-                'template_name_cn': tmpl.get('template_name_cn', ''),
-                'dimension': tmpl_dim,
-                'complexity': tmpl.get('complexity', 'L1'),
-                'dsl': tmpl.get('dsl', ''),
-                'dsl_description': tmpl.get('dsl_description', ''),
-                'parameter_space': tmpl.get('parameter_space', {}),
-                'formula_template': tmpl.get('formula_template', ''),
-                'python_function': tmpl.get('python_function', ''),
-                'python_module': tmpl.get('python_module', ''),
-            })
-
-        logger.info(f"  通道1模板召回: dimension={dimension}, dsl_type={dsl_type} → {len(matched)}个匹配")
-        return SkillResult(success=True, data=matched)
+            logger.info(f"  通道1模板召回: dimension={dimension}, dsl_type={dsl_type} → {len(matched)}个匹配")
+            return SkillResult(success=True, data=matched)
+        except Exception as e:
+            logger.warning(f"  通道1模板召回失败: {e}")
+            return SkillResult(success=False, data=[], error=str(e))
+        finally:
+            db.close()
 
     def _skill_recall_legacy(self, risk_type, feature_category, path) -> SkillResult:
         """旧版模板召回（兼容旧模板格式）"""
@@ -627,7 +615,7 @@ class FeatureDevelopmentAgent:
         1. 校验新模板完整性
         2. AUTO_PROMOTE=true → 自动晋升
         3. AUTO_PROMOTE=false → 打印信息，等待人工确认
-        4. 晋升: 写入channel1_templates.json + channel1_calculators.py
+        4. 晋升: 更新 PostgreSQL 模板状态 + 追加 channel1_calculators.py 函数
 
         Args:
             new_template: 通道2推理出的新模板（含template_id, template_name,
@@ -656,7 +644,7 @@ class FeatureDevelopmentAgent:
             logger.info(f"     DSL: {new_template.get('dsl', '')}")
             logger.info(f"     参数: {json.dumps(new_template.get('parameter_space', {}), ensure_ascii=False)[:200]}")
             logger.info(f"     设置 AUTO_PROMOTE_TEMPLATE=true 可自动晋升")
-            # 即使不自动晋升，也记录到promoted_templates供后续处理
+            # 即使不自动晋升，也进入 PostgreSQL pending 队列供后续审核
             new_template['_promotion_status'] = 'pending_approval'
             self.promoted_templates.append(new_template)
             self._save_channel2_pending(new_template)
@@ -665,95 +653,32 @@ class FeatureDevelopmentAgent:
         return self._do_promote(new_template)
 
     def _do_promote(self, new_template: Dict) -> bool:
-        """执行晋升操作：写入channel1_templates.json和channel1_calculators.py"""
+        """执行晋升操作：更新 PostgreSQL 模板库并追加模板函数。"""
         tid = new_template['template_id']
+        db = SessionLocal()
+        try:
+            row = upsert_template_from_payload(
+                db,
+                new_template,
+                status=PENDING_STATUS,
+                source_channel=2,
+                source='channel2',
+                commit=True,
+            )
+            row = approve_template(db, row.template_id, reviewer='feature_development_agent')
+            append_template_python_code(row)
 
-        # 1. 写入channel1_templates.json
-        ch1_path = self.channel1_templates_path
-        if os.path.exists(ch1_path):
-            with open(ch1_path, 'r', encoding='utf-8') as f:
-                ch1_data = json.load(f)
-        else:
-            ch1_data = {
-                'version': '1.0',
-                'created': datetime.now().strftime('%Y-%m-%d'),
-                'total_templates': 0,
-                'dimensions': [],
-                'templates': []
-            }
+            entry = template_to_channel1_item(row)
+            entry['_promotion_status'] = 'promoted'
+            self.promoted_templates.append(entry)
 
-        # 构造通道1模板条目
-        dimension = new_template.get('dimension', 'custom')
-        entry = {
-            'template_id': tid,
-            'template_name': new_template.get('template_name', ''),
-            'template_name_cn': new_template.get('template_name_cn', ''),
-            'dimension': dimension,
-            'complexity': new_template.get('complexity', 'custom'),
-            'dsl': new_template.get('dsl', ''),
-            'dsl_description': new_template.get('dsl_description', ''),
-            'parameter_space': new_template.get('parameter_space', {}),
-            'python_function': new_template.get('python_function', ''),
-            'python_module': 'channel1_calculators',
-            'formula_template': new_template.get('formula_template', ''),
-            'examples': new_template.get('examples', []),
-            '_promoted_from': 'channel2',
-            '_promoted_at': datetime.now().isoformat(),
-            '_promoted_round': self._get_current_round()
-        }
-
-        # 检查是否已存在同名template_id
-        existing_ids = [t['template_id'] for t in ch1_data['templates']]
-        if tid in existing_ids:
-            # 更新
-            for i, t in enumerate(ch1_data['templates']):
-                if t['template_id'] == tid:
-                    ch1_data['templates'][i] = entry
-                    break
-            logger.info(f"  更新通道1模板: {tid}")
-        else:
-            ch1_data['templates'].append(entry)
-            ch1_data['total_templates'] = len(ch1_data['templates'])
-            logger.info(f"  新增通道1模板: {tid}")
-
-        with open(ch1_path, 'w', encoding='utf-8') as f:
-            json.dump(ch1_data, f, ensure_ascii=False, indent=2)
-
-        # 2. 追加python函数到channel1_calculators.py
-        python_code = new_template.get('python_code', '')
-        if python_code:
-            calc_path = self.channel1_calculators_path
-            with open(calc_path, 'r', encoding='utf-8') as f:
-                current_code = f.read()
-
-            # 在文件末尾的 FUNCTION_MAP 前插入
-            marker = '# ============================================================\n# 函数映射表\n'
-            if marker in current_code:
-                insertion = f"\n# [晋升自通道2] {tid} - {new_template.get('template_name', '')}\n"
-                insertion += f"# 晋升时间: {datetime.now().isoformat()}\n"
-                insertion += python_code.strip() + "\n\n"
-                current_code = current_code.replace(marker, insertion + marker)
-            else:
-                current_code += f"\n\n# [晋升自通道2] {tid} - {new_template.get('template_name', '')}\n"
-                current_code += python_code.strip() + "\n"
-
-            # 更新FUNCTION_MAP
-            func_name = new_template.get('python_function', '')
-            map_marker = "FUNCTION_MAP = {"
-            map_line = f"    '{func_name}': {func_name},\n"
-            if map_marker in current_code:
-                current_code = current_code.replace(map_marker, map_marker + "\n" + map_line)
-
-            with open(calc_path, 'w', encoding='utf-8') as f:
-                f.write(current_code)
-
-        # 3. 记录晋升
-        entry['_promotion_status'] = 'promoted'
-        self.promoted_templates.append(entry)
-        self.save_promoted_templates()
-
-        logger.info(f"  ✅ 通道2模板 {tid} 已晋升为通道1")
-        return True
+            logger.info(f"  ✅ 通道2模板 {tid} 已晋升为通道1")
+            return True
+        except Exception as e:
+            logger.warning(f"  晋升模板失败: {tid}, error={e}")
+            return False
+        finally:
+            db.close()
 
     def _get_current_round(self) -> int:
         """获取当前评估轮次"""
@@ -772,20 +697,20 @@ class FeatureDevelopmentAgent:
         return max_r
 
     def _save_channel2_pending(self, template: Dict):
-        """保存待审批的通道2模板"""
-        path = 'outputs/feature_design/channel2_pending.json'
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        pending = []
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8') as f:
-                try:
-                    pending = json.load(f)
-                except:
-                    pending = []
-        pending.append(template)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(pending, f, ensure_ascii=False, indent=2)
-        logger.info(f"  待审批模板已保存: {path}")
+        """保存待审批的通道2模板到 PostgreSQL。"""
+        db = SessionLocal()
+        try:
+            row = upsert_template_from_payload(
+                db,
+                template,
+                status=PENDING_STATUS,
+                source_channel=2,
+                source='channel2',
+                commit=True,
+            )
+            logger.info(f"  待审批模板已保存到 PostgreSQL: {row.template_id}")
+        finally:
+            db.close()
 
     # ========== 三阶段设计（复用stepwise_framework_design） ==========
 
@@ -1115,7 +1040,7 @@ class FeatureDevelopmentAgent:
     def _channel2_supplement(self, feedback_section: str) -> List[Dict]:
         """通道2推理：判断是否需要补充新模板"""
         # 检查是否有充分的通道1模板
-        ch1_templates = self.skill_template_recall().data if os.path.exists(self.channel1_templates_path) else []
+        ch1_templates = self.skill_template_recall().data or []
         has_templates = len(ch1_templates) >= 15
 
         prompt = f"""# 通道2补充推理
@@ -1281,16 +1206,15 @@ class FeatureDevelopmentAgent:
 
     def _get_template_by_id(self, template_id: str) -> Optional[Dict]:
         """根据template_id查找通道1模板"""
-        if not os.path.exists(self.channel1_templates_path):
-            return None
+        db = SessionLocal()
         try:
-            with open(self.channel1_templates_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            for tmpl in data.get('templates', []):
-                if tmpl['template_id'] == template_id:
-                    return tmpl
+            tmpl = get_template(db, template_id)
+            if tmpl:
+                return template_to_channel1_item(tmpl)
         except Exception as e:
             logger.warning(f"  查找模板失败: {e}")
+        finally:
+            db.close()
         return None
 
     def _get_function_by_name(self, func_name: str):
@@ -1409,6 +1333,12 @@ class FeatureDevelopmentAgent:
                 logger.warning(f"  跳过特征 {name}: 模板 {tid} 未找到")
                 continue
 
+            if self._is_inline_template(tmpl, tid):
+                inline_line = self._compose_inline_derived_line(name, params)
+                feat_func_map[name] = (None, {}, feat.get('business_explanation_cn', ''), inline_line)
+                logger.info(f"    {name}: inline derived arithmetic")
+                continue
+
             func_name = tmpl.get('python_function', 'calc_count')
 
             # 特殊处理：当设计文档包含 allowed_categories 参数时，
@@ -1423,7 +1353,7 @@ class FeatureDevelopmentAgent:
                 used_functions.add(func_name)
 
             kwargs = self._params_to_kwargs(feat, params, tid, override_func_name=func_name)
-            feat_func_map[name] = (func_name, kwargs, feat.get('business_explanation_cn', ''))
+            feat_func_map[name] = (func_name, kwargs, feat.get('business_explanation_cn', ''), None)
             logger.info(f"    {name}: {func_name}({kwargs})")
 
         # 构建代码
@@ -1498,8 +1428,14 @@ class FeatureDevelopmentAgent:
             if name not in feat_func_map:
                 continue
 
-            func_name, kwargs, biz_explain_cn = feat_func_map[name]
+            func_name, kwargs, biz_explain_cn, inline_line = feat_func_map[name]
             ch1_vars.append(name)
+
+            if inline_line:
+                lines.append(f'        # {name}: {biz_explain_cn}')
+                lines.append(inline_line)
+                lines.append('')
+                continue
 
             # 构建函数调用参数列表
             # 获取函数签名，用于过滤无效参数
@@ -1615,6 +1551,66 @@ class FeatureDevelopmentAgent:
         lines.append('')
 
         return '\n'.join(lines)
+
+    def _is_inline_template(self, template: Dict, template_id: str) -> bool:
+        return (
+            template.get('execution_mode') == 'inline'
+            or template.get('requires_external_function') is False
+            or template_id == 'T016'
+            or template.get('template_name') == 'derived'
+            or template.get('python_function') == 'derived_arithmetic'
+            or str(template.get('dsl', '')).strip().startswith('derived(')
+        )
+
+    def _compose_inline_derived_line(self, feature_name: str, params: Dict) -> str:
+        dtype = params.get('derived_type')
+
+        if dtype == 'ratio_density':
+            ref = params.get('ref_feature_name', '0.0')
+            window = params.get('window', params.get('window_days', 1))
+            return f"        {feature_name} = {ref} / {float(window):g} if {ref} > 0 else 0.0"
+
+        if dtype == 'ratio_cross':
+            a = params.get('ref_feature_a', '0.0')
+            b = params.get('ref_feature_b', '0.0')
+            return f"        {feature_name} = {a} / {b} if {b} != 0 else 0.0"
+
+        if dtype == 'weighted_combo':
+            a = params.get('ref_feature_a', '0.0')
+            b = params.get('ref_feature_b', '0.0')
+            weight_a = params.get('weight_a', 1.0)
+            weight_b = params.get('weight_b', 1.0)
+            return f"        {feature_name} = ({a} * {float(weight_a):g}) * ({b} * {float(weight_b):g})"
+
+        if dtype == 'extended_velocity':
+            short_feat = params.get('ref_feature_short', '0.0')
+            long_feat = params.get('ref_feature_long', '0.0')
+            short_window = params.get('short_window', 1)
+            long_window = params.get('long_window', 1)
+            return (
+                f"        {feature_name} = (({short_feat} / {float(short_window):g}) / "
+                f"({long_feat} / {float(long_window):g}) - 1.0) if {long_feat} > 0 else 0.0"
+            )
+
+        if dtype == 'squared':
+            ref = params.get('ref_feature_name', '0.0')
+            return f"        {feature_name} = {ref} ** 2"
+
+        if dtype == 'log_transform':
+            ref = params.get('ref_feature_name', '0.0')
+            return f"        {feature_name} = math.log({ref} + 1) if {ref} >= 0 else 0.0"
+
+        if dtype == 'difference':
+            a = params.get('ref_feature_a', '0.0')
+            b = params.get('ref_feature_b', '0.0')
+            return f"        {feature_name} = {a} - {b}"
+
+        if dtype == 'is_high':
+            ref = params.get('ref_feature_name', '0.0')
+            threshold = params.get('threshold', 0.0)
+            return f"        {feature_name} = 1.0 if {ref} > {float(threshold):g} else 0.0"
+
+        return f"        {feature_name} = 0.0  # unknown inline derived type: {dtype}"
 
     def _build_code_generation_prompt(self, applist: List[Dict], fdc: List[Dict], base: List[Dict]) -> str:
         """构建代码生成prompt — 包含精确的字段映射"""
@@ -1931,15 +1927,9 @@ Generate the complete code:
         logger.info(f"  代码已保存: {path}")
 
     def save_promoted_templates(self):
-        """保存晋升的通道2模板"""
-        if not self.promoted_templates:
-            return
-
-        path = 'outputs/feature_design/promoted_templates.json'
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(self.promoted_templates, f, ensure_ascii=False, indent=2)
-        logger.info(f"  晋升模板已保存: {path}")
+        """晋升记录已进入 PostgreSQL；此方法保留为旧调用点兼容。"""
+        if self.promoted_templates:
+            logger.info(f"  晋升模板记录已写入 PostgreSQL: {len(self.promoted_templates)}个")
 
     # ========== 主入口 ==========
 

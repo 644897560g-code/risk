@@ -176,6 +176,93 @@
     "python_code": "def calc_interval_stat(data: Dict, apply_time_dt: datetime, window_days: int = 30,\n                         source: str = 'fdc_pinjaman', time_field: str = 'event_time',\n                         stat_method: str = 'mean') -> float:\n    \"\"\"计算事件序列相邻时间间隔的统计量（防穿越设计）\n\n    DSL: interval_stat(source, time_field, window, stat_method)\n\n    Args:\n        data: 订单数据\n        apply_time_dt: 申请时间\n        window_days: 回溯窗口天数\n        source: 数据源标识\n        time_field: 时间字段名\n        stat_method: 统计方法 (min, mean, std, median)\n\n    Returns:\n        间隔统计值（天）\n    \"\"\"\n    import statistics\n    from channel1_calculators import _filter_by_time, _get_event_time\n\n    items = _filter_by_time(data, source, apply_time_dt, window_days)\n    if not isinstance(items, list):\n        return 0.0\n\n    timestamps = []\n    for item in items:\n        t = _get_event_time(item, time_field)\n        if t <= apply_time_dt:\n            timestamps.append(t)\n\n    if len(timestamps) < 2:\n        return 0.0  # 不足两次事件无法计算间隔\n\n    timestamps.sort()\n    diffs = [(timestamps[i+1] - timestamps[i]).total_seconds() / 86400.0 for i in range(len(timestamps)-1)]\n\n    if stat_method == 'min':\n        return float(min(diffs))\n    elif stat_method == 'mean':\n        return float(statistics.mean(diffs))\n    elif stat_method == 'std':\n        return float(statistics.stdev(diffs)) if len(diffs) > 1 else 0.0\n    elif stat_method == 'median':\n        return float(statistics.median(diffs))\n    else:\n        return float(statistics.mean(diffs))",
     "design_reason": "现有模板侧重事件数量与金额聚合，缺乏对行为时间节奏的刻画。间隔统计能有效识别‘多头借贷冲刺期’（极小间隔）或‘集中安装高风险应用’的密集行为模式，补充时间维度特征，且标准差可反映行为规律性（如机器刷单间隔固定 vs 真人随机）。",
     "_promotion_status": "pending",
-    "created_at": "2026-06-03T14:09:09.068102"
+    "created_at": "2026-06-03T14:09:09.068102",
+    "source": "模板生成"
+  },
+  {
+    "template_id": "T021",
+    "template_name": "recency_score",
+    "template_name_cn": "近因衰减评分",
+    "dimension": "change",
+    "complexity": "L2",
+    "description": "基于最近一次事件发生时间与当前申请时间的间隔，结合时间衰减函数计算活跃度或风险暴露评分。间隔越短得分越高，用于捕捉近期行为突变或活跃期。",
+    "dsl": "recency_score(source, window, weight_field?, decay_type)",
+    "dsl_description": "计算窗口内最近事件的时间距离，按指定衰减类型映射为0-1评分，可叠加事件权重。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，建议范围[7, 180]"
+      },
+      "weight_field": {
+        "type": "string",
+        "description": "事件权重字段名（如金额、频次），可选"
+      },
+      "decay_type": {
+        "type": "string",
+        "description": "衰减类型，枚举值['exponential', 'linear', 'step']"
+      },
+      "half_life_days": {
+        "type": "float",
+        "description": "半衰期或阈值天数，建议范围[1.0, 30.0]"
+      }
+    },
+    "python_function": "calc_recency_score",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天内最近一次事件距今{days}天，按{decay_type}衰减计算得分",
+    "examples": [
+      "近30天最近一次FDC查询距今天数评分",
+      "近90天最近一笔贷款结清距今天数评分",
+      "近60天最近一次高风险APP活跃距今天数评分"
+    ],
+    "python_code": "from datetime import datetime, timedelta\nfrom typing import Dict, Optional\nimport math\n# from channel1_calculators import _filter_by_time, _get_event_time\n\ndef calc_recency_score(data: Dict, apply_time_dt: datetime, window_days: int = 30,\n                       weight_field: Optional[str] = None, decay_type: str = 'exponential',\n                       half_life_days: float = 7.0) -> float:\n    \"\"\"基于最近事件时间的近因衰减评分计算\n\n    DSL: recency_score(source, window, weight_field?, decay_type)\n\n    Args:\n        data: 订单数据字典\n        apply_time_dt: 申请时间（防穿越基准）\n        window_days: 回溯窗口天数\n        weight_field: 事件权重字段名，默认1.0\n        decay_type: 衰减类型 ('exponential', 'linear', 'step')\n        half_life_days: 半衰期/阈值天数\n\n    Returns:\n        评分 (0.0-1.0)\n    \"\"\"\n    events = data.get('events', [])\n    if not isinstance(events, list):\n        return 0.0\n\n    # 防穿越：严格按 apply_time_dt 过滤\n    valid_events = _filter_by_time(events, apply_time_dt, window_days)\n    if not valid_events:\n        return 0.0\n\n    # 获取最近一次事件时间\n    latest_time = max(_get_event_time(e) for e in valid_events)\n    days_since = (apply_time_dt - latest_time).total_seconds() / 86400.0\n    days_since = max(0.0, days_since)\n\n    # 衰减计算\n    if decay_type == 'exponential':\n        score = math.exp(-math.log(2) * days_since / half_life_days)\n    elif decay_type == 'linear':\n        score = max(0.0, 1.0 - days_since / window_days)\n    elif decay_type == 'step':\n        score = 1.0 if days_since <= half_life_days else 0.0\n    else:\n        score = 0.0\n\n    # 权重调整\n    if weight_field:\n        latest_event = max(valid_events, key=lambda e: _get_event_time(e))\n        weight = float(latest_event.get(weight_field, 1.0))\n        score = min(1.0, score * math.log1p(weight))\n\n    return round(float(score), 4)",
+    "design_reason": "现有模板侧重总量与趋势，缺乏对“最近一次行为时效性”的量化。近因效应在信贷风控中至关重要，可快速识别近期多头借贷或设备异常活跃，弥补时间衰减求和(T003)仅关注累计值而忽略最新状态的不足。",
+    "source": "模板生成",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-08T02:31:52.959087"
+  },
+  {
+    "template_id": "T022",
+    "template_name": "frequency_rate",
+    "template_name_cn": "事件发生频率",
+    "dimension": "volume",
+    "complexity": "L1",
+    "description": "计算指定时间窗口内满足条件的事件总数，并按指定时间单位（天/周/月）进行归一化，输出标准化频率值。消除窗口长度差异，直接反映行为密集度。",
+    "dsl": "frequency_rate(source, window, cond?, normalize_unit)",
+    "dsl_description": "统计窗口内符合条件的事件数量，除以窗口长度对应的单位换算系数，得到单位时间内的平均发生次数。",
+    "parameter_space": {
+      "source": {
+        "type": "string",
+        "description": "数据源标识，如 applist, fdc_inquiry, fdc_pinjaman"
+      },
+      "window": {
+        "type": "int",
+        "description": "回溯窗口天数，常用值 [7, 15, 30, 60, 90]"
+      },
+      "cond": {
+        "type": "object",
+        "description": "事件过滤条件字典"
+      },
+      "normalize_unit": {
+        "type": "string",
+        "description": "归一化单位，枚举值 [day, week, month]"
+      }
+    },
+    "python_function": "calc_frequency_rate",
+    "python_module": "channel1_calculators",
+    "formula_template": "近{window}天满足{cond}的事件数 / ({window}天/{unit}换算) = {rate}次/{unit}",
+    "examples": [
+      "近30天FDC查询日均频次",
+      "近90天贷款申请周均频次",
+      "近60天指定类别APP安装月均频次"
+    ],
+    "python_code": "from datetime import datetime\nfrom typing import Dict, Optional\nfrom channel1_calculators import _filter_by_time\n\ndef calc_frequency_rate(data: Dict, apply_time_dt: datetime, window_days: int = 30,\n                        cond: Optional[Dict] = None, normalize_unit: str = \"day\",\n                        source: str = \"fdc_inquiry\") -> float:\n    \"\"\"计算指定窗口内的事件发生频率（归一化）\n\n    DSL: frequency_rate(source, window, cond?, normalize_unit)\n\n    Args:\n        data: 订单数据字典\n        apply_time_dt: 申请时间（防穿越基准）\n        window_days: 回溯窗口天数\n        cond: 事件过滤条件字典\n        normalize_unit: 归一化单位 (day/week/month)\n        source: 数据源标识\n\n    Returns:\n        频率值 (float)\n    \"\"\"\n    # 防穿越：严格基于 apply_time_dt 截取历史窗口数据\n    items = _filter_by_time(data, source, apply_time_dt, window_days)\n    if not items:\n        return 0.0\n\n    # 应用业务条件过滤\n    if cond:\n        items = [item for item in items if all(item.get(k) == v for k, v in cond.items())]\n\n    count = len(items)\n    if count == 0:\n        return 0.0\n\n    # 单位换算系数映射\n    unit_divisors = {\"day\": 1.0, \"week\": 7.0, \"month\": 30.0}\n    divisor = unit_divisors.get(normalize_unit, 1.0)\n    \n    # 频率 = 事件数 / (窗口天数 / 单位换算系数)\n    return count / (window_days / divisor)",
+    "design_reason": "绝对计数特征受回溯窗口长度影响较大，难以横向对比。频率指标通过时间归一化，能更稳定地刻画用户行为的密集程度与紧迫性，是识别‘急用钱’、‘高频试探’或‘自动化刷单’的核心基础特征。",
+    "source": "模板生成",
+    "_promotion_status": "pending",
+    "created_at": "2026-06-08T17:10:44.485553"
   }
 ]

@@ -1,6 +1,23 @@
 version: "3.9"
 
 services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=riskforge
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=riskforge_ai
+    volumes:
+      - pg18_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U riskforge -d riskforge_ai"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -19,17 +36,22 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       - ./data:/app/data
       - ./outputs:/app/outputs
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql+psycopg://riskforge:123456@postgres:5432/riskforge_ai
       - API_KEY=${API_KEY:-}
       - DEBUG=${DEBUG:-false}
-      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - LLM_MODEL=${LLM_MODEL:-qwen/qwen3.6-plus}
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+    command: sh -c "alembic upgrade head && python scripts/init_project_data.py && uvicorn backend.app.main:app --host 0.0.0.0 --port 8000"
 
   frontend:
     build:
@@ -45,4 +67,5 @@ services:
       - backend
 
 volumes:
+  pg18_data:
   redis_data:

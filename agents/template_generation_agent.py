@@ -4,13 +4,13 @@ Template Generation Agent — 独立的模板生成Agent
 职责：
 1. 通过LLM生成通道2模板（DSL + Python函数代码）
 2. 维护长期记忆（已生效模板、被拒模板+原因、参数经验、设计模式）
-3. 写入 channel2_pending.json 供风控团队审核
+3. 写入 PostgreSQL 模板库 pending 队列供风控团队审核
 
 两种触发方式：
 - 任务驱动：任务列表新建"模板生成"任务
 - 对话驱动：AgentChat页面用户提出需求 → agent_chat.py 调用本Agent
 
-输出格式（写入 channel2_pending.json）：
+输出格式（写入 templates.status=pending）：
 {
   "template_id": "T016",           // 自动分配
   "template_name": "特征英文名",     // snake_case
@@ -42,6 +42,16 @@ from typing import Dict, List, Optional, Tuple
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.llm_client import LLMClient
+from backend.app.database import SessionLocal
+from backend.services.template_library import (
+    ACTIVE_STATUS,
+    PENDING_STATUS,
+    active_dsl_set,
+    list_dimensions,
+    list_templates,
+    next_template_id,
+    upsert_template_from_payload,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,14 +64,8 @@ class TemplateGenerationAgent:
 
         # 路径配置
         self.base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        self.channel1_path = os.path.join(
-            self.base_dir, "outputs", "feature_templates", "channel1_templates.json"
-        )
         self.channel1_calculators_path = os.path.join(
             self.base_dir, "outputs", "feature_code", "channel1_calculators.py"
-        )
-        self.channel2_pending_path = os.path.join(
-            self.base_dir, "outputs", "feature_design", "channel2_pending.json"
         )
         self.knowledge_dir = os.path.join(
             self.base_dir, "outputs", "template_knowledge"
@@ -124,7 +128,7 @@ class TemplateGenerationAgent:
                 "templates": []
             }
 
-        # 4. 保存到 channel2_pending.json
+        # 4. 保存到 PostgreSQL pending 队列
         saved = self._save_to_pending(result)
 
         return {
@@ -139,14 +143,47 @@ class TemplateGenerationAgent:
     # ============================================================
 
     def _load_channel1_templates(self) -> Dict:
-        """加载已生效的通道1模板"""
-        if os.path.exists(self.channel1_path):
-            try:
-                with open(self.channel1_path, "r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                pass
-        return {"templates": [], "dimensions": []}
+        """从 PostgreSQL 加载已生效的通道1模板。"""
+        db = SessionLocal()
+        try:
+            templates = []
+            for t in list_templates(db, status=ACTIVE_STATUS):
+                templates.append({
+                    "template_id": t.template_id,
+                    "template_name": t.template_name,
+                    "template_name_cn": t.template_name_cn or "",
+                    "dimension": t.dimension.dimension_code if t.dimension else "",
+                    "complexity": t.complexity or "",
+                    "description": t.description or "",
+                    "dsl": t.dsl or "",
+                    "dsl_description": t.dsl_description or "",
+                    "parameter_space": t.parameter_space or {},
+                    "python_function": t.python_function or "",
+                    "python_module": t.python_module or "",
+                    "formula_template": t.formula_template or "",
+                    "examples": t.examples or [],
+                })
+            dimensions = [
+                {
+                    "dimension_id": d.dimension_id or d.dimension_code,
+                    "dimension_name": d.dimension_code,
+                    "dimension_name_cn": d.dimension_name_cn,
+                    "description": d.description,
+                    "templates": [
+                        t["template_name"]
+                        for t in templates
+                        if t.get("dimension") == d.dimension_code
+                    ],
+                }
+                for d in list_dimensions(db)
+            ]
+            return {
+                "templates": templates,
+                "dimensions": dimensions,
+                "total_templates": len(templates),
+            }
+        finally:
+            db.close()
 
     def _load_channel1_code(self) -> str:
         """加载通道1计算函数的Python代码"""
@@ -190,16 +227,11 @@ class TemplateGenerationAgent:
 
     def _get_next_template_id(self, channel1: Dict) -> str:
         """获取下一个可用的template_id"""
-        templates = channel1.get("templates", [])
-        max_num = 0
-        for t in templates:
-            tid = t.get("template_id", "T000")
-            m = re.search(r"T(\d+)", tid)
-            if m:
-                num = int(m.group(1))
-                if num > max_num:
-                    max_num = num
-        return f"T{max_num + 1:03d}"
+        db = SessionLocal()
+        try:
+            return next_template_id(db)
+        finally:
+            db.close()
 
     def _get_existing_names(self, channel1: Dict) -> List[str]:
         """获取已存在的模板名称列表"""
@@ -323,7 +355,7 @@ class TemplateGenerationAgent:
 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 ## 已有的通道1模板（已生效，不可重复设计）
-{channel1_templates.get('total_templates', 0)}个模板，分为5个维度：
+{channel1_templates.get('total_templates', 0)}个模板，分为7个维度：
 
 {dims_text}
 
@@ -469,107 +501,72 @@ class TemplateGenerationAgent:
     # ============================================================
 
     def _save_to_pending(self, templates: List[Dict]) -> List[Dict]:
-        """将生成的模板保存到 channel2_pending.json（自动去重）"""
+        """将生成的模板保存到 PostgreSQL pending 队列（自动去重）"""
         if not templates:
             return []
 
-        # 加载现有pending列表
-        existing = []
-        if os.path.exists(self.channel2_pending_path):
-            try:
-                with open(self.channel2_pending_path, "r", encoding="utf-8") as f:
-                    existing = json.load(f)
-            except Exception:
-                existing = []
-
-        # 收集已有 template_name（通道2 pending + 通道1 已生效），用于去重
-        existing_names = set()
-        for t in existing:
-            tn = t.get("template_name", "")
-            if tn:
-                existing_names.add(tn)
-        ch1 = self._load_channel1_templates()
-        for t in ch1.get("templates", []):
-            tn = t.get("template_name", "")
-            if tn:
-                existing_names.add(tn)
-
-        # 获取当前最大template_id
-        max_id = 0
-        for t in existing:
-            tid = t.get("template_id", "T000")
-            m = re.search(r"T(\d+)", tid)
-            if m:
-                num = int(m.group(1))
-                if num > max_id:
-                    max_id = num
-        for t in ch1.get("templates", []):
-            tid = t.get("template_id", "T000")
-            m = re.search(r"T(\d+)", tid)
-            if m:
-                num = int(m.group(1))
-                if num > max_id:
-                    max_id = num
-
-        # DSL-level dedup: collect channel1 DSLs in normalized form
-        ch1_dsls_normalized = set()
-        for t in ch1.get("templates", []):
-            dsl = t.get("dsl", "")
-            if dsl:
-                # Simple normalization: strip whitespace, replace numbers with *
-                norm = re.sub(r"\b\d+\b", "*", dsl)
-                norm = re.sub(r"\s+", "", norm)
-                ch1_dsls_normalized.add(norm)
-
         saved = []
-        for i, tmpl in enumerate(templates):
-            tmpl_name = tmpl.get("template_name", f"template_{max_id + 1 + i}")
-            # 去重：跳过template_name已存在的
-            if tmpl_name in existing_names:
-                continue
+        db = SessionLocal()
+        try:
+            existing_names = {
+                t.template_name
+                for t in list_templates(db)
+                if t.template_name
+            }
+            ch1_dsls_normalized = active_dsl_set(db)
 
-            # DSL-level dedup: skip if DSL normalized form matches a channel1 template
-            dsl = tmpl.get("dsl", "")
-            if dsl:
-                norm = re.sub(r"\b\d+\b", "*", dsl)
-                norm = re.sub(r"\s+", "", norm)
-                if norm in ch1_dsls_normalized:
-                    logger.info(
-                        "Skipping template '%s' — DSL '%s' normalized to '%s' matches channel1",
-                        tmpl_name, dsl, norm,
-                    )
+            for i, tmpl in enumerate(templates):
+                tmpl_name = tmpl.get("template_name", f"template_{i + 1}")
+                if tmpl_name in existing_names:
                     continue
 
-            entry = {
-                "template_id": f"T{max_id + 1 + len(saved):03d}",
-                "template_name": tmpl_name,
-                "template_name_cn": tmpl.get("template_name_cn", ""),
-                "dimension": tmpl.get("dimension", ""),
-                "complexity": tmpl.get("complexity", "L1"),
-                "description": tmpl.get("description", ""),
-                "dsl": tmpl.get("dsl", ""),
-                "dsl_description": tmpl.get("dsl_description", ""),
-                "parameter_space": tmpl.get("parameter_space", {}),
-                "python_function": tmpl.get("python_function", ""),
-                "python_module": "channel1_calculators",
-                "formula_template": tmpl.get("formula_template", ""),
-                "examples": tmpl.get("examples", []),
-                "python_code": tmpl.get("python_code", ""),
-                "design_reason": tmpl.get("design_reason", ""),
-                "source": "模板生成",
-                "_promotion_status": "pending",
-                "created_at": datetime.now().isoformat(),
-            }
-            existing.append(entry)
-            existing_names.add(tmpl_name)
-            saved.append(entry)
+                dsl = tmpl.get("dsl", "")
+                if dsl:
+                    norm = re.sub(r"\b\d+\b", "*", dsl)
+                    norm = re.sub(r"\s+", "", norm)
+                    if norm in ch1_dsls_normalized:
+                        logger.info(
+                            "Skipping template '%s' — DSL '%s' normalized to '%s' matches channel1",
+                            tmpl_name, dsl, norm,
+                        )
+                        continue
 
-        # 写回
-        os.makedirs(os.path.dirname(self.channel2_pending_path), exist_ok=True)
-        with open(self.channel2_pending_path, "w", encoding="utf-8") as f:
-            json.dump(existing, f, ensure_ascii=False, indent=2)
+                entry = {
+                    "template_id": tmpl.get("template_id") or next_template_id(db),
+                    "template_name": tmpl_name,
+                    "template_name_cn": tmpl.get("template_name_cn", ""),
+                    "dimension": tmpl.get("dimension", ""),
+                    "complexity": tmpl.get("complexity", "L1"),
+                    "description": tmpl.get("description", ""),
+                    "dsl": tmpl.get("dsl", ""),
+                    "dsl_description": tmpl.get("dsl_description", ""),
+                    "parameter_space": tmpl.get("parameter_space", {}),
+                    "python_function": tmpl.get("python_function", ""),
+                    "python_module": "channel1_calculators",
+                    "formula_template": tmpl.get("formula_template", ""),
+                    "examples": tmpl.get("examples", []),
+                    "python_code": tmpl.get("python_code", ""),
+                    "design_reason": tmpl.get("design_reason", ""),
+                    "source": "模板生成",
+                    "_promotion_status": "pending",
+                    "created_at": datetime.now().isoformat(),
+                }
+                row = upsert_template_from_payload(
+                    db,
+                    entry,
+                    status=PENDING_STATUS,
+                    source_channel=2,
+                    source="模板生成",
+                    commit=False,
+                )
+                db.flush()
+                existing_names.add(tmpl_name)
+                saved.append(row.to_dict())
 
-        return saved
+            db.commit()
+            return saved
+        finally:
+            db.close()
 
     # ============================================================
     # 知识积累 —— 供外部调用（被拒记录、参数经验更新）

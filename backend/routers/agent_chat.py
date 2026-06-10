@@ -13,8 +13,15 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.app.config import get_settings
-from backend.app.database import get_db
+from backend.app.database import SessionLocal, get_db
 from backend.models.chat import ChatSession, ChatMessage
+from backend.services.template_library import (
+    ACTIVE_STATUS,
+    PENDING_STATUS,
+    active_dsl_set,
+    list_templates,
+    upsert_template_from_payload,
+)
 
 router = APIRouter()
 
@@ -219,30 +226,27 @@ def _build_system_prompt() -> str:
     settings = get_settings()
 
     # ---- channel1 templates ----
-    templates_path = os.path.join(settings.data_dir, "templates", "channel1_templates.json")
-    alt_path = os.path.join(settings.output_dir, "feature_templates", "channel1_templates.json")
-
     templates = []
-    for p in (templates_path, alt_path):
-        if os.path.exists(p):
-            try:
-                with open(p, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, dict):
-                    items = data.get("templates", data.get("items", []))
-                else:
-                    items = data
-                templates = items
-                break
-            except (json.JSONDecodeError, IOError):
-                continue
+    db = SessionLocal()
+    try:
+        templates = [
+            {
+                "template_id": t.template_id,
+                "dsl_description": t.dsl_description or "",
+                "dimension": t.dimension.dimension_code if t.dimension else "",
+                "dsl": t.dsl or "",
+            }
+            for t in list_templates(db, status=ACTIVE_STATUS)
+        ]
+    finally:
+        db.close()
 
     template_lines = []
     for t in templates:
-        tid = t.get("template_id", t.get("name", "?"))
-        desc = t.get("description", "")
-        dim = t.get("dimension", "")
-        dsl = t.get("dsl", "")
+        tid = t["template_id"]
+        desc = t["dsl_description"]
+        dim = t["dimension"]
+        dsl = t["dsl"]
         template_lines.append(
             f"## {tid}\n"
             f"- 维度: {dim}\n"
@@ -434,16 +438,10 @@ def _parse_tool_call(reply: str) -> Optional[ToolCallInfo]:
 
 def _execute_trigger_channel2(payload: dict) -> ToolCallInfo:
     """Execute channel2 template creation from tool call payload."""
-    settings = get_settings()
-    pending_dir = os.path.join(settings.output_dir, "feature_design")
-    os.makedirs(pending_dir, exist_ok=True)
-    pending_path = os.path.join(pending_dir, "channel2_pending.json")
-
-    # Read existing pending list + channel1 templates for dedup
     ch1_dsls = _load_channel1_dsls_normalized()
 
     template_entry = {
-        "template_id": payload.get("template_name", "unknown"),
+        "template_id": payload.get("template_id"),
         "template_name": payload.get("template_name", ""),
         "dimension": payload.get("dimension", ""),
         "description": payload.get("description", ""),
@@ -469,39 +467,32 @@ def _execute_trigger_channel2(payload: dict) -> ToolCallInfo:
                 detail=f"模板「{template_entry['template_name']}」的DSL与已生效模板重复，已跳过",
             )
 
-    # Read existing pending list
-    existing = []
-    if os.path.exists(pending_path):
-        try:
-            with open(pending_path, "r", encoding="utf-8") as f:
-                existing = json.load(f)
-        except (json.JSONDecodeError, IOError):
-            existing = []
-
-    existing.append(template_entry)
-
-    with open(pending_path, "w", encoding="utf-8") as f:
-        json.dump(existing, f, ensure_ascii=False, indent=2)
+    db = SessionLocal()
+    try:
+        row = upsert_template_from_payload(
+            db,
+            template_entry,
+            status=PENDING_STATUS,
+            source_channel=2,
+            source="agent chat",
+            commit=True,
+        )
+        saved_name = row.template_name
+    finally:
+        db.close()
 
     return ToolCallInfo(
         tool="trigger_channel2",
         status="success",
-        detail=f"模板「{template_entry['template_name']}」已加入通道2待审批列表",
+        detail=f"模板「{saved_name}」已加入通道2待审批列表",
     )
 
 
 def _load_channel1_dsls_normalized() -> set:
     """Load channel1 template DSLs as a set for dedup checking."""
-    settings = get_settings()
-    primary = os.path.join(settings.output_dir, "feature_templates", "channel1_templates.json")
-    fallback = os.path.join(settings.data_dir, "templates", "channel1_templates.json")
-    path = primary if os.path.exists(primary) else fallback
-    if not os.path.exists(path):
-        return set()
+    db = SessionLocal()
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        items = data if isinstance(data, list) else data.get("templates", data.get("items", []))
-        return {item.get("dsl", "") for item in items if item.get("dsl")}
-    except (json.JSONDecodeError, OSError):
+        return active_dsl_set(db)
+    finally:
+        db.close()
         return set()
