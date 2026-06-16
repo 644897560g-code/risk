@@ -1,5 +1,5 @@
 import React, { useReducer, useCallback, useRef, useEffect, useState } from 'react';
-import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Empty, Tooltip, Space, Tag, Segmented } from 'antd';
+import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Empty, Tooltip, Space, Tag, Segmented, Typography } from 'antd';
 import {
   ApiOutlined,
   FullscreenOutlined,
@@ -17,6 +17,8 @@ import TemplateSidebar from '@/components/TemplateSidebar';
 import { sendChatMessageStream, fetchChatSessions, fetchChatSessionMessages, deleteChatSession, clearChatSessions } from '@/services/api';
 import type { ChatMessage as ChatMessageType, ChatSessionSummary } from '@/types/agent';
 import { useProjectStore } from '@/store/projectStore';
+
+const { Text } = Typography;
 
 // ========== State ==========
 
@@ -242,6 +244,25 @@ const AgentChat: React.FC = () => {
     return d.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
   };
 
+  const shortcutPrompts = [
+    {
+      title: '解释当前特征',
+      prompt: `请基于当前项目${currentProject?.name ? `「${currentProject.name}」` : ''}，用业务语言解释推荐上线特征的含义、风险方向和上线注意事项。`,
+    },
+    {
+      title: '推荐新模板',
+      prompt: '请根据当前项目知识和历史实验结果，推荐下一轮值得尝试的特征加工方式，并说明适用场景。',
+    },
+    {
+      title: '诊断实验',
+      prompt: '请帮我诊断最近失败或通过率偏低的实验，指出可能的数据、策略或特征稳定性问题。',
+    },
+    {
+      title: '对比实验',
+      prompt: '请对比最近两次实验的通过率、推荐上线特征和版本变化，给出下一步建议。',
+    },
+  ];
+
   return (
     <div className="agent-console page-enter">
       {/* Left: Chat Panel */}
@@ -285,6 +306,17 @@ const AgentChat: React.FC = () => {
         <div
           className="agent-message-stream"
         >
+          <div className="copilot-shortcuts">
+            <Text type="secondary">快捷指令</Text>
+            <Space wrap style={{ marginTop: 8 }}>
+              {shortcutPrompts.map((item) => (
+                <Button key={item.title} size="small" onClick={() => handleSend(item.prompt)}>
+                  {item.title}
+                </Button>
+              ))}
+            </Space>
+          </div>
+
           {state.messages.length === 0 && !state.loading && !state.streamingContent && <ChatWelcome />}
 
           {state.messages.map((msg, i) => (

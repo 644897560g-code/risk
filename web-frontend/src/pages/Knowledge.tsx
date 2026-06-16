@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   UploadOutlined, DeleteOutlined, FileTextOutlined, SearchOutlined,
-  EyeOutlined,
+  EyeOutlined, BulbOutlined,
 } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload/interface';
 import {
@@ -233,14 +233,35 @@ const Knowledge: React.FC = () => {
     },
   ];
 
+  const businessRules = [
+    {
+      title: '有赌博APP的用户逾期风险高',
+      source: '业务经验',
+      relation: '已关联：占比类加工方式 -> prop_app_gambling_30d',
+      status: '可用于推荐',
+    },
+    {
+      title: '近30天征信查询超过5次，多头借贷风险上升',
+      source: '实验 #38 验证',
+      relation: '已关联：数量统计 -> cnt_fdcpin_30d',
+      status: '已验证',
+    },
+    {
+      title: '近期新装现金贷APP需要重点观察',
+      source: '项目复盘',
+      relation: '已关联：时间窗口标记 -> flag_app_cashloan_recent_install',
+      status: '可用于推荐',
+    },
+  ];
+
   return (
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>知识</Title>
+          <Title level={3} style={{ margin: 0 }}>知识库</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            项目知识仅在当前项目内使用；平台知识用于沉淀通用方法和模板规范。
+            业务规则会驱动实验推荐，项目知识仅在当前项目内使用。
           </Text>
         </div>
         <Upload
@@ -253,6 +274,26 @@ const Knowledge: React.FC = () => {
           </Button>
         </Upload>
       </div>
+
+      <Card title="业务规则驱动推荐" style={{ marginBottom: 16 }}>
+        <Row gutter={[16, 16]}>
+          {businessRules.map((rule) => (
+            <Col xs={24} lg={8} key={rule.title}>
+              <Card size="small" className="knowledge-rule-card">
+                <Space direction="vertical" size={8}>
+                  <Space>
+                    <BulbOutlined style={{ color: '#fbbf24' }} />
+                    <Text strong>{rule.title}</Text>
+                  </Space>
+                  <Text type="secondary">来源：{rule.source}</Text>
+                  <Text>{rule.relation}</Text>
+                  <Tag color={rule.status === '已验证' ? 'success' : 'blue'}>{rule.status}</Tag>
+                </Space>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Card>
 
       <Tabs
         items={[

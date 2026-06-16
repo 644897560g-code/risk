@@ -61,7 +61,7 @@ const dataSources: DataSourceRow[] = [
     name: '0421首贷样本文件源',
     type: 'file',
     status: 'ready',
-    snapshot: 'snapshot_20260615_001',
+    snapshot: 'V2026.04 建模样本',
     sampleCount: 2272,
     labelCoverage: 100,
     timeRange: '2026-04-01 至 2026-04-21',
@@ -82,7 +82,7 @@ const dataSources: DataSourceRow[] = [
 
 const snapshots: SnapshotRow[] = [
   {
-    id: 'snapshot_20260615_001',
+    id: 'V2026.04 建模样本',
     source: '0421首贷样本文件源',
     createdAt: '2026-06-15 14:20',
     sampleCount: 2272,
@@ -91,7 +91,7 @@ const snapshots: SnapshotRow[] = [
     task: '#108 印尼首贷6月批量特征生产',
   },
   {
-    id: 'snapshot_20260612_001',
+    id: 'V2026.03 验证样本',
     source: '0421首贷样本文件源',
     createdAt: '2026-06-12 09:00',
     sampleCount: 2272,
@@ -123,10 +123,10 @@ const sourceColumns: ColumnsType<DataSourceRow> = [
     dataIndex: 'status',
     width: 110,
     render: (status: DataSourceRow['status']) => (
-      status === 'ready' ? <Tag color="success">可用于任务</Tag> : <Tag color="warning">待配置</Tag>
+      status === 'ready' ? <Tag color="success">可用于实验</Tag> : <Tag color="warning">待配置</Tag>
     ),
   },
-  { title: '最近快照', dataIndex: 'snapshot', width: 190 },
+  { title: '最近数据版本', dataIndex: 'snapshot', width: 190 },
   { title: '样本量', dataIndex: 'sampleCount', width: 90 },
   {
     title: '标签覆盖',
@@ -139,13 +139,13 @@ const sourceColumns: ColumnsType<DataSourceRow> = [
 ];
 
 const snapshotColumns: ColumnsType<SnapshotRow> = [
-  { title: '快照ID', dataIndex: 'id', width: 190, render: (id: string) => <Tag color="blue">{id}</Tag> },
+  { title: '数据版本', dataIndex: 'id', width: 190, render: (id: string) => <Tag color="blue">{id}</Tag> },
   { title: '来源数据源', dataIndex: 'source', ellipsis: true },
   { title: '生成时间', dataIndex: 'createdAt', width: 160 },
   { title: '样本量', dataIndex: 'sampleCount', width: 90 },
   { title: '标签覆盖', dataIndex: 'labelCoverage', width: 100, render: (value: number) => `${value}%` },
   { title: '质量检查', dataIndex: 'qualityStatus', width: 100, render: (value: string) => <Tag color="success">{value}</Tag> },
-  { title: '最近任务', dataIndex: 'task', ellipsis: true },
+  { title: '最近实验', dataIndex: 'task', ellipsis: true },
 ];
 
 const DataSources: React.FC = () => {
@@ -162,7 +162,7 @@ const DataSources: React.FC = () => {
   const openSnapshot = (source?: DataSourceRow) => {
     setSnapshotSource(source || readySource || dataSources[0]);
     snapshotForm.setFieldsValue({
-      snapshot_name: `snapshot_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}_new`,
+      snapshot_name: `V${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}_new`,
       sample_scope: '首贷客户',
       label_meaning: '标签1表示逾期，标签0表示正常',
       time_policy: '以申请时间向前回溯，禁止使用申请后数据',
@@ -186,7 +186,7 @@ const DataSources: React.FC = () => {
 
   const handleSnapshotSubmit = async () => {
     await snapshotForm.validateFields();
-    message.success('数据快照生成任务已提交');
+    message.success('数据版本生成任务已提交');
     setSnapshotOpen(false);
   };
 
@@ -197,7 +197,7 @@ const DataSources: React.FC = () => {
       width: 110,
       render: (_, row) => (
         <Button size="small" disabled={row.status !== 'ready'} onClick={() => openSnapshot(row)}>
-          生成快照
+        生成版本
         </Button>
       ),
     },
@@ -207,15 +207,15 @@ const DataSources: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>数据源</Title>
+          <Title level={3} style={{ margin: 0 }}>数据版本</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            本页数据仅属于当前项目；任务不直接消费临时数据，而是绑定数据快照执行。
+            本页管理可用于实验的数据版本；实验不直接消费临时上传文件。
           </Text>
         </div>
         <Space>
           <Button icon={<ReloadOutlined />}>刷新</Button>
-          <Button icon={<UploadOutlined />} onClick={() => setUploadOpen(true)}>上传文件源</Button>
+          <Button icon={<UploadOutlined />} onClick={() => setUploadOpen(true)}>上传新数据</Button>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setDatabaseOpen(true)}>新增数据库连接</Button>
         </Space>
       </div>
@@ -225,7 +225,7 @@ const DataSources: React.FC = () => {
           <Card title="项目数据可用性">
             <Space direction="vertical" size={14} style={{ width: '100%' }}>
               <div>
-                <Text type="secondary">最近可用快照</Text>
+                <Text type="secondary">最近可用数据版本</Text>
                 <div style={{ marginTop: 6 }}><Tag color="blue">{readySource?.snapshot || '暂无'}</Tag></div>
               </div>
               <div>
@@ -234,7 +234,7 @@ const DataSources: React.FC = () => {
               </div>
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="可用数据源">1 个</Descriptions.Item>
-                <Descriptions.Item label="任务绑定方式">选择快照 / 生成新快照</Descriptions.Item>
+                <Descriptions.Item label="实验绑定方式">选择数据版本 / 生成新版本</Descriptions.Item>
                 <Descriptions.Item label="项目隔离"><Tag color="success">已按项目隔离</Tag></Descriptions.Item>
               </Descriptions>
             </Space>
@@ -256,7 +256,7 @@ const DataSources: React.FC = () => {
             <Space direction="vertical" size={10} style={{ width: '100%' }}>
               <div className="dimension-row">
                 <span>当前状态</span>
-                <Tag color="success">可启动任务</Tag>
+                <Tag color="success">可启动实验</Tag>
               </div>
               <Text type="secondary">标签1表示逾期，样本范围为首贷客户，时间口径以申请时间向前回溯。</Text>
               <Space wrap>
@@ -269,7 +269,7 @@ const DataSources: React.FC = () => {
         </Col>
       </Row>
 
-      <Card title="数据源列表" style={{ marginTop: 16 }}>
+      <Card title="项目数据源" style={{ marginTop: 16 }}>
         <Table
           rowKey="id"
           size="small"
@@ -310,9 +310,9 @@ const DataSources: React.FC = () => {
         </Col>
       </Row>
 
-      <Card title="数据快照" style={{ marginTop: 16 }}>
+      <Card title="数据版本" style={{ marginTop: 16 }}>
         <div style={{ marginBottom: 12, textAlign: 'right' }}>
-          <Button type="primary" onClick={() => openSnapshot()} disabled={!readySource}>生成新快照</Button>
+          <Button type="primary" onClick={() => openSnapshot()} disabled={!readySource}>生成新数据版本</Button>
         </div>
         <Table
           rowKey="id"
@@ -324,7 +324,7 @@ const DataSources: React.FC = () => {
       </Card>
 
       <Modal
-        title="上传文件数据源"
+        title="上传新数据"
         open={uploadOpen}
         onCancel={() => setUploadOpen(false)}
         onOk={handleUploadSubmit}
@@ -337,7 +337,7 @@ const DataSources: React.FC = () => {
           showIcon
           style={{ marginBottom: 16 }}
           message="上传文件会先进入项目级数据源"
-          description="本次上传不会直接绑定任务。系统会先完成Agent数据识别、业务口径确认和质量检查，然后生成可被任务引用的数据快照。"
+          description="本次上传不会直接绑定实验。系统会先完成Agent数据识别、业务口径确认和质量检查，然后生成可被实验引用的数据版本。"
         />
         <Steps
           size="small"
@@ -347,11 +347,11 @@ const DataSources: React.FC = () => {
             { title: '上传文件' },
             { title: 'Agent识别' },
             { title: '质量检查' },
-            { title: '生成快照' },
+            { title: '生成数据版本' },
           ]}
         />
         <Form form={uploadForm} layout="vertical">
-          <Form.Item name="source_name" label="数据源名称" rules={[{ required: true, message: '请输入数据源名称' }]}>
+          <Form.Item name="source_name" label="数据名称" rules={[{ required: true, message: '请输入数据名称' }]}>
             <Input placeholder="例如：0421印尼首贷样本文件源" />
           </Form.Item>
           <Form.Item label="客户申请短链文件（.txt）" required>
@@ -447,24 +447,24 @@ const DataSources: React.FC = () => {
             </Col>
           </Row>
           <Form.Item name="extract_policy" label="抽取范围">
-            <Input.TextArea rows={3} placeholder="例如：按申请时间抽取首贷客户；任务启动前生成固定快照；禁止读取申请后信息。" />
+            <Input.TextArea rows={3} placeholder="例如：按申请时间抽取首贷客户；实验启动前生成固定数据版本；禁止读取申请后信息。" />
           </Form.Item>
-          <Form.Item name="refresh_mode" label="快照生成方式" initialValue="manual">
+          <Form.Item name="refresh_mode" label="数据版本生成方式" initialValue="manual">
             <Radio.Group>
-              <Radio value="manual">任务启动前手动生成</Radio>
+              <Radio value="manual">实验启动前手动生成</Radio>
               <Radio value="scheduled">定期生成</Radio>
-              <Radio value="on_task">任务启动时自动生成</Radio>
+              <Radio value="on_task">实验启动时自动生成</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>
       </Modal>
 
       <Modal
-        title="生成数据快照"
+        title="生成数据版本"
         open={snapshotOpen}
         onCancel={() => setSnapshotOpen(false)}
         onOk={handleSnapshotSubmit}
-        okText="生成快照"
+        okText="生成数据版本"
         cancelText="取消"
         width={720}
       >
@@ -472,8 +472,8 @@ const DataSources: React.FC = () => {
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          message="任务只绑定快照执行"
-          description="快照生成后，后续任务、评估、部署版本和交付包都会记录该快照ID，确保结果可复现、交付可追溯。"
+          message="实验只绑定数据版本执行"
+          description="数据版本生成后，后续实验、评估、版本交付和交付包都会记录该版本ID，确保结果可复现、交付可追溯。"
         />
         <Descriptions column={1} size="small" bordered style={{ marginBottom: 16 }}>
           <Descriptions.Item label="来源数据源">{snapshotSource?.name || '-'}</Descriptions.Item>
@@ -481,7 +481,7 @@ const DataSources: React.FC = () => {
           <Descriptions.Item label="Agent解析状态">{snapshotSource?.agentStatus || '-'}</Descriptions.Item>
         </Descriptions>
         <Form form={snapshotForm} layout="vertical">
-          <Form.Item name="snapshot_name" label="快照名称" rules={[{ required: true, message: '请输入快照名称' }]}>
+          <Form.Item name="snapshot_name" label="数据版本名称" rules={[{ required: true, message: '请输入数据版本名称' }]}>
             <Input />
           </Form.Item>
           <Row gutter={12}>

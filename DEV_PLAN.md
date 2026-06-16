@@ -160,6 +160,43 @@
 - 源码扫描确认已无“项目管理 / 模板资产 / 项目工作台 / 数据源管理 / 知识依据 / 结果交付 / 部署确认”等旧主命名残留
 - 本地 `http://127.0.0.1:5174` 已验证项目列表、项目概览、数据源、任务、模板库、知识、版本与交付、智能助理核心页面均可渲染新层级文案
 
+### PRD v2.1 决策辅助型前端优化（2026-06-16）
+
+**状态**: ✅ 已完成
+
+本轮按 `RiskForge_AI_前端优化_PRD_v2.1.md` 执行 P0 原型优化，不新增后端接口和算法逻辑，重点从“业务层级展示”升级为“用户行动流和决策辅助”。
+
+- [x] 信息架构调整为“工作台 / 探索 / 资产 / 交付 / 助手”，并保留旧路由兼容跳转
+- [x] 工作台增加双模式入口：发起探索、启动特征工厂，并加入待办区、最近动态和平台洞察
+- [x] 实验列表替代任务列表，创建流程改为 4 步向导：选择模式、选择数据、选择策略、确认执行
+- [x] 评估报告改为分层决策台，按推荐上线、谨慎观察、不建议上线展示特征业务卡片
+- [x] 新增候选特征集页面，支持待确认、已确认、已排除状态和生成交付版本入口
+- [x] 数据源页面改为数据版本表达，弱化“快照”技术术语
+- [x] 模板库增加效果目录，展示历史效果、使用次数、业务说明和适用场景
+- [x] 知识库增加业务规则驱动推荐，展示规则与推荐特征加工方式的关联
+- [x] 版本管理补齐技术包、业务说明书、API文档、小流量验证和确认上线动作
+- [x] 助手增加快捷指令：解释当前特征、推荐新模板、诊断实验、对比实验
+
+**交付物**:
+- `web-frontend/src/App.tsx`
+- `web-frontend/src/components/Layout.tsx`
+- `web-frontend/src/pages/Dashboard.tsx`
+- `web-frontend/src/pages/Tasks.tsx`
+- `web-frontend/src/pages/Evaluation.tsx`
+- `web-frontend/src/pages/CandidateFeatures.tsx`
+- `web-frontend/src/pages/DataSources.tsx`
+- `web-frontend/src/pages/Templates.tsx`
+- `web-frontend/src/pages/Knowledge.tsx`
+- `web-frontend/src/pages/Deployment.tsx`
+- `web-frontend/src/pages/AgentChat.tsx`
+- `web-frontend/src/pages/Login.tsx`
+
+**验证结果**:
+- `npm run build` 通过
+- 源码扫描确认已无“项目概览 / 任务列表 / 发起特征生产 / 部署确认 / 任务结果 / 数据快照”等核心旧产品文案
+- 本地 `http://127.0.0.1:5174` 已验证 `/home`、`/mine/experiments`、`/mine/report`、`/ship/candidates`、`/assets/data`、`/assets/templates`、`/assets/knowledge`、`/ship/versions`、`/copilot` 均可渲染关键文案
+- 已验证 `/mine/experiments?create=factory` 可自动打开“创建实验”四步向导
+
 ---
 
 ## 第一阶段：基础设施与数据准备（Week 1）

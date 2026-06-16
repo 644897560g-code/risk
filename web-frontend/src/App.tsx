@@ -14,6 +14,7 @@ const Tasks = React.lazy(() => import('@/pages/Tasks'));
 const Templates = React.lazy(() => import('@/pages/Templates'));
 const Evaluation = React.lazy(() => import('@/pages/Evaluation'));
 const Deployment = React.lazy(() => import('@/pages/Deployment'));
+const CandidateFeatures = React.lazy(() => import('@/pages/CandidateFeatures'));
 
 const PageLoading = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
@@ -37,38 +38,49 @@ const App: React.FC = () => {
       <Route path="/" element={
         <AppLayout />
       }>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={
+        <Route index element={<Navigate to="/home" replace />} />
+        <Route path="home" element={
           <Suspense fallback={<PageLoading />}><Dashboard /></Suspense>
         } />
+        <Route path="dashboard" element={<Navigate to="/home" replace />} />
         <Route path="projects" element={
           <Suspense fallback={<PageLoading />}><Projects /></Suspense>
         } />
-        <Route path="knowledge" element={
+        <Route path="assets/knowledge" element={
           <Suspense fallback={<PageLoading />}><Knowledge /></Suspense>
         } />
-        <Route path="data-sources" element={
+        <Route path="knowledge" element={<Navigate to="/assets/knowledge" replace />} />
+        <Route path="assets/data" element={
           <Suspense fallback={<PageLoading />}><DataSources /></Suspense>
         } />
-        <Route path="templates" element={
+        <Route path="data-sources" element={<Navigate to="/assets/data" replace />} />
+        <Route path="assets/templates" element={
           <Suspense fallback={<PageLoading />}><Templates /></Suspense>
         } />
-        <Route path="tasks" element={
+        <Route path="templates" element={<Navigate to="/assets/templates" replace />} />
+        <Route path="mine/experiments" element={
           <Suspense fallback={<PageLoading />}><Tasks /></Suspense>
         } />
-        <Route path="evaluation" element={
+        <Route path="tasks" element={<Navigate to="/mine/experiments" replace />} />
+        <Route path="mine/report" element={
           <Suspense fallback={<PageLoading />}><Evaluation /></Suspense>
         } />
-        <Route path="deployment" element={
+        <Route path="evaluation" element={<Navigate to="/mine/report" replace />} />
+        <Route path="ship/candidates" element={
+          <Suspense fallback={<PageLoading />}><CandidateFeatures /></Suspense>
+        } />
+        <Route path="ship/versions" element={
           <Suspense fallback={<PageLoading />}><Deployment /></Suspense>
         } />
-        <Route path="agent" element={
+        <Route path="deployment" element={<Navigate to="/ship/versions" replace />} />
+        <Route path="copilot" element={
           <Suspense fallback={<PageLoading />}><AgentChat /></Suspense>
         } />
+        <Route path="agent" element={<Navigate to="/copilot" replace />} />
       </Route>
 
       {/* Catch-all redirect */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 };

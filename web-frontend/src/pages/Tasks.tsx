@@ -2,14 +2,15 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Table, Tag, Button, Modal, Form, Input, Space, Card,
   Drawer, Spin, Descriptions, Timeline, Tabs, message, Upload, Radio,
-  Empty, DatePicker, Steps, Collapse, Alert, Typography, Select,
+  Empty, DatePicker, Steps, Collapse, Alert, Typography, Select, Row, Col,
 } from 'antd';
 import {
   PlusOutlined, ReloadOutlined, UploadOutlined, DownloadOutlined,
   CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, ClockCircleOutlined,
   LinkOutlined, DeleteOutlined, FullscreenOutlined, FullscreenExitOutlined,
+  RocketOutlined, BulbOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchTasks, fetchTask, createTask, computeFeatures, fetchTaskResult, resumeTask, fetchTaskSamples, downloadTaskDeployment, downloadTaskResultCsv, downloadTaskResultReport, fetchTaskSteps, cancelTask, rerunTask, clearAllTasks, type ComputeResult } from '@/services/api';
 import { FRAMEWORK_DESCRIPTION, TEMPLATE_DEFINITIONS } from '@/constants/featureDesignFramework';
 import type { Task, TaskLog } from '@/types';
@@ -18,6 +19,7 @@ import dayjs from 'dayjs';
 import { useProjectStore } from '@/store/projectStore';
 
 const { TextArea } = Input;
+const { Text } = Typography;
 
 const taskStatusMap: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
   pending: { color: 'default', icon: <ClockCircleOutlined />, label: '等待中' },
@@ -29,6 +31,7 @@ const taskStatusMap: Record<string, { color: string; icon: React.ReactNode; labe
 
 const Tasks: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -44,6 +47,9 @@ const Tasks: React.FC = () => {
 
   // Task mode for create form
   const [taskMode, setTaskMode] = useState<'normal' | 'template_task'>('normal');
+  const [experimentMode, setExperimentMode] = useState<'factory' | 'explore'>('factory');
+  const [experimentStep, setExperimentStep] = useState(0);
+  const [experimentStrategy, setExperimentStrategy] = useState<'quick' | 'deep' | 'custom'>('quick');
   // Data snapshot source for create form
   const [dataSourceType, setDataSourceType] = useState<'snapshot' | 'new_snapshot' | 'upload'>('snapshot');
   const [urlFile, setUrlFile] = useState<File | null>(null);
@@ -72,7 +78,7 @@ const Tasks: React.FC = () => {
     setResuming(true);
     try {
       await resumeTask(detailTask.id);
-      message.success('任务已恢复执行');
+      message.success('实验已恢复执行');
       loadTasks(page);
     } catch (e: any) {
       message.error('恢复失败: ' + (e?.message || ''));
@@ -85,7 +91,7 @@ const Tasks: React.FC = () => {
     if (!detailTask) return;
     Modal.confirm({
       title: '确认重新执行',
-      content: `重新执行将从头开始运行完整流程（重新生成或绑定数据快照、特征生产、评估、部署）。任务的 history 日志会保留。确认重新执行吗？`,
+      content: `重新执行将从头开始运行完整流程（重新生成或绑定数据版本、特征生产、评估、交付）。实验历史会保留。确认重新执行吗？`,
       okText: '确认执行',
       cancelText: '取消',
       onOk: async () => {
@@ -106,8 +112,8 @@ const Tasks: React.FC = () => {
   const handleCancel = async () => {
     if (!detailTask) return;
     Modal.confirm({
-      title: '确认终止任务',
-      content: `确定要终止任务 "${detailTask.name}" 吗？终止后当前进度不会丢失，但需要手动"继续执行"才能恢复。`,
+      title: '确认终止实验',
+      content: `确定要终止实验 "${detailTask.name}" 吗？终止后当前进度不会丢失，但需要手动"继续执行"才能恢复。`,
       okText: '确认终止',
       cancelText: '取消',
       okButtonProps: { danger: true },
@@ -115,7 +121,7 @@ const Tasks: React.FC = () => {
         setCancelling(true);
         try {
           await cancelTask(detailTask.id);
-          message.success('任务已终止');
+          message.success('实验已终止');
           loadTasks(page);
           loadSteps(detailTask.id);
         } catch (e: any) {
@@ -129,15 +135,15 @@ const Tasks: React.FC = () => {
 
   const handleClearAll = () => {
     Modal.confirm({
-      title: '确认清空当前项目下的任务',
-      content: `确定要清空项目「${currentProject?.name || '-'}」下的任务记录吗？此操作不可恢复，正在执行的任务将无法清空。`,
+      title: '确认清空当前项目下的实验',
+      content: `确定要清空项目「${currentProject?.name || '-'}」下的实验记录吗？此操作不可恢复，正在执行的实验将无法清空。`,
       okText: '确认清空',
       cancelText: '取消',
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
           const res = await clearAllTasks(currentProject?.id);
-          message.success(`已清空 ${res.deleted} 个任务`);
+          message.success(`已清空 ${res.deleted} 个实验`);
           loadTasks(1);
           setPage(1);
         } catch (e: any) {
@@ -170,6 +176,17 @@ const Tasks: React.FC = () => {
     const interval = setInterval(() => loadTasks(page), 10000);
     return () => clearInterval(interval);
   }, [page, loadTasks]);
+
+  useEffect(() => {
+    const createMode = searchParams.get('create');
+    if (createMode === 'explore' || createMode === 'factory') {
+      setExperimentMode(createMode);
+      setTaskMode('normal');
+      setExperimentStep(0);
+      setCreateOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const loadSteps = async (taskId: number) => {
     setStepsLoading(true);
@@ -242,19 +259,22 @@ const Tasks: React.FC = () => {
           scheduled_at: scheduledAt,
           recurring_cron: values.recurring_cron || undefined,
         });
-        message.success('模板生成任务已创建，LLM正在生成模板...');
+        message.success('AI创新实验已创建，系统将生成新的加工方式候选。');
       } else {
         await createTask({
-          name: values.name,
+          name: values.name || (experimentMode === 'explore' ? 'AI探索实验' : '特征工厂实验'),
           project_id: currentProject?.id,
           scheduled_at: scheduledAt,
           ...(dataSourceType === 'upload'
             ? { url_file: urlFile || undefined, label_file: labelFile || undefined }
             : {}),
         });
-        message.success('任务创建成功（系统将自动创建关联的模板任务）');
+        message.success(experimentMode === 'explore'
+          ? '探索实验创建成功，AI将根据业务问题推荐特征方向'
+          : '特征工厂实验创建成功，系统将按推荐策略批量生成特征');
       }
       setCreateOpen(false);
+      setExperimentStep(0);
       setUrlFile(null);
       setLabelFile(null);
       form.resetFields();
@@ -358,10 +378,10 @@ const Tasks: React.FC = () => {
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 60 },
     {
-      title: '类型', dataIndex: 'mode', key: 'mode', width: 90,
+      title: '模式', dataIndex: 'mode', key: 'mode', width: 100,
       render: (m: string) => m === 'template_task'
-        ? <Tag color="purple">模板生成</Tag>
-        : <Tag color="blue">特征生产</Tag>,
+        ? <Tag color="purple">AI探索</Tag>
+        : <Tag color="blue">特征工厂</Tag>,
     },
     { title: '名称', dataIndex: 'name', key: 'name', ellipsis: true },
     {
@@ -372,13 +392,13 @@ const Tasks: React.FC = () => {
       render: (id: number) => currentProject?.id === id ? currentProject.name : `项目 #${id || '-'}`,
     },
     {
-      title: '使用数据快照',
+      title: '使用数据版本',
       key: 'snapshot',
       width: 180,
-      render: (_: any, r: Task) => r.mode === 'template_task' ? '-' : <Tag color="blue">{getTaskSnapshotId(r)}</Tag>,
+      render: (_: any, r: Task) => r.mode === 'template_task' ? '-' : <Tag color="blue">{getTaskSnapshotId(r).replace('snapshot', 'V')}</Tag>,
     },
     {
-      title: '关联任务', dataIndex: 'linked_task_id', key: 'linked_task_id', width: 90,
+      title: '关联实验', dataIndex: 'linked_task_id', key: 'linked_task_id', width: 90,
       render: (v: number) => v ? `#${v}` : '-',
     },
     {
@@ -421,24 +441,24 @@ const Tasks: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Typography.Title level={3} style={{ margin: 0 }}>任务</Typography.Title>
+          <Typography.Title level={3} style={{ margin: 0 }}>实验列表</Typography.Title>
           <Typography.Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            本页数据仅属于当前项目；每个任务绑定一个数据快照执行。
+            每个实验绑定一个数据版本，并在完成后进入评估决策与候选集确认。
           </Typography.Text>
         </div>
         <Space>
           {currentProject && <Tag color="blue">当前项目：{currentProject.name}</Tag>}
           <Button icon={<ReloadOutlined />} onClick={() => loadTasks(page)}>刷新</Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>发起特征生产</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => { setExperimentMode('factory'); setExperimentStep(0); setCreateOpen(true); }}>创建实验</Button>
         </Space>
       </div>
 
       <Card
-        title="任务列表"
+        title="实验列表"
         extra={
           <Space>
-            <Button icon={<DeleteOutlined />} danger onClick={handleClearAll}>清空任务</Button>
+            <Button icon={<DeleteOutlined />} danger onClick={handleClearAll}>清空实验</Button>
           </Space>
         }
       >
@@ -462,151 +482,288 @@ const Tasks: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="发起特征生产"
+        title="创建实验"
         open={createOpen}
-        onCancel={() => { setCreateOpen(false); setUrlFile(null); setLabelFile(null); }}
-        onOk={() => form.submit()}
-        okText="提交生产任务"
-        cancelText="取消"
-        width={760}
+        onCancel={() => { setCreateOpen(false); setExperimentStep(0); setUrlFile(null); setLabelFile(null); }}
+        footer={[
+          <Button key="cancel" onClick={() => { setCreateOpen(false); setExperimentStep(0); }}>
+            取消
+          </Button>,
+          experimentStep > 0 && (
+            <Button key="prev" onClick={() => setExperimentStep((step) => Math.max(0, step - 1))}>
+              上一步
+            </Button>
+          ),
+          <Button
+            key="next"
+            type="primary"
+            onClick={() => {
+              if (experimentStep < 3) {
+                setExperimentStep((step) => step + 1);
+              } else {
+                form.submit();
+              }
+            }}
+          >
+            {experimentStep < 3 ? '下一步' : '开始执行'}
+          </Button>,
+        ]}
+        width={880}
       >
         <Typography.Text
           type="secondary"
           style={{ display: 'block', marginBottom: 16, fontSize: 12 }}
         >
-          任务基于项目数据源选择或生成数据快照，再进入特征生产、指标评估、部署包生成和反馈沉淀。
+          用推荐优先的方式创建实验。系统会先绑定数据版本，再按探索或工厂模式执行特征挖掘。
         </Typography.Text>
         <Steps
           size="small"
-          current={0}
+          current={experimentStep}
           style={{ marginBottom: 20 }}
           items={[
-            { title: '确认项目' },
-            { title: '选择数据源' },
-            { title: '选择快照' },
-            { title: '填写任务' },
-            { title: '启动任务' },
+            { title: '选择模式' },
+            { title: '选择数据' },
+            { title: '选择策略' },
+            { title: '确认执行' },
           ]}
         />
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Descriptions column={1} size="small" bordered style={{ marginBottom: 16 }}>
-            <Descriptions.Item label="当前项目">{currentProject?.name || '未选择项目'}</Descriptions.Item>
-          </Descriptions>
+          {experimentStep === 0 && (
+            <Row gutter={[16, 16]}>
+              <Col xs={24} md={12}>
+                <Card
+                  hoverable
+                  className="choice-card"
+                  onClick={() => { setExperimentMode('explore'); setTaskMode('normal'); }}
+                  style={{ borderColor: experimentMode === 'explore' ? '#37e7ff' : undefined }}
+                >
+                  <Space direction="vertical" size={10}>
+                    <Space>
+                      <BulbOutlined style={{ color: '#37e7ff', fontSize: 22 }} />
+                      <Typography.Title level={4} style={{ margin: 0 }}>探索模式</Typography.Title>
+                      {experimentMode === 'explore' && <Tag color="cyan">已选择</Tag>}
+                    </Space>
+                    <Text type="secondary">适合新场景分析、异常样本诊断、模板创新。</Text>
+                    <Text>AI 分析业务问题和样本数据，推荐特征方向并设计新加工方式。</Text>
+                    <Space wrap>
+                      <Tag>20-40分钟</Tag>
+                      <Tag>20-30个精选特征</Tag>
+                    </Space>
+                  </Space>
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card
+                  hoverable
+                  className="choice-card"
+                  onClick={() => { setExperimentMode('factory'); setTaskMode('normal'); }}
+                  style={{ borderColor: experimentMode === 'factory' ? '#37e7ff' : undefined }}
+                >
+                  <Space direction="vertical" size={10}>
+                    <Space>
+                      <RocketOutlined style={{ color: '#34d399', fontSize: 22 }} />
+                      <Typography.Title level={4} style={{ margin: 0 }}>特征工厂</Typography.Title>
+                      {experimentMode === 'factory' && <Tag color="green">已选择</Tag>}
+                    </Space>
+                    <Text type="secondary">适合已知场景快速扩量、批量枚举模板组合。</Text>
+                    <Text>基于模板库自动枚举参数组合，系统优先推荐高通过率策略。</Text>
+                    <Space wrap>
+                      <Tag>15-30分钟</Tag>
+                      <Tag>200-500个候选特征</Tag>
+                    </Space>
+                  </Space>
+                </Card>
+              </Col>
+            </Row>
+          )}
 
-          <Form.Item label="任务类型">
-            <Radio.Group
-              value={taskMode}
-              onChange={(e) => { setTaskMode(e.target.value); form.resetFields(); }}
-            >
-              <Radio value="normal">特征生产</Radio>
-              <Radio value="template_task">模板生成/评审</Radio>
-            </Radio.Group>
-          </Form.Item>
-
-          {taskMode === 'template_task' ? (
+          {experimentStep === 1 && (
             <>
-              <Form.Item name="scheduled_at" label="计划执行时间（可选）" extra="设置后系统将在指定时间自动执行">
-                <DatePicker
-                  showTime
-                  format="YYYY-MM-DD HH:mm"
-                  style={{ width: '100%' }}
-                  placeholder="选择计划执行时间（默认立即执行）"
-                />
-              </Form.Item>
-              <Form.Item name="recurring_cron" label="周期性执行（可选）" extra="设置后系统将按计划反复运行，每次生成的模板自动去重">
-                <Input placeholder="例如: 0 2 * * 1（每周一凌晨2点），留空为仅执行一次" />
-              </Form.Item>
-              <div style={{ padding: '8px 0', color: 'rgba(226,232,240,0.68)', fontSize: 13 }}>
-                模板生成任务用于补充新的数据加工方式，结果进入待审区，由产品或风控确认后再进入模板库。无需配置样本数据。<br />
-                <strong>产品目标：</strong>沉淀可复用的加工模板，具体业务含义由生产出的特征和评估报告承载。
-              </div>
-            </>
-          ) : (
-            <>
-              <Form.Item name="scheduled_at" label="计划执行时间（可选）">
-                <DatePicker
-                  showTime
-                  format="YYYY-MM-DD HH:mm"
-                  style={{ width: '100%' }}
-                  placeholder="选择计划执行时间（默认立即执行）"
-                />
-              </Form.Item>
-
-              <Form.Item name="data_source_id" label="选择数据源" initialValue="ds_file_0421">
-                <Select
-                  options={[
-                    { value: 'ds_file_0421', label: '0421首贷样本文件源' },
-                    { value: 'ds_fdc_db', label: '印尼FDC数据库连接（占位）', disabled: true },
-                  ]}
-                />
-              </Form.Item>
-
-              <Form.Item label="数据快照">
+              <Descriptions column={1} size="small" bordered style={{ marginBottom: 16 }}>
+                <Descriptions.Item label="当前项目">{currentProject?.name || '未选择项目'}</Descriptions.Item>
+              </Descriptions>
+              <Form.Item label="使用哪份数据">
                 <Radio.Group
                   value={dataSourceType}
                   onChange={(e) => setDataSourceType(e.target.value)}
+                  style={{ width: '100%' }}
                 >
-                  <Radio value="snapshot">选择已有快照</Radio>
-                  <Radio value="new_snapshot">基于数据源生成新快照</Radio>
-                  <Radio value="upload">上传文件形成数据源与快照</Radio>
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <Radio value="snapshot">
+                      <Space wrap>
+                        <Tag color="success">推荐</Tag>
+                        <Text strong>V2026.04 建模样本</Text>
+                        <Text type="secondary">2272条 · 逾期率72% · 标签完整 · 质量评分92</Text>
+                      </Space>
+                    </Radio>
+                    <Radio value="new_snapshot">
+                      <Space wrap>
+                        <Tag color="success">推荐</Tag>
+                        <Text strong>基于最新数据源生成数据版本</Text>
+                        <Text type="secondary">适合例行跑新数据，系统会先完成质量检查</Text>
+                      </Space>
+                    </Radio>
+                    <Radio value="upload">
+                      <Space wrap>
+                        <Text strong>上传新数据</Text>
+                        <Text type="secondary">支持短链文件和标签文件，上传后形成项目数据版本</Text>
+                      </Space>
+                    </Radio>
+                  </Space>
                 </Radio.Group>
               </Form.Item>
 
-              <Typography.Text
-                type="secondary"
-                style={{ display: 'block', marginBottom: 16, fontSize: 12 }}
-              >
-                上传文件会先形成项目数据源与数据快照，再用于任务执行；Agent 会自动识别数据结构。
-              </Typography.Text>
-
               {dataSourceType === 'snapshot' && (
-                <Form.Item name="snapshot_id" label="选择已有快照" initialValue="snapshot_20260615_001">
+                <Form.Item name="snapshot_id" label="数据版本" initialValue="V2026.04 建模样本">
                   <Select
                     options={[
-                      { value: 'snapshot_20260615_001', label: 'snapshot_20260615_001 · 2272样本 · 质量通过' },
-                      { value: 'snapshot_20260612_001', label: 'snapshot_20260612_001 · 2272样本 · 质量通过' },
+                      { value: 'V2026.04 建模样本', label: 'V2026.04 建模样本 · 2272样本 · 标签完整' },
+                      { value: 'V2026.03 验证样本', label: 'V2026.03 验证样本 · 1500样本 · 标签完整' },
                     ]}
                   />
                 </Form.Item>
               )}
 
               {dataSourceType === 'new_snapshot' && (
-                <Form.Item name="snapshot_policy" label="新快照口径" initialValue="首贷客户；标签1=逾期；以申请时间向前回溯">
+                <Form.Item name="snapshot_policy" label="数据版本口径" initialValue="首贷客户；标签1=逾期；以申请时间向前回溯">
                   <Input.TextArea rows={3} />
                 </Form.Item>
               )}
 
-              {dataSourceType === 'upload' ? (
-                <>
-                  <Form.Item label="客户申请短链文件（.txt）" extra="上传后进入项目级文件数据源，并生成本次任务绑定的数据快照" required>
-                    <Upload
-                      accept=".txt"
-                      showUploadList={{ showRemoveIcon: true }}
-                      maxCount={1}
-                      beforeUpload={(file) => { setUrlFile(file); return false; }}
-                      onRemove={() => setUrlFile(null)}
-                    >
-                      <Button icon={<UploadOutlined />}>选择文件</Button>
-                    </Upload>
-                  </Form.Item>
-                  <Form.Item label="好坏标签文件（.xlsx / .csv）" extra="用于生成快照质量检查和评估指标，字段识别由Agent完成" required>
-                    <Upload
-                      accept=".xlsx,.xls,.csv"
-                      showUploadList={{ showRemoveIcon: true }}
-                      maxCount={1}
-                      beforeUpload={(file) => { setLabelFile(file); return false; }}
-                      onRemove={() => setLabelFile(null)}
-                    >
-                      <Button icon={<UploadOutlined />}>选择文件</Button>
-                    </Upload>
-                  </Form.Item>
-                </>
-              ) : null}
+              {dataSourceType === 'upload' && (
+                <Row gutter={12}>
+                  <Col xs={24} md={12}>
+                    <Form.Item label="客户申请短链文件（.txt）" required>
+                      <Upload
+                        accept=".txt"
+                        showUploadList={{ showRemoveIcon: true }}
+                        maxCount={1}
+                        beforeUpload={(file) => { setUrlFile(file); return false; }}
+                        onRemove={() => setUrlFile(null)}
+                      >
+                        <Button icon={<UploadOutlined />}>选择文件</Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Form.Item label="好坏标签文件（.xlsx / .csv）" required>
+                      <Upload
+                        accept=".xlsx,.xls,.csv"
+                        showUploadList={{ showRemoveIcon: true }}
+                        maxCount={1}
+                        beforeUpload={(file) => { setLabelFile(file); return false; }}
+                        onRemove={() => setLabelFile(null)}
+                      >
+                        <Button icon={<UploadOutlined />}>选择文件</Button>
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
             </>
           )}
-          <Form.Item name="name" label="任务名称" rules={[{ required: true, message: '请输入任务名称' }]}>
-            <Input placeholder={taskMode === 'template_task' ? '例如：新增GPS防欺诈模板评审' : '例如：印尼现金贷4月首贷特征生产'} />
-          </Form.Item>
+
+          {experimentStep === 2 && experimentMode === 'factory' && (
+            <>
+              <Form.Item label="选择生产策略">
+                <Radio.Group
+                  value={experimentStrategy}
+                  onChange={(e) => setExperimentStrategy(e.target.value)}
+                  style={{ width: '100%' }}
+                >
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    <Radio value="quick">
+                      <Space wrap>
+                        <Tag color="success">推荐</Tag>
+                        <Text strong>快速上手</Text>
+                        <Text type="secondary">高通过率加工方式，约200个特征，预计15分钟</Text>
+                      </Space>
+                    </Radio>
+                    <Radio value="deep">
+                      <Space wrap>
+                        <Tag color="blue">推荐</Tag>
+                        <Text strong>深度探索</Text>
+                        <Text type="secondary">全量模板和衍生特征，约500个特征，预计30分钟</Text>
+                      </Space>
+                    </Radio>
+                    <Radio value="custom">
+                      <Space wrap>
+                        <Text strong>精准定制</Text>
+                        <Text type="secondary">手动选择加工方式，适合有经验用户</Text>
+                      </Space>
+                    </Radio>
+                  </Space>
+                </Radio.Group>
+              </Form.Item>
+              {experimentStrategy === 'custom' && (
+                <Alert
+                  type="info"
+                  showIcon
+                  message="手动模板选择"
+                  description="原型阶段先展示推荐策略。后续可在这里展开加工方式卡片，由用户按场景选择。"
+                />
+              )}
+            </>
+          )}
+
+          {experimentStep === 2 && experimentMode === 'explore' && (
+            <>
+              <Form.Item label="快捷场景">
+                <Space wrap>
+                  {[
+                    '这批坏客户有什么共性？',
+                    '帮我设计检测多头借贷的特征',
+                    '最近欺诈率上升，需要新特征',
+                  ].map((prompt) => (
+                    <Button key={prompt} onClick={() => form.setFieldValue('business_question', prompt)}>
+                      {prompt}
+                    </Button>
+                  ))}
+                </Space>
+              </Form.Item>
+              <Form.Item
+                name="business_question"
+                label="输入您的业务问题"
+                initialValue="帮我分析这批坏客户有什么共性，并设计可解释的新特征"
+                rules={[{ required: true, message: '请输入业务问题' }]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+            </>
+          )}
+
+          {experimentStep === 3 && (
+            <>
+              <Descriptions column={1} bordered size="small" style={{ marginBottom: 16 }}>
+                <Descriptions.Item label="实验模式">{experimentMode === 'explore' ? '探索模式' : '特征工厂'}</Descriptions.Item>
+                <Descriptions.Item label="数据版本">
+                  {dataSourceType === 'snapshot' ? 'V2026.04 建模样本' : dataSourceType === 'new_snapshot' ? '基于最新数据源生成' : '上传新数据后生成'}
+                </Descriptions.Item>
+                <Descriptions.Item label="执行策略">
+                  {experimentMode === 'explore'
+                    ? '按业务问题探索特征方向'
+                    : experimentStrategy === 'quick' ? '快速上手 · 约200个特征'
+                      : experimentStrategy === 'deep' ? '深度探索 · 约500个特征'
+                        : '精准定制'}
+                </Descriptions.Item>
+                <Descriptions.Item label="预计产出">
+                  {experimentMode === 'explore' ? '20-30个精选特征' : experimentStrategy === 'quick' ? '60-80个通过特征' : '100-150个通过特征'}
+                </Descriptions.Item>
+              </Descriptions>
+              <Form.Item name="name" label="实验名称" rules={[{ required: true, message: '请输入实验名称' }]}>
+                <Input placeholder={experimentMode === 'explore' ? '例如：坏客户共性探索实验' : '例如：印尼现金贷4月首贷快速上手实验'} />
+              </Form.Item>
+              <Form.Item name="scheduled_at" label="计划执行时间（可选）">
+                <DatePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm"
+                  style={{ width: '100%' }}
+                  placeholder="默认立即执行"
+                />
+              </Form.Item>
+              <Alert type="info" showIcon message="执行期间可以离开页面，完成后回到评估报告处理推荐特征。" />
+            </>
+          )}
         </Form>
       </Modal>
 
@@ -614,7 +771,7 @@ const Tasks: React.FC = () => {
       <Drawer
         title={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>{`任务详情 #${detailTask?.id} ${detailTask?.mode === 'template_task' ? '(模板生成)' : '(特征生产)'}`}</span>
+            <span>{`实验详情 #${detailTask?.id} ${detailTask?.mode === 'template_task' ? '(AI探索)' : '(特征工厂)'}`}</span>
             <Button
               type="text"
               size="small"
@@ -635,7 +792,7 @@ const Tasks: React.FC = () => {
               {detailTask?.mode !== 'template_task' && (
                 <>
                   <Descriptions.Item label="来源数据源">项目级数据源</Descriptions.Item>
-                  <Descriptions.Item label="数据快照">{getTaskSnapshotId(detailTask)}</Descriptions.Item>
+                  <Descriptions.Item label="数据版本">{getTaskSnapshotId(detailTask).replace('snapshot', 'V')}</Descriptions.Item>
                   <Descriptions.Item label="Agent识别状态">
                     <Tag color="success">已完成</Tag>
                   </Descriptions.Item>
@@ -673,7 +830,7 @@ const Tasks: React.FC = () => {
                     onClick={(e) => { e.stopPropagation(); handleCancel(); }}
                     style={{ marginLeft: 12 }}
                   >
-                    终止任务
+                    终止实验
                   </Button>
                 )}
                 {detailTask && detailTask.mode !== 'template_task'
@@ -690,7 +847,7 @@ const Tasks: React.FC = () => {
                     再次运行
                   </Button>
                 )}
-                {/* 模板任务：失败时可再次执行 */}
+                {/* AI探索实验：失败时可再次执行 */}
                 {detailTask?.status === 'failed' && detailTask?.mode === 'template_task' && (
                   <Button
                     type="primary"
@@ -705,7 +862,7 @@ const Tasks: React.FC = () => {
               </Descriptions.Item>
               <Descriptions.Item label="进度">{detailTask?.progress?.toFixed(0)}%</Descriptions.Item>
               {detailTask?.linked_task_id && (
-                <Descriptions.Item label="关联任务" span={2}>#{detailTask.linked_task_id}</Descriptions.Item>
+                <Descriptions.Item label="关联实验" span={2}>#{detailTask.linked_task_id}</Descriptions.Item>
               )}
               {detailTask?.scheduled_at && (
                 <Descriptions.Item label="计划执行时间" span={2}>
@@ -732,8 +889,8 @@ const Tasks: React.FC = () => {
                 type="info"
                 showIcon
                 style={{ marginBottom: 16 }}
-                message="结果归属于当前任务"
-                description={`层级：平台 / ${currentProject?.name || `项目 #${detailTask.project_id || '-'}`} / 数据快照 ${getTaskSnapshotId(detailTask)} / 任务 #${detailTask.id} ${detailTask.name} / 执行过程、候选特征、评估报告、部署版本和反馈沉淀。`}
+                message="结果归属于当前实验"
+                description={`层级：项目 ${currentProject?.name || `#${detailTask.project_id || '-'}`} / 数据版本 ${getTaskSnapshotId(detailTask).replace('snapshot', 'V')} / 实验 #${detailTask.id} ${detailTask.name} / 执行过程、候选特征、评估报告、版本交付和反馈沉淀。`}
               />
             )}
 
@@ -746,12 +903,12 @@ const Tasks: React.FC = () => {
                 description={(
                   <Space direction="vertical" size={10}>
                     <span>
-                      系统已完成候选特征生产、指标评估和部署包生成。建议先查看评估决策，再进入部署版本确认。
+                      系统已完成候选特征生产和指标评估。建议先查看评估决策，再把推荐特征加入候选集。
                     </span>
                     <Space wrap>
-                      <Button size="small" type="primary" onClick={() => navigate(`/evaluation?taskId=${detailTask.id}`)}>查看该任务评估报告</Button>
-                      <Button size="small" onClick={() => navigate(`/deployment?taskId=${detailTask.id}`)}>查看该任务部署版本</Button>
-                      <Button size="small" onClick={() => navigate('/templates')}>查看模板库</Button>
+                      <Button size="small" type="primary" onClick={() => navigate(`/mine/report?taskId=${detailTask.id}`)}>查看评估报告</Button>
+                      <Button size="small" onClick={() => navigate(`/ship/candidates?taskId=${detailTask.id}`)}>进入候选集</Button>
+                      <Button size="small" onClick={() => navigate('/assets/templates')}>查看模板库</Button>
                     </Space>
                   </Space>
                 )}
@@ -766,11 +923,11 @@ const Tasks: React.FC = () => {
                 message="本轮生产未完成闭环"
                 description={(
                   <Space direction="vertical" size={10}>
-                    <span>优先查看失败原因，确认是数据快照、业务口径、模板还是评估阈值问题，再决定继续执行或重新发起。</span>
+                    <span>优先查看失败原因，确认是数据版本、业务口径、加工方式还是评估阈值问题，再决定继续执行或重新发起。</span>
                     <Space wrap>
                       <Button size="small" type="primary" loading={resuming} onClick={handleResume}>继续执行</Button>
-                      <Button size="small" onClick={() => navigate('/data-sources')}>检查数据源</Button>
-                      <Button size="small" onClick={() => navigate('/knowledge')}>检查知识</Button>
+                      <Button size="small" onClick={() => navigate('/assets/data')}>检查数据版本</Button>
+                      <Button size="small" onClick={() => navigate('/assets/knowledge')}>检查知识库</Button>
                     </Space>
                   </Space>
                 )}
@@ -782,11 +939,11 @@ const Tasks: React.FC = () => {
                 type="info"
                 showIcon
                 style={{ marginBottom: 16 }}
-                message="模板生成任务已完成"
+                message="AI探索实验已完成"
                 description={(
                   <Space direction="vertical" size={10}>
                     <span>模板只是数据加工方式，批准后才能进入项目可用模板范围，具体效果仍需通过特征生产和评估验证。</span>
-                    <Button size="small" type="primary" onClick={() => navigate('/templates')}>去模板库审批</Button>
+                    <Button size="small" type="primary" onClick={() => navigate('/assets/templates')}>去模板库审批</Button>
                   </Space>
                 )}
               />
@@ -867,13 +1024,13 @@ const Tasks: React.FC = () => {
                             type="info"
                             showIcon
                             style={{ marginBottom: 16 }}
-                            message="候选特征来自当前任务"
-                            description="候选特征必须经过评估报告判断后，才能进入部署版本。这里不单独给出上线结论。"
+                            message="候选特征来自当前实验"
+                            description="候选特征必须经过评估报告判断后，才能进入候选集确认。这里不单独给出上线结论。"
                           />
                           <Descriptions column={3} size="small" bordered style={{ marginBottom: 16 }}>
                             <Descriptions.Item label="候选总数">{detailTask.total_features}</Descriptions.Item>
                             <Descriptions.Item label="评估通过">{detailTask.passed_features || 0}</Descriptions.Item>
-                            <Descriptions.Item label="部署版本">{detailTask.deployed_version || '待生成'}</Descriptions.Item>
+                            <Descriptions.Item label="交付版本">{detailTask.deployed_version || '待生成'}</Descriptions.Item>
                           </Descriptions>
                           <Table
                             size="small"
@@ -1051,13 +1208,13 @@ const Tasks: React.FC = () => {
                     },
                     {
                       key: 'deploy',
-                      label: '部署版本',
+                      label: '版本交付',
                       children: detailTask.deployed_version ? (
                         <div>
                           <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
-                            <Descriptions.Item label="部署版本">{detailTask.deployed_version}</Descriptions.Item>
+                            <Descriptions.Item label="交付版本">{detailTask.deployed_version}</Descriptions.Item>
                             <Descriptions.Item label="状态">
-                              <Tag color="success">已部署</Tag>
+                              <Tag color="success">已生成</Tag>
                             </Descriptions.Item>
                             <Descriptions.Item label="完成时间">
                               {detailTask.completed_at
@@ -1189,26 +1346,26 @@ GET  /health            — 健康检查
                           </Button>
                         </div>
                       ) : (
-                        <Empty description="该任务尚未部署" />
+                        <Empty description="该实验尚未生成交付版本" />
                       ),
                     },
                     {
                       key: 'feedback',
                       label: '反馈沉淀',
                       children: (
-                        <Card size="small" title="本任务反馈沉淀">
+                        <Card size="small" title="本实验反馈沉淀">
                           <Space direction="vertical" size={12} style={{ width: '100%' }}>
                             <Alert
                               type={detailTask.status === 'completed' ? 'success' : 'info'}
                               showIcon
-                              message={detailTask.status === 'completed' ? '可沉淀为下一轮生产依据' : '任务完成后沉淀反馈'}
+                              message={detailTask.status === 'completed' ? '可沉淀为下一轮实验依据' : '实验完成后沉淀反馈'}
                               description="反馈沉淀用于记录本轮特征通过情况、淘汰原因、模板效果和业务复盘结论，后续应回流到项目知识库和模板评审。"
                             />
                             <Descriptions column={1} size="small" bordered>
-                              <Descriptions.Item label="来源任务">#{detailTask.id} {detailTask.name}</Descriptions.Item>
+                              <Descriptions.Item label="来源实验">#{detailTask.id} {detailTask.name}</Descriptions.Item>
                               <Descriptions.Item label="来源快照">{getTaskSnapshotId(detailTask)}</Descriptions.Item>
-                              <Descriptions.Item label="沉淀对象">通过特征、淘汰原因、部署版本、模板表现</Descriptions.Item>
-                              <Descriptions.Item label="后续去向">知识 / 模板库 / 下一轮生产任务</Descriptions.Item>
+                              <Descriptions.Item label="沉淀对象">通过特征、淘汰原因、交付版本、模板表现</Descriptions.Item>
+                              <Descriptions.Item label="后续去向">知识库 / 模板库 / 下一轮实验</Descriptions.Item>
                             </Descriptions>
                           </Space>
                         </Card>

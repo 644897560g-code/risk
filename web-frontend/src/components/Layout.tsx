@@ -2,16 +2,17 @@ import React, { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumb, Layout, Menu, Typography, Button, theme, Select, message } from 'antd';
 import {
-  AppstoreOutlined,
   MessageOutlined,
   DatabaseOutlined,
   FileTextOutlined,
-  OrderedListOutlined,
   UserOutlined,
   LogoutOutlined,
-  FolderOpenOutlined,
+  RocketOutlined,
   ExperimentOutlined,
   CloudUploadOutlined,
+  HomeOutlined,
+  BulbOutlined,
+  CheckSquareOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@/store/authStore';
 import { useProjectStore } from '@/store/projectStore';
@@ -20,32 +21,33 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 
 const menuItems = [
+  { key: '/home', icon: <HomeOutlined />, label: '工作台' },
   {
-    key: 'platform',
-    label: '平台',
+    key: 'mine',
+    label: '探索',
     children: [
-      { key: '/projects', icon: <FolderOpenOutlined />, label: '项目列表' },
-      { key: '/templates', icon: <ExperimentOutlined />, label: '模板库' },
+      { key: '/mine/experiments', icon: <RocketOutlined />, label: '实验列表' },
+      { key: '/mine/report', icon: <FileTextOutlined />, label: '评估报告' },
     ],
   },
   {
-    key: 'project',
-    label: '当前项目',
+    key: 'assets',
+    label: '资产',
     children: [
-      { key: '/dashboard', icon: <AppstoreOutlined />, label: '项目概览' },
-      { key: '/data-sources', icon: <DatabaseOutlined />, label: '数据源' },
-      { key: '/knowledge', icon: <FileTextOutlined />, label: '知识' },
-      { key: '/tasks', icon: <OrderedListOutlined />, label: '任务' },
-      { key: '/deployment', icon: <CloudUploadOutlined />, label: '版本与交付' },
+      { key: '/assets/data', icon: <DatabaseOutlined />, label: '数据版本' },
+      { key: '/assets/templates', icon: <ExperimentOutlined />, label: '模板库' },
+      { key: '/assets/knowledge', icon: <BulbOutlined />, label: '知识库' },
     ],
   },
   {
-    key: 'support',
-    label: '辅助工具',
+    key: 'ship',
+    label: '交付',
     children: [
-      { key: '/agent', icon: <MessageOutlined />, label: '智能助理' },
+      { key: '/ship/candidates', icon: <CheckSquareOutlined />, label: '候选特征集' },
+      { key: '/ship/versions', icon: <CloudUploadOutlined />, label: '版本管理' },
     ],
   },
+  { key: '/copilot', icon: <MessageOutlined />, label: '助手' },
 ];
 
 const AppLayout: React.FC = () => {
@@ -56,38 +58,48 @@ const AppLayout: React.FC = () => {
   const authUsername = useAuthStore((s) => s.username);
   const { projects, currentProject, isLoading, loadProjects, selectProject } = useProjectStore();
 
-  const routeRoot = '/' + location.pathname.split('/')[1];
-  const selectedKey = routeRoot === '/evaluation' ? '/tasks' : routeRoot;
+  const pathname = location.pathname;
+  const selectedKey = (() => {
+    if (pathname.startsWith('/mine/report')) return '/mine/report';
+    if (pathname.startsWith('/mine/experiments')) return '/mine/experiments';
+    if (pathname.startsWith('/assets/data')) return '/assets/data';
+    if (pathname.startsWith('/assets/templates')) return '/assets/templates';
+    if (pathname.startsWith('/assets/knowledge')) return '/assets/knowledge';
+    if (pathname.startsWith('/ship/candidates')) return '/ship/candidates';
+    if (pathname.startsWith('/ship/versions')) return '/ship/versions';
+    if (pathname.startsWith('/copilot')) return '/copilot';
+    return '/home';
+  })();
   const projectName = currentProject?.name || '当前项目';
   const routeContext = (() => {
-    switch (routeRoot) {
-      case '/projects':
-        return { title: '项目列表', breadcrumb: ['平台', '项目列表'] };
-      case '/templates':
-        return { title: '模板库', breadcrumb: ['平台', '模板库'] };
-      case '/dashboard':
-        return { title: '项目概览', breadcrumb: ['平台', projectName, '项目概览'] };
-      case '/data-sources':
-        return { title: '数据源', breadcrumb: ['平台', projectName, '数据源'] };
-      case '/knowledge':
-        return { title: '知识', breadcrumb: ['平台', projectName, '知识'] };
-      case '/tasks':
-        return { title: '任务', breadcrumb: ['平台', projectName, '任务'] };
-      case '/evaluation':
-        return { title: '任务结果 / 评估报告', breadcrumb: ['平台', projectName, '任务', '评估报告'] };
-      case '/deployment':
-        return { title: '版本与交付', breadcrumb: ['平台', projectName, '版本与交付'] };
-      case '/agent':
-        return { title: '智能助理', breadcrumb: ['辅助工具', '智能助理'] };
+    switch (selectedKey) {
+      case '/home':
+        return { title: '工作台', breadcrumb: ['工作台'] };
+      case '/mine/experiments':
+        return { title: '实验列表', breadcrumb: ['探索', projectName, '实验列表'] };
+      case '/mine/report':
+        return { title: '评估报告', breadcrumb: ['探索', projectName, '评估报告'] };
+      case '/assets/data':
+        return { title: '数据版本', breadcrumb: ['资产', projectName, '数据版本'] };
+      case '/assets/templates':
+        return { title: '模板库', breadcrumb: ['资产', '模板库'] };
+      case '/assets/knowledge':
+        return { title: '知识库', breadcrumb: ['资产', projectName, '知识库'] };
+      case '/ship/candidates':
+        return { title: '候选特征集', breadcrumb: ['交付', projectName, '候选特征集'] };
+      case '/ship/versions':
+        return { title: '版本管理', breadcrumb: ['交付', projectName, '版本管理'] };
+      case '/copilot':
+        return { title: '助手', breadcrumb: ['助手'] };
       default:
-        return { title: '特征生产平台', breadcrumb: ['平台'] };
+        return { title: '工作台', breadcrumb: ['工作台'] };
     }
   })();
 
   const handleLogout = () => {
     authLogout();
     message.info('当前为前端产品原型模式，无需登录');
-    navigate('/dashboard', { replace: true });
+    navigate('/home', { replace: true });
   };
 
   useEffect(() => {
@@ -161,7 +173,7 @@ const AppLayout: React.FC = () => {
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
-          defaultOpenKeys={['platform', 'project', 'support']}
+          defaultOpenKeys={['mine', 'assets', 'ship']}
           items={menuItems}
           onClick={({ key }) => {
             if (String(key).startsWith('/')) navigate(key);

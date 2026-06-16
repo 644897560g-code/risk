@@ -1,17 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Card, Col, Empty, Progress, Row, Space, Steps, Table, Tag, Typography, message } from 'antd';
+import { Alert, Button, Card, Col, Empty, List, Progress, Row, Space, Statistic, Tag, Typography, message } from 'antd';
 import {
-  BarChartOutlined,
-  CheckCircleOutlined,
   CloudUploadOutlined,
   DatabaseOutlined,
   ExperimentOutlined,
   FileTextOutlined,
-  FolderOpenOutlined,
   PlayCircleOutlined,
   ReloadOutlined,
+  RocketOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
-import ReactEChartsCore from 'echarts-for-react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchChannel1Templates,
@@ -25,12 +23,12 @@ import { useProjectStore } from '@/store/projectStore';
 
 const { Text, Title } = Typography;
 
-const statusColor: Record<string, string> = {
-  pending: 'default',
-  running: 'processing',
-  completed: 'success',
-  failed: 'error',
-  cancelled: 'warning',
+const taskStatusText: Record<string, { text: string; color: string }> = {
+  pending: { text: '待启动', color: 'default' },
+  running: { text: '运行中', color: 'processing' },
+  completed: { text: '评估完成', color: 'success' },
+  failed: { text: '运行失败', color: 'error' },
+  cancelled: { text: '已归档', color: 'warning' },
 };
 
 const Dashboard: React.FC = () => {
@@ -71,282 +69,230 @@ const Dashboard: React.FC = () => {
     load();
   }, [load]);
 
-  const runningTask = tasks.find((task) => task.status === 'running' || task.status === 'pending');
-  const latestTask = tasks[0];
-  const completedTasks = tasks.filter((task) => task.status === 'completed').length;
-  const failedTasks = tasks.filter((task) => task.status === 'failed').length;
-  const latestCompletedTask = tasks.find((task) => task.status === 'completed' && task.mode !== 'template_task');
-  const hasProject = Boolean(currentProject);
-  const hasProjectDataSource = hasProject;
-  const hasKnowledgeBasis = hasProject;
-  const hasTemplates = templates.length > 0;
-  const hasProductionTask = tasks.some((task) => task.mode !== 'template_task');
-  const hasEvaluation = featureStats.current_total > 0;
-  const hasDeployment = Boolean(featureStats.latest_version);
-  const lifecycleCurrent = !hasProject ? 0
-    : !hasProjectDataSource ? 1
-      : !hasKnowledgeBasis ? 2
-        : !hasTemplates ? 3
-          : !hasProductionTask ? 4
-            : runningTask ? 4
-              : !hasEvaluation ? 5
-                : !hasDeployment ? 5
-                  : 5;
+  const runningExperiment = tasks.find((task) => task.status === 'running' || task.status === 'pending');
+  const completedExperiment = tasks.find((task) => task.status === 'completed' && task.mode !== 'template_task');
+  const failedExperiment = tasks.find((task) => task.status === 'failed');
   const passRate = featureStats.current_total
     ? Math.round((featureStats.current_passed / featureStats.current_total) * 100)
     : 0;
-  const nextActions = [
-    !hasProject && { title: '先创建业务项目', desc: '明确国家、产品、客户范围和评估阈值。', action: '去项目列表', path: '/projects' },
-    hasProject && !hasProductionTask && { title: '确认项目数据源', desc: '任务启动前先选择或生成项目级数据快照。', action: '去数据源', path: '/data-sources' },
-    hasProject && !hasTemplates && { title: '选择可用模板', desc: '确认平台模板库中有哪些加工方式可用于生产。', action: '去模板库', path: '/templates' },
-    hasProject && hasTemplates && !hasProductionTask && { title: '发起首轮生产', desc: '绑定数据快照和模板范围，生成候选特征并进入评估。', action: '发起生产', path: '/tasks' },
-    runningTask && { title: '跟踪运行任务', desc: `${runningTask.name} 正在执行，优先查看步骤状态。`, action: '查看任务', path: '/tasks' },
-    hasEvaluation && !hasDeployment && { title: '确认评估结论', desc: '判断本轮特征是否足够稳定，是否可进入部署。', action: '查看评估', path: '/evaluation' },
-    hasDeployment && { title: '进入版本与交付', desc: `最新版本 ${featureStats.latest_version} 已生成，等待业务确认和交付。`, action: '查看交付版本', path: '/deployment' },
-  ].filter(Boolean) as Array<{ title: string; desc: string; action: string; path: string }>;
+  const todoCount = [
+    completedExperiment,
+    featureStats.current_passed > 0 ? 'candidate' : null,
+    featureStats.latest_version ? 'ship' : null,
+  ].filter(Boolean).length;
 
-  const taskChartOption = useMemo(() => ({
-    tooltip: {
-      trigger: 'item' as const,
-      backgroundColor: 'rgba(8, 13, 21, 0.94)',
-      borderColor: 'rgba(55, 231, 255, 0.26)',
-      textStyle: { color: '#e5f6ff' },
-    },
-    legend: { bottom: 0, textStyle: { color: '#cbd5e1' } },
-    series: [{
-      type: 'pie',
-      radius: ['48%', '70%'],
-      center: ['50%', '44%'],
-      data: [
-        { name: '已完成', value: completedTasks, itemStyle: { color: '#00b383' } },
-        { name: '运行中', value: tasks.filter((task) => task.status === 'running').length, itemStyle: { color: '#2b5fd9' } },
-        { name: '失败', value: failedTasks, itemStyle: { color: '#e8453c' } },
-        { name: '等待', value: tasks.filter((task) => task.status === 'pending').length, itemStyle: { color: '#8c93a3' } },
-      ].filter((item) => item.value > 0),
-      label: { formatter: '{b}\n{d}%', color: '#cbd5e1' },
-    }],
-  }), [completedTasks, failedTasks, tasks]);
+  const recentActivities = useMemo(() => {
+    const items = tasks.slice(0, 4).map((task) => {
+      const status = taskStatusText[task.status] || { text: task.status, color: 'default' };
+      if (task.status === 'completed') {
+        return {
+          id: task.id,
+          title: `实验 #${task.id} 评估完成`,
+          desc: `${task.passed_features || 0} 个特征可进入候选集`,
+          tag: status,
+          actions: [
+            { label: '查看报告', path: `/mine/report?taskId=${task.id}`, primary: true },
+            { label: '加入候选集', path: `/ship/candidates?taskId=${task.id}` },
+          ],
+        };
+      }
+      if (task.status === 'failed') {
+        return {
+          id: task.id,
+          title: `实验 #${task.id} 运行失败`,
+          desc: task.error_message || '建议查看失败原因后调整数据或策略重试',
+          tag: status,
+          actions: [
+            { label: '查看原因', path: '/mine/experiments', primary: true },
+            { label: '调整后重试', path: '/mine/experiments?create=factory' },
+          ],
+        };
+      }
+      return {
+        id: task.id,
+        title: `实验 #${task.id} ${status.text}`,
+        desc: task.status === 'running' ? `当前进度 ${Math.round(task.progress || 0)}%` : task.name,
+        tag: status,
+        actions: [{ label: '查看进度', path: '/mine/experiments', primary: task.status === 'running' }],
+      };
+    });
+    return items;
+  }, [tasks]);
 
   return (
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>项目概览</Title>
+          <Title level={3} style={{ margin: 0 }}>工作台</Title>
           <Text type="secondary">
-            {currentProject?.name ? `当前项目：${currentProject.name}。` : '当前项目未选择。'}
-            本页只展示当前项目的数据与产物。
+            {currentProject?.name ? `当前项目：${currentProject.name}。` : '当前未选择项目。'}
+            这里聚合今天最该推进的实验、评估和交付动作。
           </Text>
         </div>
         <Space>
           <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
-          <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => navigate('/tasks')}>创建任务</Button>
+          <Button type="primary" icon={<RocketOutlined />} onClick={() => navigate('/mine/experiments?create=factory')}>
+            创建实验
+          </Button>
         </Space>
       </div>
 
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <DatabaseOutlined className="metric-icon blue" />
-            <div className="metric-value">{hasProjectDataSource ? '已就绪' : '待配置'}</div>
-            <div className="metric-label">数据是否就绪</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <ExperimentOutlined className="metric-icon teal" />
-            <div className="metric-value">{hasTemplates ? templates.length : '待确认'}</div>
-            <div className="metric-label">模板是否可用</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <PlayCircleOutlined className="metric-icon green" />
-            <div className="metric-value">{runningTask ? '运行中' : latestTask ? statusColor[latestTask.status] === 'success' ? '已完成' : '待处理' : '无任务'}</div>
-            <div className="metric-label">最近任务状态</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <CloudUploadOutlined className="metric-icon orange" />
-            <div className="metric-value">{featureStats.latest_version || '-'}</div>
-            <div className="metric-label">最新交付版本</div>
-          </Card>
-        </Col>
-      </Row>
+      <Alert
+        type={todoCount ? 'warning' : 'success'}
+        showIcon
+        style={{ marginBottom: 16 }}
+        message={todoCount ? `待办：${completedExperiment ? '1个实验待评估，' : ''}${featureStats.current_passed ? `${featureStats.current_passed}个特征待确认，` : ''}${featureStats.latest_version ? '1个版本待交付' : ''}` : '当前没有阻塞待办'}
+        description="优先处理评估完成、候选确认和版本交付，确保每次实验都有明确下一步。"
+      />
 
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={16}>
-          <Card
-            title="核心流程闭环"
-            extra={<Button type="link" onClick={() => navigate('/tasks')}>查看任务中心</Button>}
-          >
-            <Steps
-              current={lifecycleCurrent}
-              items={[
-                { title: '项目', description: '确认业务范围', icon: <FolderOpenOutlined /> },
-                { title: '数据源', description: '生成可复现快照', icon: <DatabaseOutlined /> },
-                { title: '知识', description: '确认业务口径', icon: <FileTextOutlined /> },
-                { title: '模板', description: '选择加工方式', icon: <ExperimentOutlined /> },
-                { title: '任务', description: '绑定快照并生产', icon: <PlayCircleOutlined /> },
-                { title: '版本与交付', description: '评估、部署与追溯', icon: <CloudUploadOutlined /> },
-              ]}
-            />
-            <div className="process-summary">
-              {runningTask ? (
-                <>
-                  <Text strong>当前运行：</Text>
-                  <Text>{runningTask.name}</Text>
-                  <Progress percent={Math.round(runningTask.progress || 0)} size="small" style={{ marginTop: 10 }} />
-                </>
-              ) : (
-                <Text type="secondary">
-                  {hasDeployment
-                    ? `当前闭环已走到部署交付，最新版本为 ${featureStats.latest_version}。`
-                    : '当前闭环尚未完成，请按右侧建议推进下一步。'}
-                </Text>
-              )}
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} lg={8}>
-          <Card title="下一步建议">
-            {nextActions.length > 0 ? (
-              <Space direction="vertical" size={12} style={{ width: '100%' }}>
-                {nextActions.slice(0, 3).map((item) => (
-                  <Alert
-                    key={item.title}
-                    type={runningTask ? 'info' : hasDeployment ? 'success' : 'warning'}
-                    showIcon
-                    message={item.title}
-                    description={(
-                      <Space direction="vertical" size={8}>
-                        <span>{item.desc}</span>
-                        <Button size="small" type="primary" onClick={() => navigate(item.path)}>{item.action}</Button>
-                      </Space>
-                    )}
-                  />
-                ))}
-              </Space>
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无待办" />
-            )}
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <FolderOpenOutlined className="metric-icon blue" />
-            <div className="metric-value">{projectTotal}</div>
-            <div className="metric-label">平台项目总数</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <ExperimentOutlined className="metric-icon teal" />
-            <div className="metric-value">{templates.length}</div>
-            <div className="metric-label">平台可用模板</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <CheckCircleOutlined className="metric-icon green" />
-            <div className="metric-value">{featureStats.accumulated_passed}</div>
-            <div className="metric-label">累计通过特征</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card className="metric-card compact">
-            <CloudUploadOutlined className="metric-icon orange" />
-            <div className="metric-value">{featureStats.latest_version || '-'}</div>
-            <div className="metric-label">最新部署版本</div>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={9}>
-          <Card title="本轮评估概览" extra={<Button type="link" onClick={() => navigate('/evaluation')}>查看报告</Button>}>
-            <div className="pass-rate-block">
-              <Progress type="dashboard" percent={passRate} strokeColor={passRate >= 50 ? '#00b383' : '#f5a623'} />
-              <div>
-                <div className="pass-rate-title">{featureStats.current_passed}/{featureStats.current_total}</div>
-                <Text type="secondary">通过阈值的特征数</Text>
-                <div style={{ marginTop: 12 }}>
-                  <Tag color="green">IV &gt;= 0.02</Tag>
-                  <Tag color="blue">PSI &lt;= 0.25</Tag>
-                  <Tag color="gold">覆盖率 &gt; 5%</Tag>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <Card className="action-card" hoverable>
+            <Space direction="vertical" size={14} style={{ width: '100%' }}>
+              <Space align="start">
+                <ExperimentOutlined className="metric-icon blue" />
+                <div>
+                  <Title level={4} style={{ margin: 0 }}>发起探索</Title>
+                  <Text type="secondary">适合新场景分析、异常样本诊断和新模板创新。</Text>
                 </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} lg={7}>
-          <Card title="最近任务状态">
-            {tasks.length > 0 ? (
-              <ReactEChartsCore option={taskChartOption} style={{ height: 245 }} notMerge />
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无任务" />
-            )}
-          </Card>
-        </Col>
-        <Col xs={24} lg={8}>
-          <Card title="最新产出">
-            {latestCompletedTask ? (
-              <Space direction="vertical" size={10} style={{ width: '100%' }}>
-                <Text strong>{latestCompletedTask.name}</Text>
-                <Text type="secondary">
-                  已通过 {latestCompletedTask.passed_features || 0}/{latestCompletedTask.total_features || 0} 个特征。
-                </Text>
-                <Space wrap>
-                  {latestCompletedTask.deployed_version && <Tag color="blue">版本 {latestCompletedTask.deployed_version}</Tag>}
-                  <Tag color={passRate >= 50 ? 'success' : 'warning'}>通过率 {passRate}%</Tag>
-                </Space>
-                <Space>
-                  <Button size="small" onClick={() => navigate(`/evaluation?taskId=${latestCompletedTask.id}`)}>评估决策</Button>
-                  <Button size="small" type="primary" onClick={() => navigate(`/deployment?taskId=${latestCompletedTask.id}`)}>版本与交付</Button>
-                </Space>
               </Space>
-            ) : (
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无完成任务" />
-            )}
+              <Text>AI 会根据业务问题和样本表现推荐特征方向，预计产出 20-30 个精选特征。</Text>
+              <Button type="primary" icon={<ThunderboltOutlined />} onClick={() => navigate('/mine/experiments?create=explore')}>
+                发起探索
+              </Button>
+            </Space>
+          </Card>
+        </Col>
+        <Col xs={24} lg={12}>
+          <Card className="action-card" hoverable>
+            <Space direction="vertical" size={14} style={{ width: '100%' }}>
+              <Space align="start">
+                <RocketOutlined className="metric-icon teal" />
+                <div>
+                  <Title level={4} style={{ margin: 0 }}>启动特征工厂</Title>
+                  <Text type="secondary">适合已知场景快速扩量，基于模板库批量生成组合。</Text>
+                </div>
+              </Space>
+              <Text>系统推荐高通过率模板组合，预计 15-30 分钟产出 200-500 个候选特征。</Text>
+              <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => navigate('/mine/experiments?create=factory')}>
+                快速启动
+              </Button>
+            </Space>
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24}>
-          <Card title="最近生产任务">
-            <Table
-              rowKey="id"
-              size="small"
-              dataSource={tasks}
-              pagination={false}
-              columns={[
-                { title: '任务', dataIndex: 'name', ellipsis: true },
-                {
-                  title: '状态',
-                  dataIndex: 'status',
-                  width: 100,
-                  render: (status: string) => <Tag color={statusColor[status] || 'default'}>{status}</Tag>,
-                },
-                {
-                  title: '通过/总数',
-                  width: 110,
-                  render: (_, row: Task) => row.total_features != null ? `${row.passed_features}/${row.total_features}` : '-',
-                },
-                {
-                  title: '版本',
-                  dataIndex: 'deployed_version',
-                  width: 100,
-                  render: (version: string) => version ? <Tag color="blue">{version}</Tag> : '-',
-                },
-              ]}
-            />
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <Statistic title="平台项目" value={projectTotal} suffix="个" />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <Statistic title="可用加工方式" value={templates.length} suffix="个" />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <Statistic title="本轮通过率" value={passRate} suffix="%" />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <Statistic title="最新版本" value={featureStats.latest_version || '-'} />
           </Card>
         </Col>
       </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={15}>
+          <Card title="最近动态">
+            {recentActivities.length ? (
+              <List
+                dataSource={recentActivities}
+                renderItem={(item) => (
+                  <List.Item
+                    actions={item.actions.map((action) => (
+                      <Button
+                        key={action.label}
+                        size="small"
+                        type={action.primary ? 'primary' : 'default'}
+                        onClick={() => navigate(action.path)}
+                      >
+                        {action.label}
+                      </Button>
+                    ))}
+                  >
+                    <List.Item.Meta
+                      title={<Space><span>{item.title}</span><Tag color={item.tag.color}>{item.tag.text}</Tag></Space>}
+                      description={item.desc}
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="暂无实验动态"
+              >
+                <Button type="primary" onClick={() => navigate('/mine/experiments?create=factory')}>启动第一次实验</Button>
+              </Empty>
+            )}
+          </Card>
+        </Col>
+        <Col xs={24} lg={9}>
+          <Card title="平台洞察">
+            <Space direction="vertical" size={14} style={{ width: '100%' }}>
+              <div>
+                <div className="dimension-row">
+                  <span>历史平均通过率</span>
+                  <Tag color="success">68%</Tag>
+                </div>
+                <Progress percent={68} strokeColor="#34d399" />
+              </div>
+              <Alert
+                type="info"
+                showIcon
+                message="建议优先使用占比类加工方式"
+                description="APP高风险类别占比在当前项目中表现稳定，适合作为快速上手策略的核心组合。"
+              />
+              <Space wrap>
+                <Button size="small" icon={<DatabaseOutlined />} onClick={() => navigate('/assets/data')}>查看数据版本</Button>
+                <Button size="small" icon={<FileTextOutlined />} onClick={() => navigate('/assets/knowledge')}>查看知识库</Button>
+                <Button size="small" icon={<CloudUploadOutlined />} onClick={() => navigate('/ship/versions')}>查看交付</Button>
+              </Space>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+
+      {runningExperiment && (
+        <Card title="正在运行的实验" style={{ marginTop: 16 }}>
+          <Space direction="vertical" size={10} style={{ width: '100%' }}>
+            <Space>
+              <Tag color="processing">运行中</Tag>
+              <Text strong>{runningExperiment.name}</Text>
+            </Space>
+            <Progress percent={Math.round(runningExperiment.progress || 0)} />
+            <Space>
+              <Button type="primary" onClick={() => navigate('/mine/experiments')}>查看实时进度</Button>
+              <Button onClick={() => navigate('/copilot')}>让助手诊断实验</Button>
+            </Space>
+          </Space>
+        </Card>
+      )}
+
+      {!currentProject && (
+        <Card style={{ marginTop: 16 }}>
+          <Empty description="欢迎来到 RiskForge AI">
+            <Space direction="vertical">
+              <Text>3步开始挖掘风控特征：创建项目、准备数据版本、启动第一次实验。</Text>
+              <Button type="primary" onClick={() => navigate('/projects')}>开始设置</Button>
+            </Space>
+          </Empty>
+        </Card>
+      )}
     </div>
   );
 };

@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
     try {
       await login(values.username, values.password);
       message.success('登录成功');
-      navigate('/agent', { replace: true });
+      navigate('/copilot', { replace: true });
     } catch (err: any) {
       message.error(err?.response?.data?.detail || '登录失败，请检查用户名和密码');
     } finally {

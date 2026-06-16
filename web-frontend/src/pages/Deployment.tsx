@@ -73,8 +73,8 @@ const Deployment: React.FC = () => {
         </Space>
       ),
     },
-    { title: '来源任务', dataIndex: 'task_id', width: 100, render: (id: number) => `#${id}` },
-    { title: '来源数据快照', dataIndex: 'task_id', width: 180, render: (id: number) => <Tag color="blue">{`snapshot_task_${id}`}</Tag> },
+    { title: '来源实验', dataIndex: 'task_id', width: 100, render: (id: number) => `#${id}` },
+    { title: '数据版本', dataIndex: 'task_id', width: 180, render: (id: number) => <Tag color="blue">{`V_task_${id}`}</Tag> },
     { title: '特征数', dataIndex: 'total_features', width: 100 },
     {
       title: '通过率',
@@ -115,10 +115,10 @@ const Deployment: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>版本与交付</Title>
+          <Title level={3} style={{ margin: 0 }}>版本管理</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            本页数据仅属于当前项目；对接方凭版本号获取固定不变的交付物。
+            管理候选集生成的交付版本，面向模型团队提供技术包、业务说明书和调用说明。
           </Text>
         </div>
         <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
@@ -128,9 +128,9 @@ const Deployment: React.FC = () => {
         <Descriptions column={{ xs: 1, sm: 2, lg: 5 }} size="small">
           <Descriptions.Item label="所属平台">RiskForge AI</Descriptions.Item>
           <Descriptions.Item label="所属项目">{currentProject?.name || '-'}</Descriptions.Item>
-          <Descriptions.Item label="来源任务">{latest?.task_id ? `#${latest.task_id}` : taskIdParam ? `#${taskIdParam}` : '请选择版本'}</Descriptions.Item>
-          <Descriptions.Item label="来源快照">{latest?.task_id ? `snapshot_task_${latest.task_id}` : taskIdParam ? `snapshot_task_${taskIdParam}` : '-'}</Descriptions.Item>
-          <Descriptions.Item label="结果类型">版本与交付</Descriptions.Item>
+          <Descriptions.Item label="来源实验">{latest?.task_id ? `#${latest.task_id}` : taskIdParam ? `#${taskIdParam}` : '请选择版本'}</Descriptions.Item>
+          <Descriptions.Item label="数据版本">{latest?.task_id ? `V_task_${latest.task_id}` : taskIdParam ? `V_task_${taskIdParam}` : '-'}</Descriptions.Item>
+          <Descriptions.Item label="结果类型">版本交付</Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -145,13 +145,15 @@ const Deployment: React.FC = () => {
                   <Tag color="warning">待业务确认</Tag>
                 </Space>
                 <Text type="secondary">
-                  包含 {latest.total_features} 个候选特征，{latest.passed_features} 个通过生产阈值。当前版本已具备交付条件，但仍需业务确认后再发布。
+                  来自候选集确认结果，包含 {latest.passed_features} 个待交付特征。当前版本已具备交付条件，但仍需业务确认后再发布。
                 </Text>
+                <Text>上线建议：特征质量较上一版本提升，建议替换上一版；首次上线特征需重点监控稳定性。</Text>
               </Space>
             </Col>
             <Col xs={24} lg={9} style={{ textAlign: 'right' }}>
               <Space wrap style={{ justifyContent: 'flex-end' }}>
-                <Button onClick={() => navigate(`/evaluation?taskId=${latest.task_id}`)}>查看同任务评估</Button>
+                <Button onClick={() => navigate(`/mine/report?taskId=${latest.task_id}`)}>查看同实验评估</Button>
+                <Button onClick={() => navigate(`/ship/candidates?taskId=${latest.task_id}`)}>查看候选集</Button>
                 <Button
                   type="primary"
                   icon={<CloudDownloadOutlined />}
@@ -205,14 +207,14 @@ const Deployment: React.FC = () => {
           <Card title="来源追溯">
             {latest ? (
               <Descriptions column={1} size="small">
-                <Descriptions.Item label="来源任务">#{latest.task_id}</Descriptions.Item>
-                <Descriptions.Item label="来源快照">{`snapshot_task_${latest.task_id}`}</Descriptions.Item>
+                <Descriptions.Item label="来源实验">#{latest.task_id}</Descriptions.Item>
+                <Descriptions.Item label="数据版本">{`V_task_${latest.task_id}`}</Descriptions.Item>
                 <Descriptions.Item label="评估版本">{latest.version}</Descriptions.Item>
                 <Descriptions.Item label="通过特征">{latest.passed_features}/{latest.total_features}</Descriptions.Item>
                 <Descriptions.Item label="追溯动作">
                   <Space wrap>
-                    <Button size="small" onClick={() => navigate('/tasks')}>查看任务</Button>
-                    <Button size="small" onClick={() => navigate(`/evaluation?taskId=${latest.task_id}`)}>查看评估</Button>
+                    <Button size="small" onClick={() => navigate('/mine/experiments')}>查看实验</Button>
+                    <Button size="small" onClick={() => navigate(`/mine/report?taskId=${latest.task_id}`)}>查看评估</Button>
                   </Space>
                 </Descriptions.Item>
               </Descriptions>
@@ -236,6 +238,32 @@ const Deployment: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      <Card title="交付物" style={{ marginTop: 16 }}>
+        <Space wrap>
+          <Button
+            type="primary"
+            icon={<CloudDownloadOutlined />}
+            disabled={!latest}
+            loading={latest ? downloadingId === latest.task_id : false}
+            onClick={() => latest && download(latest)}
+          >
+            下载技术包
+          </Button>
+          <Button disabled={!latest} onClick={() => message.info('业务说明书生成为原型占位，后续支持PDF/Excel导出。')}>
+            下载业务说明书
+          </Button>
+          <Button disabled={!latest} onClick={() => message.info('API文档为原型占位，后续展示接口字段和示例请求。')}>
+            API文档
+          </Button>
+          <Button disabled={!latest} onClick={() => message.info('小流量验证能力即将上线。')}>
+            小流量验证
+          </Button>
+          <Button type="primary" disabled={!latest} onClick={() => message.success('已记录业务确认，等待技术部署。')}>
+            确认上线
+          </Button>
+        </Space>
+      </Card>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={10}>
