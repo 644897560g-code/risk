@@ -11,6 +11,7 @@ import {
   LogoutOutlined,
   FolderOpenOutlined,
   ExperimentOutlined,
+  CloudUploadOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@/store/authStore';
 import { useProjectStore } from '@/store/projectStore';
@@ -23,18 +24,19 @@ const menuItems = [
     key: 'platform',
     label: '平台',
     children: [
-      { key: '/projects', icon: <FolderOpenOutlined />, label: '项目管理' },
-      { key: '/templates', icon: <ExperimentOutlined />, label: '模板资产' },
+      { key: '/projects', icon: <FolderOpenOutlined />, label: '项目列表' },
+      { key: '/templates', icon: <ExperimentOutlined />, label: '模板库' },
     ],
   },
   {
     key: 'project',
     label: '当前项目',
     children: [
-      { key: '/dashboard', icon: <AppstoreOutlined />, label: '项目工作台' },
-      { key: '/data-sources', icon: <DatabaseOutlined />, label: '数据源管理' },
-      { key: '/knowledge', icon: <FileTextOutlined />, label: '知识依据' },
-      { key: '/tasks', icon: <OrderedListOutlined />, label: '项目任务' },
+      { key: '/dashboard', icon: <AppstoreOutlined />, label: '项目概览' },
+      { key: '/data-sources', icon: <DatabaseOutlined />, label: '数据源' },
+      { key: '/knowledge', icon: <FileTextOutlined />, label: '知识' },
+      { key: '/tasks', icon: <OrderedListOutlined />, label: '任务' },
+      { key: '/deployment', icon: <CloudUploadOutlined />, label: '版本与交付' },
     ],
   },
   {
@@ -55,26 +57,26 @@ const AppLayout: React.FC = () => {
   const { projects, currentProject, isLoading, loadProjects, selectProject } = useProjectStore();
 
   const routeRoot = '/' + location.pathname.split('/')[1];
-  const selectedKey = ['/evaluation', '/deployment'].includes(routeRoot) ? '/tasks' : routeRoot;
+  const selectedKey = routeRoot === '/evaluation' ? '/tasks' : routeRoot;
   const projectName = currentProject?.name || '当前项目';
   const routeContext = (() => {
     switch (routeRoot) {
       case '/projects':
-        return { title: '项目管理', breadcrumb: ['平台', '项目管理'] };
+        return { title: '项目列表', breadcrumb: ['平台', '项目列表'] };
       case '/templates':
-        return { title: '模板资产', breadcrumb: ['平台', '模板资产'] };
+        return { title: '模板库', breadcrumb: ['平台', '模板库'] };
       case '/dashboard':
-        return { title: '项目工作台', breadcrumb: ['平台', projectName, '项目工作台'] };
+        return { title: '项目概览', breadcrumb: ['平台', projectName, '项目概览'] };
       case '/data-sources':
-        return { title: '数据源管理', breadcrumb: ['平台', projectName, '数据源管理'] };
+        return { title: '数据源', breadcrumb: ['平台', projectName, '数据源'] };
       case '/knowledge':
-        return { title: '知识依据', breadcrumb: ['平台', projectName, '知识依据'] };
+        return { title: '知识', breadcrumb: ['平台', projectName, '知识'] };
       case '/tasks':
-        return { title: '项目任务', breadcrumb: ['平台', projectName, '项目任务'] };
+        return { title: '任务', breadcrumb: ['平台', projectName, '任务'] };
       case '/evaluation':
-        return { title: '结果库 / 评估报告', breadcrumb: ['平台', projectName, '项目任务', '评估报告'] };
+        return { title: '任务结果 / 评估报告', breadcrumb: ['平台', projectName, '任务', '评估报告'] };
       case '/deployment':
-        return { title: '结果库 / 部署版本', breadcrumb: ['平台', projectName, '项目任务', '部署版本'] };
+        return { title: '版本与交付', breadcrumb: ['平台', projectName, '版本与交付'] };
       case '/agent':
         return { title: '智能助理', breadcrumb: ['辅助工具', '智能助理'] };
       default:

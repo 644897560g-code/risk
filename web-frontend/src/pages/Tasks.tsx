@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Table, Tag, Button, Modal, Form, Input, Space, Card,
   Drawer, Spin, Descriptions, Timeline, Tabs, message, Upload, Radio,
-  Empty, DatePicker, Steps, Collapse, Alert, Typography,
+  Empty, DatePicker, Steps, Collapse, Alert, Typography, Select,
 } from 'antd';
 import {
   PlusOutlined, ReloadOutlined, UploadOutlined, DownloadOutlined,
@@ -44,8 +44,8 @@ const Tasks: React.FC = () => {
 
   // Task mode for create form
   const [taskMode, setTaskMode] = useState<'normal' | 'template_task'>('normal');
-  // Data source type for create form
-  const [dataSourceType, setDataSourceType] = useState<'upload' | 'local'>('upload');
+  // Data snapshot source for create form
+  const [dataSourceType, setDataSourceType] = useState<'snapshot' | 'new_snapshot' | 'upload'>('snapshot');
   const [urlFile, setUrlFile] = useState<File | null>(null);
   const [labelFile, setLabelFile] = useState<File | null>(null);
 
@@ -129,7 +129,7 @@ const Tasks: React.FC = () => {
 
   const handleClearAll = () => {
     Modal.confirm({
-      title: '确认清空当前项目任务',
+      title: '确认清空当前项目下的任务',
       content: `确定要清空项目「${currentProject?.name || '-'}」下的任务记录吗？此操作不可恢复，正在执行的任务将无法清空。`,
       okText: '确认清空',
       cancelText: '取消',
@@ -250,7 +250,7 @@ const Tasks: React.FC = () => {
           scheduled_at: scheduledAt,
           ...(dataSourceType === 'upload'
             ? { url_file: urlFile || undefined, label_file: labelFile || undefined }
-            : { url_path: values.url_path, label_path: values.label_path }),
+            : {}),
         });
         message.success('任务创建成功（系统将自动创建关联的模板任务）');
       }
@@ -365,6 +365,19 @@ const Tasks: React.FC = () => {
     },
     { title: '名称', dataIndex: 'name', key: 'name', ellipsis: true },
     {
+      title: '所属项目',
+      dataIndex: 'project_id',
+      key: 'project_id',
+      width: 110,
+      render: (id: number) => currentProject?.id === id ? currentProject.name : `项目 #${id || '-'}`,
+    },
+    {
+      title: '使用数据快照',
+      key: 'snapshot',
+      width: 180,
+      render: (_: any, r: Task) => r.mode === 'template_task' ? '-' : <Tag color="blue">{getTaskSnapshotId(r)}</Tag>,
+    },
+    {
       title: '关联任务', dataIndex: 'linked_task_id', key: 'linked_task_id', width: 90,
       render: (v: number) => v ? `#${v}` : '-',
     },
@@ -408,8 +421,11 @@ const Tasks: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Typography.Title level={3} style={{ margin: 0 }}>项目任务</Typography.Title>
-          <Typography.Text type="secondary">一个项目下可有多个生产或模板任务；每个任务下沉淀候选特征、评估报告、部署版本和反馈</Typography.Text>
+          <Typography.Title level={3} style={{ margin: 0 }}>任务</Typography.Title>
+          <Typography.Text type="secondary">
+            {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
+            本页数据仅属于当前项目；每个任务绑定一个数据快照执行。
+          </Typography.Text>
         </div>
         <Space>
           {currentProject && <Tag color="blue">当前项目：{currentProject.name}</Tag>}
@@ -465,17 +481,17 @@ const Tasks: React.FC = () => {
           current={0}
           style={{ marginBottom: 20 }}
           items={[
-            { title: '数据快照' },
-            { title: '模板' },
-            { title: '生产' },
-            { title: '评估' },
-            { title: '部署' },
+            { title: '确认项目' },
+            { title: '选择数据源' },
+            { title: '选择快照' },
+            { title: '填写任务' },
+            { title: '启动任务' },
           ]}
         />
         <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="name" label="任务名称" rules={[{ required: true, message: '请输入任务名称' }]}>
-            <Input placeholder={taskMode === 'template_task' ? '例如：新增GPS防欺诈模板评审' : '例如：印尼现金贷4月首贷特征生产'} />
-          </Form.Item>
+          <Descriptions column={1} size="small" bordered style={{ marginBottom: 16 }}>
+            <Descriptions.Item label="当前项目">{currentProject?.name || '未选择项目'}</Descriptions.Item>
+          </Descriptions>
 
           <Form.Item label="任务类型">
             <Radio.Group
@@ -501,7 +517,7 @@ const Tasks: React.FC = () => {
                 <Input placeholder="例如: 0 2 * * 1（每周一凌晨2点），留空为仅执行一次" />
               </Form.Item>
               <div style={{ padding: '8px 0', color: 'rgba(226,232,240,0.68)', fontSize: 13 }}>
-                模板生成任务用于补充新的数据加工方式，结果进入待审批区，由产品或风控确认后再进入模板资产库。无需配置样本数据。<br />
+                模板生成任务用于补充新的数据加工方式，结果进入待审区，由产品或风控确认后再进入模板库。无需配置样本数据。<br />
                 <strong>产品目标：</strong>沉淀可复用的加工模板，具体业务含义由生产出的特征和评估报告承载。
               </div>
             </>
@@ -516,13 +532,23 @@ const Tasks: React.FC = () => {
                 />
               </Form.Item>
 
-              <Form.Item label="数据快照来源">
+              <Form.Item name="data_source_id" label="选择数据源" initialValue="ds_file_0421">
+                <Select
+                  options={[
+                    { value: 'ds_file_0421', label: '0421首贷样本文件源' },
+                    { value: 'ds_fdc_db', label: '印尼FDC数据库连接（占位）', disabled: true },
+                  ]}
+                />
+              </Form.Item>
+
+              <Form.Item label="数据快照">
                 <Radio.Group
                   value={dataSourceType}
                   onChange={(e) => setDataSourceType(e.target.value)}
                 >
-                  <Radio value="upload">上传文件生成新快照</Radio>
-                  <Radio value="local">使用项目已有数据路径生成快照</Radio>
+                  <Radio value="snapshot">选择已有快照</Radio>
+                  <Radio value="new_snapshot">基于数据源生成新快照</Radio>
+                  <Radio value="upload">上传文件形成数据源与快照</Radio>
                 </Radio.Group>
               </Form.Item>
 
@@ -530,8 +556,25 @@ const Tasks: React.FC = () => {
                 type="secondary"
                 style={{ display: 'block', marginBottom: 16, fontSize: 12 }}
               >
-                Agent 会自动识别数据结构；用户只确认标签含义、首贷范围、时间口径等业务口径。
+                上传文件会先形成项目数据源与数据快照，再用于任务执行；Agent 会自动识别数据结构。
               </Typography.Text>
+
+              {dataSourceType === 'snapshot' && (
+                <Form.Item name="snapshot_id" label="选择已有快照" initialValue="snapshot_20260615_001">
+                  <Select
+                    options={[
+                      { value: 'snapshot_20260615_001', label: 'snapshot_20260615_001 · 2272样本 · 质量通过' },
+                      { value: 'snapshot_20260612_001', label: 'snapshot_20260612_001 · 2272样本 · 质量通过' },
+                    ]}
+                  />
+                </Form.Item>
+              )}
+
+              {dataSourceType === 'new_snapshot' && (
+                <Form.Item name="snapshot_policy" label="新快照口径" initialValue="首贷客户；标签1=逾期；以申请时间向前回溯">
+                  <Input.TextArea rows={3} />
+                </Form.Item>
+              )}
 
               {dataSourceType === 'upload' ? (
                 <>
@@ -558,18 +601,12 @@ const Tasks: React.FC = () => {
                     </Upload>
                   </Form.Item>
                 </>
-              ) : (
-                <>
-                  <Form.Item name="url_path" label="客户申请短链文件路径" rules={[{ required: true, message: '请输入短链文件路径' }]}>
-                    <Input placeholder="例如: /data/0421全样本短链.txt" />
-                  </Form.Item>
-                  <Form.Item name="label_path" label="好坏标签文件路径" extra="系统会基于这些项目级数据路径生成任务快照" rules={[{ required: true, message: '请输入标签文件路径' }]}>
-                    <Input placeholder="例如: /data/印尼模型分_2026_04_21_建模样本aiagent.xlsx" />
-                  </Form.Item>
-                </>
-              )}
+              ) : null}
             </>
           )}
+          <Form.Item name="name" label="任务名称" rules={[{ required: true, message: '请输入任务名称' }]}>
+            <Input placeholder={taskMode === 'template_task' ? '例如：新增GPS防欺诈模板评审' : '例如：印尼现金贷4月首贷特征生产'} />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -714,7 +751,7 @@ const Tasks: React.FC = () => {
                     <Space wrap>
                       <Button size="small" type="primary" onClick={() => navigate(`/evaluation?taskId=${detailTask.id}`)}>查看该任务评估报告</Button>
                       <Button size="small" onClick={() => navigate(`/deployment?taskId=${detailTask.id}`)}>查看该任务部署版本</Button>
-                      <Button size="small" onClick={() => navigate('/templates')}>查看模板资产</Button>
+                      <Button size="small" onClick={() => navigate('/templates')}>查看模板库</Button>
                     </Space>
                   </Space>
                 )}
@@ -733,7 +770,7 @@ const Tasks: React.FC = () => {
                     <Space wrap>
                       <Button size="small" type="primary" loading={resuming} onClick={handleResume}>继续执行</Button>
                       <Button size="small" onClick={() => navigate('/data-sources')}>检查数据源</Button>
-                      <Button size="small" onClick={() => navigate('/knowledge')}>检查知识依据</Button>
+                      <Button size="small" onClick={() => navigate('/knowledge')}>检查知识</Button>
                     </Space>
                   </Space>
                 )}
@@ -749,7 +786,7 @@ const Tasks: React.FC = () => {
                 description={(
                   <Space direction="vertical" size={10}>
                     <span>模板只是数据加工方式，批准后才能进入项目可用模板范围，具体效果仍需通过特征生产和评估验证。</span>
-                    <Button size="small" type="primary" onClick={() => navigate('/templates')}>去模板资产审批</Button>
+                    <Button size="small" type="primary" onClick={() => navigate('/templates')}>去模板库审批</Button>
                   </Space>
                 )}
               />
@@ -1171,7 +1208,7 @@ GET  /health            — 健康检查
                               <Descriptions.Item label="来源任务">#{detailTask.id} {detailTask.name}</Descriptions.Item>
                               <Descriptions.Item label="来源快照">{getTaskSnapshotId(detailTask)}</Descriptions.Item>
                               <Descriptions.Item label="沉淀对象">通过特征、淘汰原因、部署版本、模板表现</Descriptions.Item>
-                              <Descriptions.Item label="后续去向">知识依据 / 模板资产 / 下一轮生产任务</Descriptions.Item>
+                              <Descriptions.Item label="后续去向">知识 / 模板库 / 下一轮生产任务</Descriptions.Item>
                             </Descriptions>
                           </Space>
                         </Card>

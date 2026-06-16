@@ -207,10 +207,10 @@ const DataSources: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>数据源管理</Title>
+          <Title level={3} style={{ margin: 0 }}>数据源</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            项目级配置数据源，任务只绑定数据快照执行；Agent 自动识别数据结构，用户只确认业务口径
+            本页数据仅属于当前项目；任务不直接消费临时数据，而是绑定数据快照执行。
           </Text>
         </div>
         <Space>

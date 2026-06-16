@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Table, Button, Upload, message, Typography, Space, Tag, Popconfirm, Input, Select,
-  Card, Row, Col, Statistic,
+  Card, Row, Col, Statistic, Tabs,
 } from 'antd';
 import {
   UploadOutlined, DeleteOutlined, FileTextOutlined, SearchOutlined,
@@ -18,6 +18,7 @@ import {
 } from '@/services/api';
 import type { KnowledgeStats as KnowledgeStatsType } from '@/types/knowledge';
 import KnowledgePreview from '@/components/KnowledgePreview';
+import { useProjectStore } from '@/store/projectStore';
 
 const { Text, Title } = Typography;
 
@@ -41,6 +42,7 @@ const Knowledge: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   const [stats, setStats] = useState<KnowledgeStatsType | null>(null);
+  const currentProject = useProjectStore((s) => s.currentProject);
 
   // Preview state
   const [previewFilename, setPreviewFilename] = useState<string | null>(null);
@@ -235,8 +237,11 @@ const Knowledge: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>知识依据</Title>
-          <Text type="secondary">沉淀业务规则、变量说明、风控口径和历史反馈；样本、标签和连接配置在数据源管理中维护</Text>
+          <Title level={3} style={{ margin: 0 }}>知识</Title>
+          <Text type="secondary">
+            {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
+            项目知识仅在当前项目内使用；平台知识用于沉淀通用方法和模板规范。
+          </Text>
         </div>
         <Upload
           beforeUpload={handleUpload}
@@ -244,100 +249,140 @@ const Knowledge: React.FC = () => {
           accept=".txt,.md,.json,.csv,.xlsx,.xls,.py,.sql,.yaml,.yml,.pdf,.doc,.docx"
         >
           <Button type="primary" icon={<UploadOutlined />} loading={uploading}>
-            上传知识依据
+            上传项目知识
           </Button>
         </Upload>
       </div>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} lg={8}>
-          <Card title="业务规则" size="small">
-            <Text type="secondary">记录标签含义、首贷范围、时间口径、防穿越原则和评估阈值。</Text>
-          </Card>
-        </Col>
-        <Col xs={24} lg={8}>
-          <Card title="变量与规则说明" size="small">
-            <Text type="secondary">沉淀FDC变量清单、APP分类规则、风险解释和模板评审依据。</Text>
-          </Card>
-        </Col>
-        <Col xs={24} lg={8}>
-          <Card title="历史反馈" size="small">
-            <Text type="secondary">保留评估结果和复盘结论，用于下一轮特征生产时减少重复试错。</Text>
-          </Card>
-        </Col>
-      </Row>
+      <Tabs
+        items={[
+          {
+            key: 'project',
+            label: '项目知识',
+            children: (
+              <>
+                <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                  <Col xs={24} lg={8}>
+                    <Card title="数据字典 / 字段解释" size="small">
+                      <Text type="secondary">记录项目样本字段、FDC字段、APP字段和标签含义。</Text>
+                    </Card>
+                  </Col>
+                  <Col xs={24} lg={8}>
+                    <Card title="样本画像 / 业务资料" size="small">
+                      <Text type="secondary">沉淀首贷范围、客户画像、产品资料和业务口径。</Text>
+                    </Card>
+                  </Col>
+                  <Col xs={24} lg={8}>
+                    <Card title="项目上传文档" size="small">
+                      <Text type="secondary">仅在当前项目内使用，不会直接进入公共模板库。</Text>
+                    </Card>
+                  </Col>
+                </Row>
 
-      {/* Stats cards */}
-      {stats && (
-        <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-          <Col span={6}>
-            <Card size="small">
-              <Statistic title="文件总数" value={stats.total_files} suffix="个" />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small">
-              <Statistic title="总大小" value={formatSize(stats.total_size)} />
-            </Card>
-          </Col>
-          {Object.entries(stats.by_category).map(([cat, info]) => (
-            <Col span={4} key={cat}>
-              <Card size="small">
-                <Statistic
-                  title={(categoryConfig[cat] || categoryConfig.other).label}
-                  value={info.count}
-                  suffix="个"
+                {/* Stats cards */}
+                {stats && (
+                  <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                    <Col span={6}>
+                      <Card size="small">
+                        <Statistic title="文件总数" value={stats.total_files} suffix="个" />
+                      </Card>
+                    </Col>
+                    <Col span={6}>
+                      <Card size="small">
+                        <Statistic title="总大小" value={formatSize(stats.total_size)} />
+                      </Card>
+                    </Col>
+                    {Object.entries(stats.by_category).map(([cat, info]) => (
+                      <Col span={4} key={cat}>
+                        <Card size="small">
+                          <Statistic
+                            title={(categoryConfig[cat] || categoryConfig.other).label}
+                            value={info.count}
+                            suffix="个"
+                          />
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                )}
+
+                {/* Search + Filter + Upload bar */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                    gap: 12,
+                  }}
+                >
+                  <Space>
+                    <Input.Search
+                      placeholder="搜索文件名..."
+                      allowClear
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                      onSearch={(v) => setSearchText(v)}
+                      style={{ width: 240 }}
+                      prefix={<SearchOutlined />}
+                    />
+                    <Select
+                      placeholder="分类筛选"
+                      allowClear
+                      style={{ width: 130 }}
+                      value={categoryFilter}
+                      onChange={(v) => setCategoryFilter(v)}
+                      options={[
+                        { value: 'doc', label: '文档' },
+                        { value: 'excel', label: '表格' },
+                        { value: 'code', label: '代码' },
+                        { value: 'other', label: '其他' },
+                      ]}
+                    />
+                  </Space>
+                </div>
+
+                {/* File table */}
+                <Table
+                  dataSource={filteredItems}
+                  columns={columns}
+                  rowKey="id"
+                  loading={loading}
+                  pagination={{ pageSize: 20, showSizeChanger: false }}
+                  locale={{ emptyText: '暂无知识文件' }}
                 />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      )}
-
-      {/* Search + Filter + Upload bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          marginBottom: 16,
-          gap: 12,
-        }}
-      >
-        <Space>
-          <Input.Search
-            placeholder="搜索文件名..."
-            allowClear
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onSearch={(v) => setSearchText(v)}
-            style={{ width: 240 }}
-            prefix={<SearchOutlined />}
-          />
-          <Select
-            placeholder="分类筛选"
-            allowClear
-            style={{ width: 130 }}
-            value={categoryFilter}
-            onChange={(v) => setCategoryFilter(v)}
-            options={[
-              { value: 'doc', label: '文档' },
-              { value: 'excel', label: '表格' },
-              { value: 'code', label: '代码' },
-              { value: 'other', label: '其他' },
-            ]}
-          />
-        </Space>
-      </div>
-
-      {/* File table */}
-      <Table
-        dataSource={filteredItems}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20, showSizeChanger: false }}
-        locale={{ emptyText: '暂无知识文件' }}
+              </>
+            ),
+          },
+          {
+            key: 'platform',
+            label: '平台知识',
+            children: (
+              <Row gutter={[16, 16]}>
+                <Col xs={24} lg={12}>
+                  <Card title="通用方法" size="small">
+                    <Text type="secondary">WOE/IV、PSI、覆盖率、稳定性观察、分箱与特征筛选方法。</Text>
+                  </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Card title="风控经验" size="small">
+                    <Text type="secondary">印尼现金贷、APP风险类别、FDC查询模式和防穿越经验。</Text>
+                  </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Card title="模板生成规范" size="small">
+                    <Text type="secondary">公共模板需要脱敏、泛化、可解释，并通过平台模板库审核。</Text>
+                  </Card>
+                </Col>
+                <Col xs={24} lg={12}>
+                  <Card title="被拒记忆" size="small">
+                    <Text type="secondary">记录被驳回模板的原因，避免重复生成低质量或不可上线的加工方式。</Text>
+                  </Card>
+                </Col>
+              </Row>
+            ),
+          },
+        ]}
       />
 
       {/* Preview drawer */}

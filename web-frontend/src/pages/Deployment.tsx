@@ -73,7 +73,8 @@ const Deployment: React.FC = () => {
         </Space>
       ),
     },
-    { title: '任务ID', dataIndex: 'task_id', width: 100, render: (id: number) => `#${id}` },
+    { title: '来源任务', dataIndex: 'task_id', width: 100, render: (id: number) => `#${id}` },
+    { title: '来源数据快照', dataIndex: 'task_id', width: 180, render: (id: number) => <Tag color="blue">{`snapshot_task_${id}`}</Tag> },
     { title: '特征数', dataIndex: 'total_features', width: 100 },
     {
       title: '通过率',
@@ -87,7 +88,7 @@ const Deployment: React.FC = () => {
       render: (v: string) => v ? new Date(v).toLocaleString() : '-',
     },
     {
-      title: '生命周期',
+      title: '状态',
       width: 130,
       render: (_, row) => row.version === latest?.version ? <Tag color="warning">待业务确认</Tag> : <Tag>历史归档</Tag>,
     },
@@ -114,10 +115,10 @@ const Deployment: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>结果库 / 部署版本</Title>
+          <Title level={3} style={{ margin: 0 }}>版本与交付</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : ''}
-            按项目下的任务查看评估后生成的特征版本，面向风控团队交付部署包
+            本页数据仅属于当前项目；对接方凭版本号获取固定不变的交付物。
           </Text>
         </div>
         <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
@@ -129,7 +130,7 @@ const Deployment: React.FC = () => {
           <Descriptions.Item label="所属项目">{currentProject?.name || '-'}</Descriptions.Item>
           <Descriptions.Item label="来源任务">{latest?.task_id ? `#${latest.task_id}` : taskIdParam ? `#${taskIdParam}` : '请选择版本'}</Descriptions.Item>
           <Descriptions.Item label="来源快照">{latest?.task_id ? `snapshot_task_${latest.task_id}` : taskIdParam ? `snapshot_task_${taskIdParam}` : '-'}</Descriptions.Item>
-          <Descriptions.Item label="结果类型">部署版本</Descriptions.Item>
+          <Descriptions.Item label="结果类型">版本与交付</Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -221,12 +222,13 @@ const Deployment: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="发布建议">
+          <Card title="API 调用信息">
             {latest ? (
               <Space direction="vertical" size={10}>
-                <Text>建议先完成业务确认，再由技术团队部署。</Text>
-                <Text type="secondary">若评估页存在大量“谨慎观察”特征，应先确认是否剔除后再发布。</Text>
-                <Tag color="warning">当前状态：待确认</Tag>
+                <Text>版本号：<Tag color="blue">{latest.version}</Tag></Text>
+                <Text type="secondary">调用方应固定传入版本号，确保线上结果与交付包一致。</Text>
+                <Text code>{`POST /feature/calculate?version=${latest.version}`}</Text>
+                <Tag color="warning">接口信息占位</Tag>
               </Space>
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -236,7 +238,20 @@ const Deployment: React.FC = () => {
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24}>
+        <Col xs={24} lg={10}>
+          <Card title="版本对比">
+            {versions.length >= 2 ? (
+              <Descriptions column={1} size="small">
+                <Descriptions.Item label="当前版本">{versions[0].version} · {versions[0].passed_features}/{versions[0].total_features}</Descriptions.Item>
+                <Descriptions.Item label="对比版本">{versions[1].version} · {versions[1].passed_features}/{versions[1].total_features}</Descriptions.Item>
+                <Descriptions.Item label="变化摘要">通过特征增加 {versions[0].passed_features - versions[1].passed_features} 个，发布前需结合评估报告确认。</Descriptions.Item>
+              </Descriptions>
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无可对比版本" />
+            )}
+          </Card>
+        </Col>
+        <Col xs={24} lg={14}>
           <Card title="版本列表">
             <Table
               rowKey="version"

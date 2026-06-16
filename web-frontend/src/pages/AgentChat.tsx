@@ -1,5 +1,5 @@
 import React, { useReducer, useCallback, useRef, useEffect, useState } from 'react';
-import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Empty, Tooltip, Space, Tag } from 'antd';
+import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Empty, Tooltip, Space, Tag, Segmented } from 'antd';
 import {
   ApiOutlined,
   FullscreenOutlined,
@@ -16,6 +16,7 @@ import ChatInput from '@/components/ChatInput';
 import TemplateSidebar from '@/components/TemplateSidebar';
 import { sendChatMessageStream, fetchChatSessions, fetchChatSessionMessages, deleteChatSession, clearChatSessions } from '@/services/api';
 import type { ChatMessage as ChatMessageType, ChatSessionSummary } from '@/types/agent';
+import { useProjectStore } from '@/store/projectStore';
 
 // ========== State ==========
 
@@ -96,9 +97,11 @@ const AgentChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [sidebarTab, setSidebarTab] = useState('sessions');
+  const [chatMode, setChatMode] = useState<'project' | 'template'>('project');
   const abortRef = useRef<AbortController | null>(null);
   const convIdRef = useRef<string | null>(null);
   const messagesRef = useRef<ChatMessageType[]>(state.messages);
+  const currentProject = useProjectStore((s) => s.currentProject);
 
   // Session list state
   const [sessions, setSessions] = useState<ChatSessionSummary[]>([]);
@@ -249,12 +252,26 @@ const AgentChat: React.FC = () => {
             <span className="agent-core-icon"><RobotOutlined /></span>
             <div>
               <div className="agent-title-main">智能助理</div>
-              <div className="agent-title-sub">特征设计、模板评审、任务复盘的产品协同入口</div>
+              <div className="agent-title-sub">
+                {chatMode === 'project'
+                  ? '当前项目模式：使用项目数据源、项目知识和项目任务上下文'
+                  : '平台模板模式：用于讨论公共模板、模板审核和模板优化'}
+              </div>
             </div>
           </div>
         )}
         extra={(
           <Space size={8} wrap>
+            <Tag color="blue">当前项目：{currentProject?.name || '未选择'}</Tag>
+            <Segmented
+              size="small"
+              value={chatMode}
+              onChange={(value) => setChatMode(value as 'project' | 'template')}
+              options={[
+                { label: '当前项目模式', value: 'project' },
+                { label: '平台模板模式', value: 'template' },
+              ]}
+            />
             <Tag color="cyan" icon={<ThunderboltOutlined />}>实时推理</Tag>
             <Tag color="geekblue" icon={<SafetyCertificateOutlined />}>防穿越校验</Tag>
             <Tag color="purple" icon={<ApiOutlined />}>模板联动</Tag>

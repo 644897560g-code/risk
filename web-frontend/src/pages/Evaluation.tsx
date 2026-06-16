@@ -80,7 +80,7 @@ const Evaluation: React.FC = () => {
   const decisionMessage = metrics.length === 0
     ? '暂无可判断的评估数据'
     : decisionReady
-      ? '建议进入部署确认'
+      ? '建议进入版本与交付'
       : '建议补充验证后再进入部署';
   const decisionDescription = metrics.length === 0
     ? '请先完成特征生产任务，生成 IV、PSI、覆盖率等评估指标。'
@@ -216,8 +216,8 @@ const Evaluation: React.FC = () => {
             <Space direction="vertical" size={10}>
               <span>{decisionDescription}</span>
               <Space wrap>
-                <Button type="primary" disabled={!decisionReady} onClick={() => navigate(selected?.task_id ? `/deployment?taskId=${selected.task_id}` : '/deployment')}>进入该任务部署确认</Button>
-                <Button onClick={() => navigate('/tasks')}>返回项目任务</Button>
+                <Button type="primary" disabled={!decisionReady} onClick={() => navigate(selected?.task_id ? `/deployment?taskId=${selected.task_id}` : '/deployment')}>进入版本与交付</Button>
+                <Button onClick={() => navigate('/tasks')}>返回任务</Button>
                 <Button icon={<EyeOutlined />} onClick={openReport} disabled={!selectedVersion}>打开HTML报告</Button>
               </Space>
             </Space>

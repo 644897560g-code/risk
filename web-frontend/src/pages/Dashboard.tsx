@@ -96,13 +96,13 @@ const Dashboard: React.FC = () => {
     ? Math.round((featureStats.current_passed / featureStats.current_total) * 100)
     : 0;
   const nextActions = [
-    !hasProject && { title: '先创建业务项目', desc: '明确国家、产品、客户范围和评估阈值。', action: '去项目管理', path: '/projects' },
-    hasProject && !hasProductionTask && { title: '确认项目数据源', desc: '任务启动前先选择或生成项目级数据快照。', action: '去数据源管理', path: '/data-sources' },
-    hasProject && !hasTemplates && { title: '选择可用模板', desc: '确认当前项目允许使用哪些加工方式。', action: '去模板资产', path: '/templates' },
+    !hasProject && { title: '先创建业务项目', desc: '明确国家、产品、客户范围和评估阈值。', action: '去项目列表', path: '/projects' },
+    hasProject && !hasProductionTask && { title: '确认项目数据源', desc: '任务启动前先选择或生成项目级数据快照。', action: '去数据源', path: '/data-sources' },
+    hasProject && !hasTemplates && { title: '选择可用模板', desc: '确认平台模板库中有哪些加工方式可用于生产。', action: '去模板库', path: '/templates' },
     hasProject && hasTemplates && !hasProductionTask && { title: '发起首轮生产', desc: '绑定数据快照和模板范围，生成候选特征并进入评估。', action: '发起生产', path: '/tasks' },
     runningTask && { title: '跟踪运行任务', desc: `${runningTask.name} 正在执行，优先查看步骤状态。`, action: '查看任务', path: '/tasks' },
     hasEvaluation && !hasDeployment && { title: '确认评估结论', desc: '判断本轮特征是否足够稳定，是否可进入部署。', action: '查看评估', path: '/evaluation' },
-    hasDeployment && { title: '进入部署确认', desc: `最新版本 ${featureStats.latest_version} 已生成，等待业务确认和交付。`, action: '查看部署', path: '/deployment' },
+    hasDeployment && { title: '进入版本与交付', desc: `最新版本 ${featureStats.latest_version} 已生成，等待业务确认和交付。`, action: '查看交付版本', path: '/deployment' },
   ].filter(Boolean) as Array<{ title: string; desc: string; action: string; path: string }>;
 
   const taskChartOption = useMemo(() => ({
@@ -131,17 +131,48 @@ const Dashboard: React.FC = () => {
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>项目工作台</Title>
+          <Title level={3} style={{ margin: 0 }}>项目概览</Title>
           <Text type="secondary">
             {currentProject?.name ? `当前项目：${currentProject.name}。` : '当前项目未选择。'}
-            围绕项目数据源、知识依据、启用模板、生产任务和任务结果完成特征生产闭环
+            本页只展示当前项目的数据与产物。
           </Text>
         </div>
         <Space>
           <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
-          <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => navigate('/tasks')}>发起生产任务</Button>
+          <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => navigate('/tasks')}>创建任务</Button>
         </Space>
       </div>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <DatabaseOutlined className="metric-icon blue" />
+            <div className="metric-value">{hasProjectDataSource ? '已就绪' : '待配置'}</div>
+            <div className="metric-label">数据是否就绪</div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <ExperimentOutlined className="metric-icon teal" />
+            <div className="metric-value">{hasTemplates ? templates.length : '待确认'}</div>
+            <div className="metric-label">模板是否可用</div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <PlayCircleOutlined className="metric-icon green" />
+            <div className="metric-value">{runningTask ? '运行中' : latestTask ? statusColor[latestTask.status] === 'success' ? '已完成' : '待处理' : '无任务'}</div>
+            <div className="metric-label">最近任务状态</div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card className="metric-card compact">
+            <CloudUploadOutlined className="metric-icon orange" />
+            <div className="metric-value">{featureStats.latest_version || '-'}</div>
+            <div className="metric-label">最新交付版本</div>
+          </Card>
+        </Col>
+      </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={16}>
@@ -154,10 +185,10 @@ const Dashboard: React.FC = () => {
               items={[
                 { title: '项目', description: '确认业务范围', icon: <FolderOpenOutlined /> },
                 { title: '数据源', description: '生成可复现快照', icon: <DatabaseOutlined /> },
-                { title: '知识依据', description: '确认业务口径', icon: <FileTextOutlined /> },
+                { title: '知识', description: '确认业务口径', icon: <FileTextOutlined /> },
                 { title: '模板', description: '选择加工方式', icon: <ExperimentOutlined /> },
                 { title: '任务', description: '绑定快照并生产', icon: <PlayCircleOutlined /> },
-                { title: '结果交付', description: '评估、部署与追溯', icon: <CloudUploadOutlined /> },
+                { title: '版本与交付', description: '评估、部署与追溯', icon: <CloudUploadOutlined /> },
               ]}
             />
             <div className="process-summary">
@@ -208,14 +239,14 @@ const Dashboard: React.FC = () => {
           <Card className="metric-card compact">
             <FolderOpenOutlined className="metric-icon blue" />
             <div className="metric-value">{projectTotal}</div>
-            <div className="metric-label">平台项目</div>
+            <div className="metric-label">平台项目总数</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card className="metric-card compact">
             <ExperimentOutlined className="metric-icon teal" />
             <div className="metric-value">{templates.length}</div>
-            <div className="metric-label">可用模板</div>
+            <div className="metric-label">平台可用模板</div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -274,7 +305,7 @@ const Dashboard: React.FC = () => {
                 </Space>
                 <Space>
                   <Button size="small" onClick={() => navigate(`/evaluation?taskId=${latestCompletedTask.id}`)}>评估决策</Button>
-                  <Button size="small" type="primary" onClick={() => navigate(`/deployment?taskId=${latestCompletedTask.id}`)}>部署确认</Button>
+                  <Button size="small" type="primary" onClick={() => navigate(`/deployment?taskId=${latestCompletedTask.id}`)}>版本与交付</Button>
                 </Space>
               </Space>
             ) : (

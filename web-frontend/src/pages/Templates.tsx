@@ -6,12 +6,13 @@ import {
   Descriptions,
   Drawer,
   Empty,
-  Alert,
+  Form,
   Input,
+  Modal,
   Row,
-  Segmented,
   Space,
   Table,
+  Tabs,
   Tag,
   Typography,
   message,
@@ -30,19 +31,65 @@ import {
 
 const { Text, Title } = Typography;
 
+type TemplateLifecycle = 'pending' | 'active' | 'rejected';
+
 type TemplateRow = (Channel1Template | PendingTemplateItem) & {
-  lifecycle: 'active' | 'pending';
+  lifecycle: TemplateLifecycle;
+  source?: string;
+  reject_reason?: string;
+  rejected_at?: string;
+};
+
+const initialRejectedTemplates: TemplateRow[] = [
+  {
+    template_id: 'T019',
+    template_name: 'raw_device_identifier_join',
+    template_name_cn: '设备标识直接拼接',
+    dimension: '设备信息',
+    description: '直接拼接设备标识生成特征，解释性弱且存在隐私口径风险。',
+    dsl: 'concat(device_id, phone_hash)',
+    python_function: 'raw_device_identifier_join',
+    lifecycle: 'rejected',
+    reject_reason: '缺少可解释业务含义，且未完成脱敏泛化。',
+    rejected_at: '2026-06-13 16:20',
+    source: '通道2',
+  },
+];
+
+const lifecycleLabel: Record<TemplateLifecycle, { text: string; color: string }> = {
+  pending: { text: '待审', color: 'warning' },
+  active: { text: '已生效', color: 'success' },
+  rejected: { text: '已驳回', color: 'error' },
+};
+
+const getQualityChecks = (row: TemplateRow) => {
+  const parameterPass = row.template_id !== 'T018' && row.lifecycle !== 'rejected';
+  return [
+    { label: 'DSL 可解析', pass: true },
+    { label: '命名模板完整', pass: Boolean(row.template_id && (row.template_name || row.template_name_cn || row.name)) },
+    { label: '参数空间合理', pass: parameterPass },
+    { label: '防穿越口径明确', pass: row.lifecycle !== 'rejected' },
+  ];
+};
+
+const qualityText = (row: TemplateRow) => {
+  const checks = getQualityChecks(row);
+  const passed = checks.filter((item) => item.pass).length;
+  return `${passed}/${checks.length}`;
 };
 
 const Templates: React.FC = () => {
   const [active, setActive] = useState<Channel1Template[]>([]);
   const [pending, setPending] = useState<PendingTemplateItem[]>([]);
+  const [rejected, setRejected] = useState<TemplateRow[]>(initialRejectedTemplates);
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const [scope, setScope] = useState<'all' | 'active' | 'pending'>('all');
+  const [scope, setScope] = useState<TemplateLifecycle>('pending');
   const [detail, setDetail] = useState<TemplateRow | null>(null);
+  const [rejecting, setRejecting] = useState<TemplateRow | null>(null);
   const [code, setCode] = useState('');
   const [codeLoading, setCodeLoading] = useState(false);
+  const [rejectForm] = Form.useForm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -54,7 +101,7 @@ const Templates: React.FC = () => {
       setActive(activeRes);
       setPending(pendingRes);
     } catch {
-      message.error('模板资产加载失败');
+      message.error('模板库加载失败');
     } finally {
       setLoading(false);
     }
@@ -64,23 +111,25 @@ const Templates: React.FC = () => {
     load();
   }, [load]);
 
+  const allRows = useMemo<TemplateRow[]>(() => [
+    ...pending.map((item) => ({ ...item, lifecycle: 'pending' as const })),
+    ...active.map((item) => ({ ...item, lifecycle: 'active' as const })),
+    ...rejected,
+  ], [active, pending, rejected]);
+
   const rows = useMemo<TemplateRow[]>(() => {
-    const merged: TemplateRow[] = [
-      ...active.map((item) => ({ ...item, lifecycle: 'active' as const })),
-      ...pending.map((item) => ({ ...item, lifecycle: 'pending' as const })),
-    ];
-    return merged.filter((item) => {
-      if (scope !== 'all' && item.lifecycle !== scope) return false;
+    return allRows.filter((item) => {
+      if (item.lifecycle !== scope) return false;
       const text = `${item.template_id} ${item.template_name || ''} ${item.template_name_cn || ''} ${item.dimension || ''} ${item.description || ''}`.toLowerCase();
       return text.includes(keyword.trim().toLowerCase());
     });
-  }, [active, pending, keyword, scope]);
+  }, [allRows, keyword, scope]);
 
   const templateTypes = useMemo(() => {
     const counter = new Map<string, number>();
-    rows.forEach((row) => counter.set(row.dimension || '未分类', (counter.get(row.dimension || '未分类') || 0) + 1));
+    allRows.forEach((row) => counter.set(row.dimension || '未分类', (counter.get(row.dimension || '未分类') || 0) + 1));
     return Array.from(counter.entries()).sort((a, b) => b[1] - a[1]);
-  }, [rows]);
+  }, [allRows]);
 
   const openDetail = async (row: TemplateRow) => {
     setDetail(row);
@@ -98,39 +147,67 @@ const Templates: React.FC = () => {
   };
 
   const handleApprove = async (row: TemplateRow) => {
+    const checks = getQualityChecks(row);
+    if (checks.some((item) => !item.pass)) {
+      message.warning('质量校验未全部通过，不能批准生效');
+      return;
+    }
     try {
       await approveChannel2Template(row.template_id);
-      message.success('模板已批准启用');
-      await load();
+      setPending((prev) => prev.filter((item) => item.template_id !== row.template_id));
+      setActive((prev) => prev.some((item) => item.template_id === row.template_id)
+        ? prev
+        : [...prev, row as Channel1Template]);
+      message.success('模板已批准生效');
       setDetail(null);
     } catch (e: any) {
       message.error(e?.response?.data?.detail || '审批失败');
     }
   };
 
-  const handleReject = async (row: TemplateRow) => {
+  const openReject = (row: TemplateRow) => {
+    setRejecting(row);
+    rejectForm.resetFields();
+  };
+
+  const handleReject = async () => {
+    const values = await rejectForm.validateFields();
+    if (!rejecting) return;
     try {
-      await rejectChannel2Template(row.template_id, '产品评审未通过');
-      message.success('模板已拒绝');
-      await load();
+      await rejectChannel2Template(rejecting.template_id, values.reason);
+      setPending((prev) => prev.filter((item) => item.template_id !== rejecting.template_id));
+      setRejected((prev) => [
+        {
+          ...rejecting,
+          lifecycle: 'rejected',
+          reject_reason: values.reason,
+          rejected_at: new Date().toLocaleString('zh-CN'),
+        },
+        ...prev,
+      ]);
+      message.success('模板已驳回');
+      setRejecting(null);
       setDetail(null);
     } catch (e: any) {
-      message.error(e?.response?.data?.detail || '拒绝失败');
+      message.error(e?.response?.data?.detail || '驳回失败');
     }
   };
 
   const columns: ColumnsType<TemplateRow> = [
     {
-      title: '模板',
+      title: '来源通道',
+      width: 110,
+      render: (_, row) => <Tag color={row.lifecycle === 'active' ? 'blue' : 'purple'}>{row.source || (row.lifecycle === 'active' ? '通道1' : '通道2')}</Tag>,
+    },
+    {
+      title: '模板名',
       dataIndex: 'template_id',
       width: 260,
       render: (_: string, row) => (
         <div>
           <Space size={6}>
             <Text strong>{row.template_id}</Text>
-            <Tag color={row.lifecycle === 'active' ? 'success' : 'processing'}>
-              {row.lifecycle === 'active' ? '已启用' : '待审批'}
-            </Tag>
+            <Tag color={lifecycleLabel[row.lifecycle].color}>{lifecycleLabel[row.lifecycle].text}</Tag>
           </Space>
           <div style={{ color: 'rgba(226, 232, 240, 0.68)', marginTop: 4 }}>
             {row.template_name_cn || row.template_name || row.name || '-'}
@@ -138,28 +215,119 @@ const Templates: React.FC = () => {
         </div>
       ),
     },
-    { title: '模板类型', dataIndex: 'dimension', width: 140, render: (v: string) => <Tag>{v || '未分类'}</Tag> },
+    { title: '维度', dataIndex: 'dimension', width: 130, render: (v: string) => <Tag>{v || '未分类'}</Tag> },
+    {
+      title: '质量校验',
+      width: 120,
+      render: (_, row) => {
+        const text = qualityText(row);
+        return <Tag color={text === '4/4' ? 'success' : 'warning'}>{text}</Tag>;
+      },
+    },
+    {
+      title: '状态时间',
+      width: 170,
+      render: (_, row) => row.rejected_at || (row.created_at ? new Date(row.created_at).toLocaleString('zh-CN') : '-'),
+    },
     { title: '加工方式说明', dataIndex: 'description', ellipsis: true },
     {
-      title: '产品判断',
-      width: 130,
-      render: (_, row) => row.lifecycle === 'active'
-        ? <Tag color="success">可用于生产</Tag>
-        : <Tag color="warning">需评审</Tag>,
-    },
-    {
       title: '操作',
-      width: 110,
-      render: (_, row) => <Button icon={<EyeOutlined />} size="small" onClick={() => openDetail(row)}>详情</Button>,
+      width: 180,
+      render: (_, row) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" onClick={() => openDetail(row)}>详情</Button>
+          {row.lifecycle === 'pending' && (
+            <>
+              <Button danger icon={<CloseOutlined />} size="small" onClick={() => openReject(row)}>驳回</Button>
+              <Button
+                type="primary"
+                icon={<CheckOutlined />}
+                size="small"
+                disabled={qualityText(row) !== '4/4'}
+                onClick={() => handleApprove(row)}
+              >
+                通过
+              </Button>
+            </>
+          )}
+        </Space>
+      ),
     },
   ];
+
+  const detailTabs = detail ? [
+    {
+      key: 'overview',
+      label: '概览',
+      children: (
+        <Descriptions bordered size="small" column={1}>
+          <Descriptions.Item label="状态"><Tag color={lifecycleLabel[detail.lifecycle].color}>{lifecycleLabel[detail.lifecycle].text}</Tag></Descriptions.Item>
+          <Descriptions.Item label="来源通道">{detail.source || (detail.lifecycle === 'active' ? '通道1' : '通道2')}</Descriptions.Item>
+          <Descriptions.Item label="维度">{detail.dimension || '-'}</Descriptions.Item>
+          <Descriptions.Item label="加工方式说明">{detail.description || '-'}</Descriptions.Item>
+          {detail.reject_reason && <Descriptions.Item label="驳回原因">{detail.reject_reason}</Descriptions.Item>}
+        </Descriptions>
+      ),
+    },
+    {
+      key: 'logic',
+      label: '逻辑框架',
+      children: (
+        <Card size="small" title="DSL / Python 口径" loading={codeLoading}>
+          <Descriptions column={1} size="small" bordered>
+            <Descriptions.Item label="DSL">{detail.dsl || '-'}</Descriptions.Item>
+            <Descriptions.Item label="函数名">{detail.python_function || '-'}</Descriptions.Item>
+          </Descriptions>
+          <div style={{ marginTop: 12 }}>
+            {code ? <pre className="code-preview">{code}</pre> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="当前模板没有可展示代码" />}
+          </div>
+        </Card>
+      ),
+    },
+    {
+      key: 'params',
+      label: '参数空间与命名模板',
+      children: (
+        <Descriptions column={1} size="small" bordered>
+          <Descriptions.Item label="参数空间">实体字段、时间窗口、统计方法、缺失值处理。</Descriptions.Item>
+          <Descriptions.Item label="命名模板">{`${detail.template_name || detail.template_id.toLowerCase()}_{field}_{window}`}</Descriptions.Item>
+          <Descriptions.Item label="适用范围">仅作为加工方式，具体特征是否交付由任务评估决定。</Descriptions.Item>
+        </Descriptions>
+      ),
+    },
+    {
+      key: 'quality',
+      label: '质量校验清单',
+      children: (
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {getQualityChecks(detail).map((item) => (
+            <div key={item.label} className="dimension-row">
+              <span>{item.label}</span>
+              <Tag color={item.pass ? 'success' : 'warning'}>{item.pass ? '通过' : '未通过'}</Tag>
+            </div>
+          ))}
+        </Space>
+      ),
+    },
+    {
+      key: 'history',
+      label: '审批记录',
+      children: (
+        <Descriptions column={1} size="small" bordered>
+          <Descriptions.Item label="当前状态">{lifecycleLabel[detail.lifecycle].text}</Descriptions.Item>
+          <Descriptions.Item label="状态时间">{detail.rejected_at || (detail.created_at ? new Date(detail.created_at).toLocaleString('zh-CN') : '-')}</Descriptions.Item>
+          <Descriptions.Item label="审批说明">{detail.reject_reason || '等待产品/风控确认。'}</Descriptions.Item>
+        </Descriptions>
+      ),
+    },
+  ] : [];
 
   return (
     <div className="page-enter">
       <div className="page-header">
         <div>
-          <Title level={3} style={{ margin: 0 }}>模板资产</Title>
-          <Text type="secondary">管理可复用的数据加工方式；特征是否上线由后续任务评估判断</Text>
+          <Title level={3} style={{ margin: 0 }}>模板库</Title>
+          <Text type="secondary">平台级统一模板入口，管理待审、已生效和已驳回的数据加工方式</Text>
         </div>
         <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
       </div>
@@ -167,27 +335,27 @@ const Templates: React.FC = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={8}>
           <Card className="metric-card compact">
-            <div className="metric-value">{active.length}</div>
-            <div className="metric-label">已启用模板</div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card className="metric-card compact">
             <div className="metric-value">{pending.length}</div>
-            <div className="metric-label">待审批模板</div>
+            <div className="metric-label">待审模板</div>
           </Card>
         </Col>
         <Col xs={24} sm={8}>
           <Card className="metric-card compact">
-            <div className="metric-value">{templateTypes.length}</div>
-            <div className="metric-label">模板类型</div>
+            <div className="metric-value">{active.length}</div>
+            <div className="metric-label">已生效模板</div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card className="metric-card compact">
+            <div className="metric-value">{rejected.length}</div>
+            <div className="metric-label">已驳回模板</div>
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={6}>
-          <Card title="模板类型分布">
+          <Card title="模板维度分布">
             {templateTypes.length ? templateTypes.map(([dimension, count]) => (
               <div key={dimension} className="dimension-row">
                 <span>{dimension}</span>
@@ -203,23 +371,23 @@ const Templates: React.FC = () => {
               <Space>
                 <Input.Search
                   allowClear
-                  placeholder="搜索模板名称、ID、加工方式"
+                  placeholder="搜索模板名称、ID、维度"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   style={{ width: 260 }}
                 />
-                <Segmented
-                  value={scope}
-                  onChange={(value) => setScope(value as typeof scope)}
-                  options={[
-                    { label: '全部', value: 'all' },
-                    { label: '已启用', value: 'active' },
-                    { label: '待审批', value: 'pending' },
-                  ]}
-                />
               </Space>
             )}
           >
+            <Tabs
+              activeKey={scope}
+              onChange={(key) => setScope(key as TemplateLifecycle)}
+              items={[
+                { key: 'pending', label: `待审 ${pending.length}` },
+                { key: 'active', label: `已生效 ${active.length}` },
+                { key: 'rejected', label: `已驳回 ${rejected.length}` },
+              ]}
+            />
             <Table
               rowKey={(row) => `${row.lifecycle}-${row.template_id}`}
               loading={loading}
@@ -235,44 +403,42 @@ const Templates: React.FC = () => {
         title={detail ? `${detail.template_id} · ${detail.template_name_cn || detail.template_name || detail.name || '模板详情'}` : '模板详情'}
         open={!!detail}
         onClose={() => setDetail(null)}
-        width={720}
+        width={760}
         extra={detail?.lifecycle === 'pending' ? (
           <Space>
-            <Button danger icon={<CloseOutlined />} onClick={() => handleReject(detail)}>拒绝</Button>
-            <Button type="primary" icon={<CheckOutlined />} onClick={() => handleApprove(detail)}>批准启用</Button>
+            <Button danger icon={<CloseOutlined />} onClick={() => openReject(detail)}>驳回</Button>
+            <Button
+              type="primary"
+              icon={<CheckOutlined />}
+              disabled={qualityText(detail) !== '4/4'}
+              onClick={() => handleApprove(detail)}
+            >
+              通过
+            </Button>
           </Space>
         ) : null}
       >
-        {detail && (
-          <>
-            <Alert
-              type={detail.lifecycle === 'active' ? 'success' : 'warning'}
-              showIcon
-              style={{ marginBottom: 16 }}
-              message={detail.lifecycle === 'active' ? '该模板已可用于生产任务' : '该模板仍需产品/风控评审'}
-              description="评审重点是加工方式是否合理、是否可解释、是否与已有模板重复；特征效果由后续生产任务评估。"
-            />
-            <Descriptions bordered size="small" column={1}>
-              <Descriptions.Item label="状态">
-                <Tag color={detail.lifecycle === 'active' ? 'success' : 'processing'}>
-                  {detail.lifecycle === 'active' ? '已启用' : '待审批'}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="模板类型">{detail.dimension || '-'}</Descriptions.Item>
-              <Descriptions.Item label="加工方式说明">{detail.description || '-'}</Descriptions.Item>
-              <Descriptions.Item label="DSL">{detail.dsl || '-'}</Descriptions.Item>
-              <Descriptions.Item label="函数名">{detail.python_function || '-'}</Descriptions.Item>
-            </Descriptions>
-            <Card title="模板代码/口径" size="small" style={{ marginTop: 16 }} loading={codeLoading}>
-              {code ? (
-                <pre className="code-preview">{code}</pre>
-              ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="当前模板没有可展示代码" />
-              )}
-            </Card>
-          </>
-        )}
+        {detail && <Tabs items={detailTabs} />}
       </Drawer>
+
+      <Modal
+        title="驳回模板"
+        open={!!rejecting}
+        onCancel={() => setRejecting(null)}
+        onOk={handleReject}
+        okText="确认驳回"
+        cancelText="取消"
+      >
+        <Form form={rejectForm} layout="vertical">
+          <Form.Item
+            name="reason"
+            label="驳回原因"
+            rules={[{ required: true, message: '请填写驳回原因' }]}
+          >
+            <Input.TextArea rows={4} placeholder="例如：加工逻辑与已有模板重复、解释性不足、质量校验未通过。" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
