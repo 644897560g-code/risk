@@ -2,36 +2,39 @@
   "agent_executions": [
     {
       "agent_name": "feature_mass_producer",
-      "timestamp": "2026-06-03T10:47:04.716407",
+      "timestamp": "2026-06-11T15:44:42.087075",
       "inputs": {
-        "param_combos": "agents/feature_mass_producer.py::_build_param_combos"
+        "builtin_param_combos": "agents/feature_mass_producer.py::_build_param_combos",
+        "project_templates": "project_id=1"
       },
       "outputs": {
-        "features_calculator": "outputs/feature_code/features_calculator_v2.py"
+        "features_calculator": "outputs/feature_code/features_calculator_v2.py",
+        "feature_metadata": "outputs/feature_code/feature_metadata.json"
       },
       "metadata": {
         "total_features": 542,
+        "project_id": 1,
         "mode": "deterministic"
       }
     },
     {
       "agent_name": "reference_computation",
-      "timestamp": "2026-06-03T10:47:06.766028",
+      "timestamp": "2026-06-11T15:44:42.453906",
       "inputs": {
-        "train_data": "2332 samples",
+        "train_data": "16 samples",
         "code": "features_calculator_v2.py"
       },
       "outputs": {
         "reference_distributions": "outputs/feature_code/reference_distributions.json"
       },
       "metadata": {
-        "train_size": 2332,
-        "oot_size": 582
+        "train_size": 16,
+        "oot_size": 4
       }
     },
     {
       "agent_name": "feature_evaluation",
-      "timestamp": "2026-06-03T10:49:14.235998",
+      "timestamp": "2026-06-11T15:44:44.470043",
       "inputs": {
         "features_calculator": "features_calculator_v2.py",
         "reference_distributions": "reference_distributions.json"
@@ -42,13 +45,13 @@
       },
       "metadata": {
         "total": 529,
-        "passed": 326,
-        "failed": 203
+        "passed": 4,
+        "failed": 525
       }
     },
     {
       "agent_name": "feature_deployment",
-      "timestamp": "2026-06-03T10:49:14.274559",
+      "timestamp": "2026-06-11T15:44:44.968934",
       "inputs": {
         "passed_features": "outputs/evaluation/passed_features.json",
         "code": "features_calculator_v2.py"
@@ -62,7 +65,7 @@
     },
     {
       "agent_name": "feedback_aggregation",
-      "timestamp": "2026-06-03T10:49:14.277753",
+      "timestamp": "2026-06-11T15:44:44.992634",
       "inputs": {
         "passed_features": "outputs/evaluation/passed_features.json",
         "accumulated": "accumulated_passed_features.json"
@@ -71,12 +74,13 @@
         "accumulated_passed": "outputs/evaluation/accumulated_passed_features.json"
       },
       "metadata": {
-        "total_accumulated": 326
+        "total_accumulated": 327
       }
     }
   ],
   "latest_outputs": {
     "features_calculator": "outputs/feature_code/features_calculator_v2.py",
+    "feature_metadata": "outputs/feature_code/feature_metadata.json",
     "reference_distributions": "outputs/feature_code/reference_distributions.json",
     "passed_features": "outputs/evaluation/passed_features.json",
     "report": "outputs/evaluation/feature_evaluation_report.html",

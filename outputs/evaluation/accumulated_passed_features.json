@@ -1,6 +1,6 @@
 {
   "total_rounds": 1,
-  "total_passed": 326,
+  "total_passed": 327,
   "passed_features": [
     {
       "feature_name": "cnt_fdciq_3d",
@@ -2281,6 +2281,13 @@
       "feature_name": "d_high_conc_fdcpin_penyelenggara_gini_90d",
       "iv": 0.068476,
       "psi": 0.002953,
+      "coverage": 1.0,
+      "status": "passed"
+    },
+    {
+      "feature_name": "d_high_perc_fdciq_3v7d",
+      "iv": 0.028039,
+      "psi": 0.216439,
       "coverage": 1.0,
       "status": "passed"
     }

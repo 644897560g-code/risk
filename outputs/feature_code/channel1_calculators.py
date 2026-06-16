@@ -1058,11 +1058,242 @@ def calc_recency_days(data: Dict, apply_time_dt: datetime,
 
     return max(0.0, delta_days)
 
+
+# [晋升自模板库] T019 - value_stats
+# 晋升时间: 2026-06-11T02:55:56.208318
+from channel1_calculators import _filter_by_time
+from typing import Dict, Optional
+import math
+
+def calc_value_stats(data: Dict, apply_time_dt: datetime, source: str = 'fdc_pinjaman',
+                     window_days: int = 90, value_field: str = 'amount', method: str = 'mean',
+                     cond: Optional[str] = None, min_count: int = 1) -> float:
+    """对窗口内数值字段进行基础聚合统计
+
+    DSL: value_stats(source, window, value_field, method, cond?, min_count)
+
+    Args:
+        data: 订单数据字典
+        apply_time_dt: 申请时间基准点
+        source: 数据源标识
+        window_days: 回溯窗口天数
+        value_field: 目标数值字段名
+        method: 统计方法
+        cond: 过滤条件
+        min_count: 最小有效样本数
+
+    Returns:
+        统计结果浮点数，样本不足时返回0.0
+    """
+    items = _filter_by_time(data, source, apply_time_dt, window_days)
+    if not isinstance(items, list):
+        return 0.0
+
+    values = []
+    for item in items:
+        if cond and not _eval_cond(item, cond):
+            continue
+        val = item.get(value_field)
+        if val is not None:
+            try:
+                values.append(float(val))
+            except (ValueError, TypeError):
+                continue
+
+    if len(values) < min_count:
+        return 0.0
+
+    if method == 'sum':
+        return round(sum(values), 2)
+    elif method == 'mean':
+        return round(sum(values) / len(values), 2)
+    elif method == 'max':
+        return round(max(values), 2)
+    elif method == 'min':
+        return round(min(values), 2)
+    elif method == 'std':
+        mean_val = sum(values) / len(values)
+        variance = sum((x - mean_val) ** 2 for x in values) / len(values)
+        return round(math.sqrt(variance), 2)
+    return 0.0
+
+
+# [晋升自模板库] T023 - event_gap
+# 晋升时间: 2026-06-11T02:57:51.822671
+from channel1_calculators import _filter_by_time, _get_event_time
+
+def calc_event_gap(data: Dict, apply_time_dt: datetime, window_days: int = 30,
+                   source: str = 'fdc_inquiry', method: str = 'avg',
+                   cond: str = None) -> float:
+    """计算指定窗口内连续事件的时间间隔统计值
+
+    DSL: event_gap(source, window, method, cond?)
+
+    Args:
+        data: 订单数据字典
+        apply_time_dt: 申请时间（防穿越基准）
+        window_days: 回溯窗口天数
+        source: 数据源标识
+        method: 聚合方法 (min, avg, max, std, median)
+        cond: 可选过滤条件
+
+    Returns:
+        间隔统计值 (单位: 天)
+    """
+    raw_items = data.get(source, [])
+    if not isinstance(raw_items, list) or len(raw_items) < 2:
+        return 0.0
+
+    # 防穿越机制：严格基于 apply_time_dt 截断
+    filtered_items = _filter_by_time(raw_items, apply_time_dt, window_days)
+    if len(filtered_items) < 2:
+        return 0.0
+
+    # 提取时间戳并排序
+    timestamps = sorted([_get_event_time(item) for item in filtered_items])
+    if not timestamps:
+        return 0.0
+
+    # 计算相邻间隔（转换为天）
+    gaps = [(timestamps[i] - timestamps[i-1]).total_seconds() / 86400.0 for i in range(1, len(timestamps))]
+    if not gaps:
+        return 0.0
+
+    # 聚合计算
+    if method == 'min':
+        return float(min(gaps))
+    elif method == 'max':
+        return float(max(gaps))
+    elif method == 'avg':
+        return float(sum(gaps) / len(gaps))
+    elif method == 'std':
+        mean_val = sum(gaps) / len(gaps)
+        variance = sum((x - mean_val) ** 2 for x in gaps) / len(gaps)
+        return float(variance ** 0.5)
+    elif method == 'median':
+        sorted_gaps = sorted(gaps)
+        n = len(sorted_gaps)
+        mid = n // 2
+        return float(sorted_gaps[mid] if n % 2 != 0 else (sorted_gaps[mid-1] + sorted_gaps[mid]) / 2)
+    return 0.0
+
+
+# [晋升自模板库] T021 - recency_score
+# 晋升时间: 2026-06-11T07:08:08.200215
+from datetime import datetime, timedelta
+from typing import Dict, Optional
+import math
+
+def calc_recency_score(data: Dict, apply_time_dt: datetime, source: str = 'applist',
+                       window_days: int = 30, weight_field: Optional[str] = None,
+                       decay_type: str = 'exponential', half_life_days: float = 7.0) -> float:
+    """基于最近事件时间的近因衰减评分计算
+
+    DSL: recency_score(source, window, weight_field?, decay_type)
+
+    Args:
+        data: 订单数据字典
+        apply_time_dt: 申请时间（防穿越基准）
+        source: 数据源标识（applist/fdc_pinjaman）
+        window_days: 回溯窗口天数
+        weight_field: 事件权重字段名，默认1.0
+        decay_type: 衰减类型 ('exponential', 'linear', 'step')
+        half_life_days: 半衰期/阈值天数
+
+    Returns:
+        评分 (0.0-1.0)
+    """
+    valid_events = _filter_by_time(data, source, apply_time_dt, window_days)
+    if not valid_events:
+        return 0.0
+
+    event_times = [t for t in (_get_event_time(e) for e in valid_events) if t]
+    if not event_times:
+        return 0.0
+
+    latest_time = max(event_times)
+    days_since = (apply_time_dt - latest_time).total_seconds() / 86400.0
+    days_since = max(0.0, days_since)
+
+    # 衰减计算
+    if decay_type == 'exponential':
+        score = math.exp(-math.log(2) * days_since / half_life_days)
+    elif decay_type == 'linear':
+        score = max(0.0, 1.0 - days_since / window_days)
+    elif decay_type == 'step':
+        score = 1.0 if days_since <= half_life_days else 0.0
+    else:
+        score = 0.0
+
+    # 权重调整
+    if weight_field:
+        latest_event = max(valid_events, key=lambda e: _get_event_time(e) or datetime.min)
+        try:
+            weight = float(latest_event.get(weight_field, 1.0))
+            score = min(1.0, score * math.log1p(max(weight, 0.0)))
+        except (TypeError, ValueError):
+            pass
+
+    return round(float(score), 4)
+
+
+# [晋升自模板库] T022 - frequency_rate
+# 晋升时间: 2026-06-11T07:30:21.510945
+from datetime import datetime
+from typing import Dict, Optional
+from channel1_calculators import _filter_by_time
+
+def calc_frequency_rate(data: Dict, apply_time_dt: datetime, window_days: int = 30,
+                        cond: Optional[Dict] = None, normalize_unit: str = "day",
+                        source: str = "fdc_inquiry") -> float:
+    """计算指定窗口内的事件发生频率（归一化）
+
+    DSL: frequency_rate(source, window, cond?, normalize_unit)
+
+    Args:
+        data: 订单数据字典
+        apply_time_dt: 申请时间（防穿越基准）
+        window_days: 回溯窗口天数
+        cond: 事件过滤条件字典
+        normalize_unit: 归一化单位 (day/week/month)
+        source: 数据源标识
+
+    Returns:
+        频率值 (float)
+    """
+    # 防穿越：严格基于 apply_time_dt 截取历史窗口数据
+    items = _filter_by_time(data, source, apply_time_dt, window_days)
+    if not items:
+        return 0.0
+
+    # 应用业务条件过滤
+    if cond:
+        items = [item for item in items if all(item.get(k) == v for k, v in cond.items())]
+
+    count = len(items)
+    if count == 0:
+        return 0.0
+
+    # 单位换算系数映射
+    unit_divisors = {"day": 1.0, "week": 7.0, "month": 30.0}
+    divisor = unit_divisors.get(normalize_unit, 1.0)
+    
+    # 频率 = 事件数 / (窗口天数 / 单位换算系数)
+    return count / (window_days / divisor)
+
 # ============================================================
 # 函数映射表
 # ============================================================
 
 FUNCTION_MAP = {
+    'calc_frequency_rate': calc_frequency_rate,
+
+    'calc_recency_score': calc_recency_score,
+
+    'calc_event_gap': calc_event_gap,
+
+    'calc_value_stats': calc_value_stats,
+
     'calc_recency_days': calc_recency_days,
 
     'calc_event_interval_cv': calc_event_interval_cv,

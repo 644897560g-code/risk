@@ -742,28 +742,28 @@ class FeatureCalculator:
         prop_app_ewallet_90d = calc_proportion_by_category(data, window_days=90, allowed_categories={'ewallet'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_7d
-        prop_app_cash_loan_fintech_lending_7d = calc_proportion_by_category(data, window_days=7, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_7d = calc_proportion_by_category(data, window_days=7, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_30d
-        prop_app_cash_loan_fintech_lending_30d = calc_proportion_by_category(data, window_days=30, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_30d = calc_proportion_by_category(data, window_days=30, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_60d
-        prop_app_cash_loan_fintech_lending_60d = calc_proportion_by_category(data, window_days=60, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_60d = calc_proportion_by_category(data, window_days=60, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_90d
-        prop_app_cash_loan_fintech_lending_90d = calc_proportion_by_category(data, window_days=90, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_90d = calc_proportion_by_category(data, window_days=90, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_7d
-        prop_app_gambling_cash_loan_fintech_lending_7d = calc_proportion_by_category(data, window_days=7, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_7d = calc_proportion_by_category(data, window_days=7, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_30d
-        prop_app_gambling_cash_loan_fintech_lending_30d = calc_proportion_by_category(data, window_days=30, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_30d = calc_proportion_by_category(data, window_days=30, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_60d
-        prop_app_gambling_cash_loan_fintech_lending_60d = calc_proportion_by_category(data, window_days=60, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_60d = calc_proportion_by_category(data, window_days=60, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_90d
-        prop_app_gambling_cash_loan_fintech_lending_90d = calc_proportion_by_category(data, window_days=90, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_90d = calc_proportion_by_category(data, window_days=90, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_shopping_food_delivery_7d
         prop_app_shopping_food_delivery_7d = calc_proportion_by_category(data, window_days=7, allowed_categories={'shopping', 'food_delivery'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
@@ -928,16 +928,16 @@ class FeatureCalculator:
         prop_app_ewallet_15d = calc_proportion_by_category(data, window_days=15, allowed_categories={'ewallet'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_3d
-        prop_app_cash_loan_fintech_lending_3d = calc_proportion_by_category(data, window_days=3, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_3d = calc_proportion_by_category(data, window_days=3, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_cash_loan_fintech_lending_15d
-        prop_app_cash_loan_fintech_lending_15d = calc_proportion_by_category(data, window_days=15, allowed_categories={'cash_loan', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_cash_loan_fintech_lending_15d = calc_proportion_by_category(data, window_days=15, allowed_categories={'fintech_lending', 'cash_loan'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_3d
-        prop_app_gambling_cash_loan_fintech_lending_3d = calc_proportion_by_category(data, window_days=3, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_3d = calc_proportion_by_category(data, window_days=3, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_gambling_cash_loan_fintech_lending_15d
-        prop_app_gambling_cash_loan_fintech_lending_15d = calc_proportion_by_category(data, window_days=15, allowed_categories={'cash_loan', 'fintech_lending', 'gambling'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
+        prop_app_gambling_cash_loan_fintech_lending_15d = calc_proportion_by_category(data, window_days=15, allowed_categories={'cash_loan', 'gambling', 'fintech_lending'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
 
         # prop_app_shopping_food_delivery_3d
         prop_app_shopping_food_delivery_3d = calc_proportion_by_category(data, window_days=3, allowed_categories={'shopping', 'food_delivery'}, category_cache=self.app_category_cache, apply_time_dt=apply_dt)
