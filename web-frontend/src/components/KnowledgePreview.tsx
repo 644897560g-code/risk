@@ -43,7 +43,7 @@ const KnowledgePreview: React.FC<Props> = ({ filename, open, onClose }) => {
       width={720}
     >
       {loading && (
-        <div style={{ textAlign: 'center', padding: 40 }}><Spin /><p style={{ marginTop: 8, color: '#999' }}>加载中...</p></div>
+        <div style={{ textAlign: 'center', padding: 40 }}><Spin /><p style={{ marginTop: 8, color: 'rgba(226,232,240,0.58)' }}>加载中...</p></div>
       )}
       {error && (
         <Alert type="error" message="预览失败" description={error} showIcon closable onClose={() => setError(null)} />
@@ -60,7 +60,7 @@ const KnowledgePreview: React.FC<Props> = ({ filename, open, onClose }) => {
             fontSize: 13, lineHeight: 1.6, overflow: 'auto', maxHeight: 600,
             whiteSpace: 'pre-wrap', wordBreak: 'break-all', margin: 0,
           }}>
-            {preview.content || <span style={{ color: '#888' }}>（空文件）</span>}
+            {preview.content || <span style={{ color: 'rgba(226,232,240,0.58)' }}>（空文件）</span>}
           </pre>
         </div>
       )}

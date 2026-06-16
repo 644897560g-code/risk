@@ -17,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.app.database import SessionLocal  # noqa: E402
+from backend.services.project_service import ensure_default_project  # noqa: E402
 from scripts.seeds.seed_template_library import (  # noqa: E402
     seed_pending_templates,
     seed_template_library,
@@ -64,6 +65,7 @@ def main() -> int:
             source=Path(args.pending_template_source),
             dry_run=args.dry_run,
         )
+        default_project = ensure_default_project(db) if not args.dry_run else None
     finally:
         db.close()
 
@@ -74,6 +76,10 @@ def main() -> int:
     print(prefix + "pending_templates:")
     for key, value in pending_stats.items():
         print(f"  {key}: {value}")
+    if default_project:
+        print("default_project:")
+        print(f"  id: {default_project.id}")
+        print(f"  name: {default_project.name}")
     return 0
 
 

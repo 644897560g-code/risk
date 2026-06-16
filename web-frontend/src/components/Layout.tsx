@@ -1,22 +1,49 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, Typography, Button, theme } from 'antd';
+import { Breadcrumb, Layout, Menu, Typography, Button, theme, Select, message } from 'antd';
 import {
+  AppstoreOutlined,
   MessageOutlined,
   DatabaseOutlined,
+  FileTextOutlined,
   OrderedListOutlined,
   UserOutlined,
   LogoutOutlined,
+  FolderOpenOutlined,
+  ExperimentOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@/store/authStore';
+import { useProjectStore } from '@/store/projectStore';
 
 const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 
 const menuItems = [
-  { key: '/agent', icon: <MessageOutlined />, label: 'Agent' },
-  { key: '/knowledge', icon: <DatabaseOutlined />, label: '知识' },
-  { key: '/tasks', icon: <OrderedListOutlined />, label: '任务' },
+  {
+    key: 'platform',
+    label: '平台',
+    children: [
+      { key: '/projects', icon: <FolderOpenOutlined />, label: '项目管理' },
+      { key: '/templates', icon: <ExperimentOutlined />, label: '模板资产' },
+    ],
+  },
+  {
+    key: 'project',
+    label: '当前项目',
+    children: [
+      { key: '/dashboard', icon: <AppstoreOutlined />, label: '项目工作台' },
+      { key: '/data-sources', icon: <DatabaseOutlined />, label: '数据源管理' },
+      { key: '/knowledge', icon: <FileTextOutlined />, label: '知识依据' },
+      { key: '/tasks', icon: <OrderedListOutlined />, label: '项目任务' },
+    ],
+  },
+  {
+    key: 'support',
+    label: '辅助工具',
+    children: [
+      { key: '/agent', icon: <MessageOutlined />, label: '智能助理' },
+    ],
+  },
 ];
 
 const AppLayout: React.FC = () => {
@@ -25,21 +52,55 @@ const AppLayout: React.FC = () => {
   const { token } = theme.useToken();
   const authLogout = useAuthStore((s) => s.logout);
   const authUsername = useAuthStore((s) => s.username);
+  const { projects, currentProject, isLoading, loadProjects, selectProject } = useProjectStore();
 
-  const selectedKey = '/' + location.pathname.split('/')[1];
+  const routeRoot = '/' + location.pathname.split('/')[1];
+  const selectedKey = ['/evaluation', '/deployment'].includes(routeRoot) ? '/tasks' : routeRoot;
+  const projectName = currentProject?.name || '当前项目';
+  const routeContext = (() => {
+    switch (routeRoot) {
+      case '/projects':
+        return { title: '项目管理', breadcrumb: ['平台', '项目管理'] };
+      case '/templates':
+        return { title: '模板资产', breadcrumb: ['平台', '模板资产'] };
+      case '/dashboard':
+        return { title: '项目工作台', breadcrumb: ['平台', projectName, '项目工作台'] };
+      case '/data-sources':
+        return { title: '数据源管理', breadcrumb: ['平台', projectName, '数据源管理'] };
+      case '/knowledge':
+        return { title: '知识依据', breadcrumb: ['平台', projectName, '知识依据'] };
+      case '/tasks':
+        return { title: '项目任务', breadcrumb: ['平台', projectName, '项目任务'] };
+      case '/evaluation':
+        return { title: '结果库 / 评估报告', breadcrumb: ['平台', projectName, '项目任务', '评估报告'] };
+      case '/deployment':
+        return { title: '结果库 / 部署版本', breadcrumb: ['平台', projectName, '项目任务', '部署版本'] };
+      case '/agent':
+        return { title: '智能助理', breadcrumb: ['辅助工具', '智能助理'] };
+      default:
+        return { title: '特征生产平台', breadcrumb: ['平台'] };
+    }
+  })();
 
   const handleLogout = () => {
     authLogout();
-    navigate('/login', { replace: true });
+    message.info('当前为前端产品原型模式，无需登录');
+    navigate('/dashboard', { replace: true });
   };
 
+  useEffect(() => {
+    loadProjects().catch(() => {
+      message.error('项目列表加载失败');
+    });
+  }, [loadProjects]);
+
   return (
-    <Layout style={{ minHeight: '100vh', background: token.colorBgLayout }}>
+    <Layout className="tech-shell" style={{ minHeight: '100vh', background: token.colorBgLayout }}>
       {/* Sidebar */}
       <Sider
+        className="tech-sider"
         width={220}
         style={{
-          background: 'linear-gradient(180deg, #0a1628 0%, #132044 100%)',
           borderRight: 'none',
           position: 'fixed',
           left: 0,
@@ -89,7 +150,7 @@ const AppLayout: React.FC = () => {
                 textTransform: 'uppercase' as const,
               }}
             >
-              特征挖掘引擎
+              特征生产平台
             </span>
           </div>
         </div>
@@ -98,15 +159,11 @@ const AppLayout: React.FC = () => {
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
-          items={menuItems.map((item) => ({
-            ...item,
-            style: {
-              borderRadius: 8,
-              margin: '4px 8px',
-              color: 'rgba(255,255,255,0.65)',
-            },
-          }))}
-          onClick={({ key }) => navigate(key)}
+          defaultOpenKeys={['platform', 'project', 'support']}
+          items={menuItems}
+          onClick={({ key }) => {
+            if (String(key).startsWith('/')) navigate(key);
+          }}
           style={{
             background: 'transparent',
             borderRight: 0,
@@ -141,10 +198,9 @@ const AppLayout: React.FC = () => {
       <Layout style={{ marginLeft: 220 }}>
         {/* Header */}
         <Header
+          className="tech-header"
           style={{
-            background: '#ffffff',
             padding: '0 28px',
-            borderBottom: '1px solid #e8ecf1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -157,13 +213,28 @@ const AppLayout: React.FC = () => {
             backgroundClip: 'padding-box',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Typography.Title level={4} style={{ margin: 0, fontWeight: 600 }}>
-              {menuItems.find((m) => m.key === selectedKey)?.label || '特征挖掘系统'}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Breadcrumb
+              className="app-breadcrumb"
+              items={routeContext.breadcrumb.map((title) => ({ title }))}
+            />
+            <Typography.Title level={4} style={{ margin: 0, fontWeight: 600, lineHeight: 1.2 }}>
+              {routeContext.title}
             </Typography.Title>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <Text style={{ color: '#5a6070', fontSize: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Select
+              value={currentProject?.id}
+              loading={isLoading}
+              style={{ width: 220 }}
+              placeholder="选择项目"
+              options={projects.map((p) => ({
+                value: p.id,
+                label: p.is_default ? `${p.name}（默认）` : p.name,
+              }))}
+              onChange={selectProject}
+            />
+            <Text style={{ color: 'rgba(226,232,240,0.72)', fontSize: 14 }}>
               <UserOutlined style={{ marginRight: 6 }} />
               {authUsername || '用户'}
             </Text>
@@ -174,13 +245,14 @@ const AppLayout: React.FC = () => {
               onClick={handleLogout}
               style={{ color: '#ff4d4f' }}
             >
-              退出
+              演示模式
             </Button>
           </div>
         </Header>
 
         {/* Content */}
         <Content
+          className="tech-content"
           style={{
             padding: 24,
             minHeight: 'calc(100vh - 64px)',

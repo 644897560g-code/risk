@@ -25,6 +25,7 @@ from agents.feature_evaluation_agent import FeatureEvaluator
 from agents.feature_deployment_agent import FeatureDeploymentAgent
 from backend.app.database import SessionLocal
 from backend.services.template_library import ACTIVE_STATUS, list_templates
+from backend.services.project_service import list_project_templates
 
 
 class DataFlowRegistry:
@@ -343,7 +344,41 @@ class FeatureOrchestrator:
 
         return overall_success
 
-    def run_mass_production(self, short_url_file: str = None, labels_excel: str = None):
+    def _build_generation_param_combos(self, project_id: int = None) -> Dict[str, List[Dict]]:
+        """Build the template combo set for this run.
+
+        T001-T016 are built-in. T017+ are included only when the current project
+        explicitly enables the active platform template.
+        """
+        from agents.feature_mass_producer import build_param_combos
+
+        extra_templates = []
+        if project_id:
+            db = SessionLocal()
+            try:
+                rows = list_project_templates(db, project_id, enabled=True)
+                extra_templates = [
+                    row.template
+                    for row in rows
+                    if row.template and row.template.status == ACTIVE_STATUS
+                ]
+                enabled_ids = [t.template_id for t in extra_templates]
+                self._log(f"  项目 {project_id} 已启用模板: {enabled_ids}")
+            finally:
+                db.close()
+        else:
+            self._log("  未指定项目，使用内置模板 T001-T016")
+
+        param_combos = build_param_combos(extra_templates=extra_templates)
+        dynamic_ids = [
+            tid for tid in sorted(param_combos)
+            if tid.startswith('T') and tid[1:].isdigit() and int(tid[1:]) > 16
+        ]
+        if dynamic_ids:
+            self._log(f"  本次纳入项目动态模板: {dynamic_ids}")
+        return param_combos
+
+    def run_mass_production(self, short_url_file: str = None, labels_excel: str = None, project_id: int = None):
         """批量生产模式：单轮一次性生成333个特征
 
         作为FeatureOrchestrator的正式阶段，与run_full_pipeline()平级。
@@ -380,16 +415,25 @@ class FeatureOrchestrator:
             # ---- Step 1: 批量生成特征代码 ----
             if 'mass_production' not in self.state['completed_steps']:
                 self._log("\n【步骤1/5】批量特征生产")
-                from agents.feature_mass_producer import produce_all_features, save_feature_calculator, PARAM_COMBOS
-                code = produce_all_features()
-                save_feature_calculator(code)
-                self._log("  ✅ 特征代码已生成（333个特征）")
+                from agents.feature_mass_producer import produce_all_features, save_feature_calculator
+                param_combos = self._build_generation_param_combos(project_id)
+                code = produce_all_features(param_combos=param_combos)
+                save_feature_calculator(code, param_combos=param_combos)
+                total_features = sum(len(combos) for combos in param_combos.values())
+                self._log(f"  ✅ 特征代码已生成（{total_features}个特征）")
 
                 self.data_flow.register_execution(
                     agent_name='feature_mass_producer',
-                    inputs={'param_combos': 'agents/feature_mass_producer.py::_build_param_combos'},
-                    outputs={'features_calculator': 'outputs/feature_code/features_calculator_v2.py'},
-                    metadata={'total_features': sum(len(combos) for combos in PARAM_COMBOS.values()),
+                    inputs={
+                        'builtin_param_combos': 'agents/feature_mass_producer.py::_build_param_combos',
+                        'project_templates': f'project_id={project_id}' if project_id else 'builtin_only',
+                    },
+                    outputs={
+                        'features_calculator': 'outputs/feature_code/features_calculator_v2.py',
+                        'feature_metadata': 'outputs/feature_code/feature_metadata.json',
+                    },
+                    metadata={'total_features': total_features,
+                              'project_id': project_id,
                               'mode': 'deterministic'}
                 )
                 self._update_state('mass_production', 'mass_production_completed', next_step='reference_computation')
@@ -422,8 +466,9 @@ class FeatureOrchestrator:
                 # 重建特征代码（注入参考分布）
                 self._log("  [step2] 重建特征代码...")
                 from agents.feature_mass_producer import produce_all_features
-                code = produce_all_features(ref_distributions=refs)
-                save_feature_calculator(code)
+                param_combos = self._build_generation_param_combos(project_id)
+                code = produce_all_features(ref_distributions=refs, param_combos=param_combos)
+                save_feature_calculator(code, param_combos=param_combos)
                 self._log(f"  ✅ 特征代码已重建（T010-T012带参考分布）")
 
                 self._log("  [step2] 加载特征计算器...")
@@ -455,6 +500,48 @@ class FeatureOrchestrator:
                 feature_names = [c for c in df_train.columns if c not in ('target', 'sample_index')]
                 self._log(f"  评估 {len(feature_names)} 个特征")
 
+                feature_metadata = {}
+                metadata_path = 'outputs/feature_code/feature_metadata.json'
+                if os.path.exists(metadata_path):
+                    try:
+                        with open(metadata_path, 'r', encoding='utf-8') as f:
+                            metadata_payload = json.load(f)
+                        feature_metadata = metadata_payload.get('features', metadata_payload)
+                        self._log(f"  已加载特征元数据: {metadata_path}")
+                    except Exception as e:
+                        self._log(f"  ⚠ 特征元数据文件读取失败，评估结果仅保存指标: {e}")
+                else:
+                    self._log(f"  ⚠ 特征元数据文件不存在: {metadata_path}")
+                design_doc_path = 'outputs/feature_design/feature_design_doc.json'
+                if os.path.exists(design_doc_path):
+                    try:
+                        with open(design_doc_path, 'r', encoding='utf-8') as f:
+                            design_doc = json.load(f)
+                        design_features = design_doc.get('features', [])
+                        for feat in design_features:
+                            feat_name = feat.get('feature_name')
+                            if not feat_name:
+                                continue
+                            metadata = {
+                                k: feat.get(k)
+                                for k in (
+                                    'feature_name',
+                                    'template_id',
+                                    'data_source',
+                                    'data_sources',
+                                    'calculation_logic',
+                                    'formula_template',
+                                    'formula',
+                                )
+                                if feat.get(k) not in (None, '')
+                            }
+                            feature_metadata[feat_name] = {
+                                **feature_metadata.get(feat_name, {}),
+                                **metadata,
+                            }
+                    except Exception as e:
+                        self._log(f"  ⚠ 设计文档元数据加载失败: {e}")
+
                 passed = []
                 failed = []
                 for feat_name in feature_names:
@@ -466,6 +553,7 @@ class FeatureOrchestrator:
                         'psi': round(psi, 6), 'coverage': round(cov, 6),
                         'status': 'passed' if iv >= 0.02 and psi <= 0.25 and cov > 0.05 else 'failed'
                     }
+                    result.update(feature_metadata.get(feat_name, {}))
                     icon = '✅' if result['status'] == 'passed' else '❌'
                     self._log(f"  {icon} {feat_name:<45s} IV={iv:<8.4f} PSI={psi:<8.4f} Cov={cov*100:>6.2f}%")
                     if result['status'] == 'passed':

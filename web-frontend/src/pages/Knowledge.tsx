@@ -19,7 +19,7 @@ import {
 import type { KnowledgeStats as KnowledgeStatsType } from '@/types/knowledge';
 import KnowledgePreview from '@/components/KnowledgePreview';
 
-const { Title } = Typography;
+const { Text, Title } = Typography;
 
 const categoryConfig: Record<string, { label: string; color: string }> = {
   doc: { label: '文档', color: 'blue' },
@@ -185,7 +185,13 @@ const Knowledge: React.FC = () => {
             </Tag>
           ))}
           <Tag
-            style={{ background: '#fff', borderStyle: 'dashed', cursor: 'pointer', margin: 0 }}
+            style={{
+              background: 'rgba(15,23,42,0.72)',
+              borderColor: 'rgba(55,231,255,0.22)',
+              borderStyle: 'dashed',
+              cursor: 'pointer',
+              margin: 0,
+            }}
             onClick={() => {
               const tag = prompt('输入标签名称:');
               if (tag?.trim()) handleAddTag(record.filename, tag.trim());
@@ -226,7 +232,41 @@ const Knowledge: React.FC = () => {
   ];
 
   return (
-    <div>
+    <div className="page-enter">
+      <div className="page-header">
+        <div>
+          <Title level={3} style={{ margin: 0 }}>知识依据</Title>
+          <Text type="secondary">沉淀业务规则、变量说明、风控口径和历史反馈；样本、标签和连接配置在数据源管理中维护</Text>
+        </div>
+        <Upload
+          beforeUpload={handleUpload}
+          showUploadList={false}
+          accept=".txt,.md,.json,.csv,.xlsx,.xls,.py,.sql,.yaml,.yml,.pdf,.doc,.docx"
+        >
+          <Button type="primary" icon={<UploadOutlined />} loading={uploading}>
+            上传知识依据
+          </Button>
+        </Upload>
+      </div>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+        <Col xs={24} lg={8}>
+          <Card title="业务规则" size="small">
+            <Text type="secondary">记录标签含义、首贷范围、时间口径、防穿越原则和评估阈值。</Text>
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card title="变量与规则说明" size="small">
+            <Text type="secondary">沉淀FDC变量清单、APP分类规则、风险解释和模板评审依据。</Text>
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card title="历史反馈" size="small">
+            <Text type="secondary">保留评估结果和复盘结论，用于下一轮特征生产时减少重复试错。</Text>
+          </Card>
+        </Col>
+      </Row>
+
       {/* Stats cards */}
       {stats && (
         <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
@@ -258,7 +298,7 @@ const Knowledge: React.FC = () => {
       <div
         style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           marginBottom: 16,
           gap: 12,
@@ -288,15 +328,6 @@ const Knowledge: React.FC = () => {
             ]}
           />
         </Space>
-        <Upload
-          beforeUpload={handleUpload}
-          showUploadList={false}
-          accept=".txt,.md,.json,.csv,.xlsx,.xls,.py,.sql,.yaml,.yml,.pdf,.doc,.docx"
-        >
-          <Button type="primary" icon={<UploadOutlined />} loading={uploading}>
-            上传文件
-          </Button>
-        </Upload>
       </div>
 
       {/* File table */}

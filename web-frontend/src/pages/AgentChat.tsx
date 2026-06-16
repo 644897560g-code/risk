@@ -1,19 +1,21 @@
 import React, { useReducer, useCallback, useRef, useEffect, useState } from 'react';
-import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Typography, Empty, Tooltip } from 'antd';
+import { Card, message as antMessage, Button, Tabs, List, Popconfirm, Empty, Tooltip, Space, Tag } from 'antd';
 import {
+  ApiOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
   PlusOutlined,
   DeleteOutlined,
   HistoryOutlined,
+  RobotOutlined,
+  SafetyCertificateOutlined,
+  ThunderboltOutlined,
 } from '@ant-design/icons';
 import ChatMessage, { ChatLoading, ChatError, ChatWelcome } from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import TemplateSidebar from '@/components/TemplateSidebar';
 import { sendChatMessageStream, fetchChatSessions, fetchChatSessionMessages, deleteChatSession, clearChatSessions } from '@/services/api';
 import type { ChatMessage as ChatMessageType, ChatSessionSummary } from '@/types/agent';
-
-const { Text } = Typography;
 
 // ========== State ==========
 
@@ -238,22 +240,33 @@ const AgentChat: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 120px)' }}>
+    <div className="agent-console page-enter">
       {/* Left: Chat Panel */}
       <Card
-        title="Agent Chat"
+        className="agent-chat-card"
+        title={(
+          <div className="agent-title">
+            <span className="agent-core-icon"><RobotOutlined /></span>
+            <div>
+              <div className="agent-title-main">智能助理</div>
+              <div className="agent-title-sub">特征设计、模板评审、任务复盘的产品协同入口</div>
+            </div>
+          </div>
+        )}
+        extra={(
+          <Space size={8} wrap>
+            <Tag color="cyan" icon={<ThunderboltOutlined />}>实时推理</Tag>
+            <Tag color="geekblue" icon={<SafetyCertificateOutlined />}>防穿越校验</Tag>
+            <Tag color="purple" icon={<ApiOutlined />}>模板联动</Tag>
+          </Space>
+        )}
         size="small"
         style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
         styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' } }}
       >
         {/* Messages area */}
         <div
-          style={{
-            flex: 1,
-            overflow: 'auto',
-            padding: '16px 16px 0',
-            background: '#fafafa',
-          }}
+          className="agent-message-stream"
         >
           {state.messages.length === 0 && !state.loading && !state.streamingContent && <ChatWelcome />}
 
@@ -279,8 +292,9 @@ const AgentChat: React.FC = () => {
       </Card>
 
       {/* Right: Sessions + Templates sidebar */}
-      <div style={{ width: sidebarExpanded ? 'calc(100vw - 48px)' : 420, overflow: 'auto', transition: 'width 0.3s' }}>
+      <div className="agent-side-rail" style={{ width: sidebarExpanded ? 'calc(100vw - 48px)' : 420 }}>
         <Card
+          className="agent-side-card"
           size="small"
           styles={{ body: { padding: 0 } }}
           extra={
@@ -302,7 +316,7 @@ const AgentChat: React.FC = () => {
                 label: <span><HistoryOutlined /> 会话</span>,
                 children: (
                   <div style={{ padding: '0 4px' }}>
-                    <div style={{ display: 'flex', gap: 4, padding: '8px 8px 4px', justifyContent: 'space-between' }}>
+                    <div className="agent-session-actions">
                       <Button size="small" type="primary" icon={<PlusOutlined />} onClick={handleNewSession}>
                         新建
                       </Button>
@@ -326,15 +340,15 @@ const AgentChat: React.FC = () => {
                           onClick={() => handleSelectSession(s.id)}
                           style={{
                             cursor: 'pointer',
-                            padding: '8px 12px',
-                            borderRadius: 6,
+                            padding: '10px 12px',
+                            borderRadius: 8,
                             margin: '2px 4px',
-                            background: convIdRef.current === s.id ? '#e6f4ff' : 'transparent',
-                            border: 'none',
+                            background: convIdRef.current === s.id ? 'rgba(55, 231, 255, 0.14)' : 'transparent',
+                            border: convIdRef.current === s.id ? '1px solid rgba(55, 231, 255, 0.28)' : '1px solid transparent',
                           }}
                           onMouseEnter={(e) => {
                             if (convIdRef.current !== s.id) {
-                              (e.currentTarget as HTMLElement).style.background = '#f5f5f5';
+                              (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
                             }
                           }}
                           onMouseLeave={(e) => {
@@ -347,7 +361,7 @@ const AgentChat: React.FC = () => {
                             <div style={{ fontSize: 13, fontWeight: convIdRef.current === s.id ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {s.title}
                             </div>
-                            <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                            <div style={{ fontSize: 11, color: 'rgba(226, 232, 240, 0.62)', marginTop: 2 }}>
                               {formatTime(s.updated_at)}
                             </div>
                           </div>

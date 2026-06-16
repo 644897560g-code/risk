@@ -72,11 +72,19 @@ def run_mass_production(self, task_id: int, config: dict = None):
 
         # 调用现有的 agent 代码（不做任何修改）
         from agents.feature_orchestrator import FeatureOrchestrator
+        from backend.services.task_service import get_task
 
         _update_progress(task_id, 10.0, "正在枚举参数组合并生成特征代码...")
 
+        db_project = _get_db()
+        try:
+            task = get_task(db_project, task_id)
+            project_id = task.project_id if task else None
+        finally:
+            db_project.close()
+
         orchestrator = FeatureOrchestrator()
-        orchestrator.run_mass_production()
+        orchestrator.run_mass_production(project_id=project_id)
 
         _update_progress(task_id, 90.0, "特征评估完成，正在保存结果...")
 

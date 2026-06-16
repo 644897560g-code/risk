@@ -19,9 +19,14 @@ import json
 import math
 import os
 import sys
+from copy import deepcopy
+from itertools import product
 from typing import Dict, List, Tuple, Optional
 
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    np = None
 
 # ============================================================
 # PARAM_COMBOS — 完整枚举所有模板的确定性参数组合
@@ -641,7 +646,158 @@ def _validate_t016_references(t016_combos: list, all_combos: dict):
         print("[T016 validation] No T016 features to validate")
 
 
+BUILTIN_TEMPLATE_MAX_NUMBER = 16
+DYNAMIC_TEMPLATE_MAX_COMBOS = 48
 PARAM_COMBOS = _build_param_combos()
+
+
+def _template_number(template_id: str) -> Optional[int]:
+    if not template_id or not template_id.startswith('T'):
+        return None
+    suffix = template_id[1:]
+    return int(suffix) if suffix.isdigit() else None
+
+
+def is_builtin_template_id(template_id: str) -> bool:
+    number = _template_number(template_id)
+    return number is not None and number <= BUILTIN_TEMPLATE_MAX_NUMBER
+
+
+def _template_field(template, field: str, default=None):
+    if isinstance(template, dict):
+        return template.get(field, default)
+    return getattr(template, field, default)
+
+
+def _function_name(value: str) -> str:
+    if not value:
+        return ''
+    return value.split('(', 1)[0].strip()
+
+
+def _function_param_names(value: str) -> List[str]:
+    if not value or '(' not in value:
+        return []
+    inside = value.split('(', 1)[1].rsplit(')', 1)[0]
+    names = []
+    for part in inside.split(','):
+        token = part.strip()
+        if not token or token in ('*', '/'):
+            continue
+        token = token.split(':', 1)[0].split('=', 1)[0].strip()
+        if token and token not in ('data', 'apply_time_dt', 'self'):
+            names.append(token)
+    return names
+
+
+def _is_dynamic_template_params(params: Dict) -> bool:
+    return bool(params.get('__dynamic_template'))
+
+
+def _spec_values(spec) -> List:
+    if not isinstance(spec, dict):
+        return []
+    for key in ('values', 'enum', 'options', 'choices'):
+        values = spec.get(key)
+        if isinstance(values, list):
+            return values
+    return []
+
+
+def _dynamic_values_for_param(name: str, spec: Dict, all_names: set) -> List:
+    explicit = _spec_values(spec)
+    if explicit:
+        return explicit
+    if name == 'source':
+        if 'value_field' in all_names:
+            return ['fdc_pinjaman']
+        return ['applist', 'fdc_pinjaman']
+    if name in ('window', 'window_days'):
+        if 'value_field' in all_names:
+            return [30, 90, 180]
+        return [7, 30, 90]
+    if name == 'value_field':
+        return ['nilai_pendanaan', 'sisa_pinjaman_berjalan', 'pendapatan']
+    if name == 'method':
+        return ['sum', 'mean', 'max', 'min'] if 'value_field' in all_names else ['mean']
+    if name == 'decay_type':
+        return ['exponential', 'linear']
+    if name == 'half_life_days':
+        return [7.0, 15.0]
+    if name == 'weight_field':
+        return [None]
+    if name == 'min_count':
+        return [1]
+    if name == 'cond':
+        return [None]
+    if name == 'time_field':
+        return ['inTime', 'tgl_penyaluran_dana']
+    default = spec.get('default') if isinstance(spec, dict) else None
+    return [default] if default is not None else []
+
+
+def _normalize_dynamic_param_name(name: str, function_params: set) -> str:
+    if name == 'window' and 'window_days' in function_params:
+        return 'window_days'
+    return name
+
+
+def _dynamic_template_param_combos(template) -> List[Dict]:
+    """Expand project-enabled T017+ templates from their own parameter_space."""
+    tid = _template_field(template, 'template_id', '')
+    template_name = _template_field(template, 'template_name', '')
+    python_function_raw = _template_field(template, 'python_function', '')
+    python_function = _function_name(python_function_raw)
+    if not python_function:
+        return []
+
+    parameter_space = _template_field(template, 'parameter_space', {}) or {}
+    function_params = set(_function_param_names(python_function_raw))
+    param_specs = []
+    for raw_name, spec in parameter_space.items():
+        name = _normalize_dynamic_param_name(raw_name, function_params)
+        if name in ('data', 'apply_time_dt', 'self'):
+            continue
+        values = _dynamic_values_for_param(raw_name, spec, set(parameter_space.keys()))
+        if not values:
+            continue
+        param_specs.append((name, values))
+
+    if not param_specs:
+        param_specs = [(name, _dynamic_values_for_param(name, {}, function_params)) for name in sorted(function_params)]
+        param_specs = [(name, values) for name, values in param_specs if values]
+
+    combos = []
+    for values in product(*(item[1] for item in param_specs)):
+        combo = dict(zip((item[0] for item in param_specs), values))
+        if 'window_days' in combo:
+            combo['window'] = combo['window_days']
+        combo['__dynamic_template'] = True
+        combo['__template_id'] = tid
+        combo['__template_name'] = template_name
+        combo['__python_function'] = python_function
+        combo['__formula_template'] = _template_field(template, 'formula_template', '')
+        combos.append(combo)
+        if len(combos) >= DYNAMIC_TEMPLATE_MAX_COMBOS:
+            break
+    return combos
+
+
+def build_param_combos(extra_templates: List = None) -> Dict[str, List[Dict]]:
+    """Return active param combos for one generation run.
+
+    T001-T016 are built-in. T017+ must come from the active template library and,
+    for project runs, from templates explicitly enabled by the project.
+    """
+    combos = deepcopy(PARAM_COMBOS)
+    for template in extra_templates or []:
+        tid = _template_field(template, 'template_id', '')
+        if not tid or is_builtin_template_id(tid):
+            continue
+        dynamic = _dynamic_template_param_combos(template)
+        if dynamic:
+            combos[tid] = dynamic
+    return combos
 
 
 # ============================================================
@@ -759,6 +915,24 @@ def _generate_feature_name(tid: str, params: Dict) -> str:
         shared = params.get('shared_field', 'packageX').replace('id_', '').replace('packageX', 'pkg')
         return f"cluster_device_{shared}"
 
+    elif _is_dynamic_template_params(params):
+        prefix = ''.join(part[0] for part in params.get('__template_name', tid.lower()).split('_') if part) or tid.lower()
+        parts = [prefix]
+        if params.get('source'):
+            parts.append(_short_source(params['source']))
+        if params.get('value_field'):
+            parts.append(params.get('vf_label') or params['value_field'])
+        if params.get('method'):
+            parts.append(params['method'])
+        if params.get('decay_type'):
+            parts.append({'exponential': 'exp', 'linear': 'lin', 'step': 'step'}.get(params['decay_type'], params['decay_type']))
+        if params.get('half_life_days') is not None:
+            parts.append('h' + str(params['half_life_days']).replace('.', 'x'))
+        window = params.get('window') or params.get('window_days')
+        if window:
+            parts.append(f"{window}d")
+        return '_'.join(str(p).replace('.', 'x') for p in parts)
+
     elif tid == 'T016':
         dtype = params.get('derived_type', '')
         if dtype == 'ratio_density':
@@ -817,6 +991,8 @@ def _get_func_name(tid: str, params: Dict) -> str:
         'T014': 'calc_cross_discrepancy',
         'T015': 'calc_identity_cluster',
     }
+    if _is_dynamic_template_params(params):
+        return params.get('__python_function', 'calc_count')
     if tid == 'T004':
         if params.get('use_by_category'):
             return 'calc_proportion_by_category'
@@ -923,7 +1099,469 @@ def _params_to_kwargs(tid: str, params: Dict) -> Dict:
             'identity_field': params['identity_field'],
             'shared_field': params['shared_field'],
         }
+    elif _is_dynamic_template_params(params):
+        return {
+            key: value
+            for key, value in params.items()
+            if not key.startswith('__') and key != 'window' and value is not None
+        }
     return {}
+
+
+def _source_label(source: str) -> str:
+    """Return a Chinese data-domain label for report exports."""
+    labels = {
+        'applist': 'APP安装列表',
+        'fdc_inquiry': 'FDC征信查询统计',
+        'fdc_pinjaman': 'FDC贷款记录',
+        'base': '用户基础信息',
+    }
+    return labels.get(source, source or '衍生特征')
+
+
+def _source_path(source: str) -> str:
+    paths = {
+        'applist': 'params.appList[]',
+        'fdc_inquiry': 'params.FDC.history_inquiry',
+        'fdc_pinjaman': 'params.FDC.pinjaman[]',
+        'base': 'params.base',
+    }
+    return paths.get(source, source or 'derived')
+
+
+def _field_label(field: str) -> str:
+    labels = {
+        'inTime': '安装时间',
+        'upTime': '更新时间',
+        'packageX': 'APP包名',
+        'category': 'APP分类',
+        'hit_by': '查询机构',
+        'tgl_inquiry': '查询时间',
+        'jml_data': '查询命中数据量',
+        'tgl_penyaluran_dana': '放款日期',
+        'id_penyelenggara': '放贷机构ID',
+        'tipe_pinjaman': '贷款类型',
+        'status_pinjaman': '贷款状态',
+        'kualitas_pinjaman': '贷款质量等级',
+        'nilai_pendanaan': '放款金额',
+        'sisa_pinjaman_berjalan': '在贷余额',
+        'pendapatan': 'FDC记录收入',
+        'pendanaan_syariah': '是否伊斯兰金融',
+        'salary': '申请填写月收入',
+        'birthday': '生日',
+        'workYears': '工作年限',
+        'gender': '性别',
+        'marita': '婚姻状态',
+        'children': '子女数',
+        'job': '职业代码',
+        'device_id': '设备ID',
+    }
+    return labels.get(field, field)
+
+
+def _category_label(category: str) -> str:
+    labels = {
+        'gambling': '赌博类APP',
+        'cash_loan': '现金贷类APP',
+        'fintech_lending': '金融借贷类APP',
+        'fake_gps': '虚拟定位类APP',
+        'clone_app': '应用克隆类APP',
+        'banking': '银行类APP',
+        'ewallet': '电子钱包类APP',
+        'shopping': '购物类APP',
+        'food_delivery': '外卖配送类APP',
+    }
+    return labels.get(category, category)
+
+
+def _field_ref(source: str, field: str) -> str:
+    if source == 'applist':
+        return f"appList[].{field}"
+    if source == 'fdc_pinjaman':
+        return f"pinjaman[].{field}"
+    if source == 'fdc_inquiry':
+        if field.startswith('statistic.'):
+            return f"history_inquiry.{field}"
+        return f"last3DaysInquiry[].{field}"
+    if source == 'base':
+        return f"base.{field}"
+    return field
+
+
+def _field_desc(source: str, fields: List[str]) -> str:
+    unique_fields = []
+    for field in fields:
+        if field and field not in unique_fields:
+            unique_fields.append(field)
+    return '、'.join(
+        f"{_field_ref(source, field)}（{_field_label(field.split('.')[-1])}）"
+        for field in unique_fields
+    )
+
+
+def _data_source_text(source: str, fields: List[str]) -> str:
+    fields_text = _field_desc(source, fields)
+    if fields_text:
+        return f"{_source_label(source)}（{_source_path(source)}）；涉及字段：{fields_text}"
+    return f"{_source_label(source)}（{_source_path(source)}）"
+
+
+def _format_cond(cond: Optional[Dict]) -> str:
+    if not cond:
+        return ''
+    return ' 且 '.join(f"{k}={repr(v)}（{_field_label(k)}）" for k, v in cond.items())
+
+
+def _format_formula_cond(cond: Optional[Dict], source: str = '') -> str:
+    if not cond:
+        return ''
+    return ' AND '.join(f"{_field_ref(source, k)}={repr(v)}" for k, v in cond.items())
+
+
+def _format_category_list(categories: List[str]) -> str:
+    return '、'.join(_category_label(c) for c in categories)
+
+
+def _feature_data_source(tid: str, params: Dict) -> str:
+    if tid == 'T001':
+        source = params.get('source', '')
+        fields = ['tgl_penyaluran_dana'] if source == 'fdc_pinjaman' else ['inTime', 'upTime']
+        if source == 'fdc_inquiry':
+            fields = [f"statistic.{params.get('window')}_hari"]
+        fields.extend((params.get('cond') or {}).keys())
+        return _data_source_text(source, fields)
+    if tid == 'T002':
+        source = params.get('source', '')
+        fields = ['tgl_penyaluran_dana', params.get('dedup_field')] if source == 'fdc_pinjaman' else [params.get('dedup_field')]
+        if source == 'fdc_inquiry':
+            fields = ['last3DaysInquiry', 'tgl_inquiry', params.get('dedup_field')]
+        return _data_source_text(source, fields)
+    if tid == 'T003':
+        source = params.get('source', '')
+        return _data_source_text(source, ['tgl_penyaluran_dana', params.get('value_field')])
+    if tid in ('T007', 'T008', 'T009'):
+        source = params.get('source', '')
+        if source == 'fdc_pinjaman':
+            return _data_source_text(source, ['tgl_penyaluran_dana'])
+        if source == 'fdc_inquiry':
+            return _data_source_text(source, ['statistic.*_hari'])
+        return _data_source_text(source, ['inTime', 'upTime'])
+    if tid == 'T004':
+        if params.get('use_by_category'):
+            cats = '、'.join(_category_label(c) for c in params.get('allowed_categories', []))
+            return (
+                "APP安装列表（params.appList[]）+ APP分类映射；"
+                f"涉及字段：appList[].inTime（安装时间）、appList[].upTime（更新时间）、"
+                f"appList[].packageX（APP包名）、classification[packageX].category（APP分类，目标类别：{cats}）"
+            )
+        source = params.get('source', '')
+        return _data_source_text(source, ['tgl_penyaluran_dana', *(params.get('target_cond') or {}).keys()])
+    if tid == 'T005':
+        if params.get('use_by_category'):
+            return (
+                "APP安装列表（params.appList[]）+ APP分类映射；"
+                "涉及字段：appList[].inTime（安装时间）、appList[].packageX（APP包名）、"
+                "classification[packageX].category（APP分类）"
+            )
+        source = params.get('source', '')
+        return _data_source_text(source, ['tgl_penyaluran_dana', params.get('category_field')])
+    if tid == 'T006':
+        source_a = params.get('source_a', '')
+        source_b = params.get('source_b', '')
+        return (
+            f"{_source_label(source_a)}（{_source_path(source_a)}）+ {_source_label(source_b)}（{_source_path(source_b)}）；"
+            f"涉及字段：{_field_ref(source_a, params.get('field_a', ''))}（{_field_label(params.get('field_a', ''))}）、"
+            f"{_field_ref(source_b, params.get('field_b', ''))}（{_field_label(params.get('field_b', ''))}）"
+        )
+    if tid in ('T010', 'T011'):
+        metric = params.get('target_metric', '')
+        if metric == 'salary':
+            return "用户基础信息（params.base）+ 训练集参考分布；涉及字段：base.salary（申请填写月收入）"
+        if metric == 'loan_amount':
+            return "FDC贷款记录（params.FDC.pinjaman[]）+ 训练集参考分布；涉及字段：pinjaman[].nilai_pendanaan（放款金额）"
+        if metric == 'inquiry_count':
+            return "FDC征信查询统计（params.FDC.history_inquiry）+ 训练集参考分布；涉及字段：history_inquiry.statistic.30_hari（近30天查询次数）"
+        if metric == 'applist_count':
+            return "APP安装列表（params.appList[]）+ 训练集参考分布；涉及字段：appList[]（安装APP数量）"
+        return "样本当前值 + 训练集参考分布"
+    if tid == 'T012':
+        metric = params.get('target_metric', '')
+        if metric == 'app_install_pattern':
+            return "APP安装列表（params.appList[]）+ 训练集参考矩阵；涉及字段：appList[]（APP总数）、appList[].sysApp（系统APP标识）"
+        if metric == 'loan_pattern':
+            return "FDC贷款记录（params.FDC.pinjaman[]）+ 训练集参考矩阵；涉及字段：pinjaman[].nilai_pendanaan（放款金额）、pinjaman[].id_penyelenggara（放贷机构ID）"
+        return "当前样本特征向量 + 训练集参考矩阵"
+    if tid == 'T013':
+        return (
+            "用户基础信息（params.base）+ FDC贷款记录（params.FDC.pinjaman[]）；"
+            f"涉及字段：{params.get('declared_field')}（申报字段）、{params.get('actual_field')}（实际字段）"
+        )
+    if tid == 'T014':
+        pairs = params.get('field_pairs_config', [])
+        fields = []
+        for pair in pairs:
+            if pair.get('src') and pair.get('field'):
+                fields.append(f"{pair.get('src')}.{pair.get('field')}")
+        return f"跨数据源一致性校验；涉及字段：{', '.join(fields) if fields else 'field_pairs'}"
+    if tid == 'T015':
+        shared = params.get('shared_field', '')
+        if shared == 'packageX':
+            return "设备关联APP聚类；涉及字段：device_id（设备ID）、appList[].packageX（APP包名）"
+        if shared == 'id_penyelenggara':
+            return "设备关联FDC放贷机构聚类；涉及字段：device_id（设备ID）、pinjaman[].id_penyelenggara（放贷机构ID）"
+        return f"device_id + {shared}"
+    if _is_dynamic_template_params(params):
+        source = params.get('source', '')
+        fields = []
+        if source == 'fdc_pinjaman':
+            fields.append('tgl_penyaluran_dana')
+        elif source == 'applist':
+            fields.extend(['inTime', 'upTime'])
+        for field_key in ('value_field', 'weight_field', 'time_field'):
+            if params.get(field_key):
+                fields.append(params[field_key])
+        fields.extend((params.get('cond') or {}).keys())
+        return _data_source_text(source, fields)
+    if tid == 'T016':
+        refs = [
+            params.get('ref_feature_name'),
+            params.get('ref_feature_a'),
+            params.get('ref_feature_b'),
+            params.get('ref_feature_short'),
+            params.get('ref_feature_long'),
+        ]
+        refs = [r for r in refs if r]
+        return f"衍生特征；涉及上游特征：{', '.join(refs)}" if refs else '衍生特征'
+    return '未知数据来源'
+
+
+def _feature_formula(tid: str, params: Dict) -> str:
+    """Chinese calculation logic that mirrors generated code."""
+    if tid == 'T001':
+        source = params['source']
+        window = params['window']
+        cond = _format_cond(params.get('cond'))
+        cond_formula = _format_formula_cond(params.get('cond'), source)
+        where_text = f"，并满足 {cond}" if cond else ''
+        where_formula = f" AND {cond_formula}" if cond_formula else ''
+        time_field = 'tgl_penyaluran_dana' if source == 'fdc_pinjaman' else 'inTime'
+        if source == 'fdc_inquiry':
+            return (
+                f"统计申请时间前{window}天内的FDC查询次数。"
+                f"公式：history_inquiry.statistic['{window}_hari']"
+            )
+        return (
+            f"统计申请时间前{window}天内，{_source_label(source)}的记录数量{where_text}。"
+            f"公式：COUNT({_source_path(source)} WHERE {_field_ref(source, time_field)} ∈ (applyTime-{window}天, applyTime]{where_formula})"
+        )
+    if tid == 'T002':
+        source = params['source']
+        window = params['window']
+        field = params['dedup_field']
+        return (
+            f"统计申请时间前{window}天内，{_source_label(source)}中{_field_label(field)}的去重数量。"
+            f"公式：COUNT_DISTINCT({_field_ref(source, field)} WHERE 时间 ∈ (applyTime-{window}天, applyTime])"
+        )
+    if tid == 'T003':
+        source = params['source']
+        window = params['window']
+        vf = params.get('value_field') or 'event'
+        return (
+            f"对申请时间前{window}天内的{_source_label(source)}按时间衰减加权求和，越近记录权重越高。"
+            f"公式：SUM({_field_ref(source, vf)} * {params['decay_func']}_decay(applyTime-{_field_ref(source, 'tgl_penyaluran_dana')}, rate={params['decay_rate']}))"
+        )
+    if tid == 'T004':
+        if params.get('use_by_category'):
+            window = params['window']
+            cats = params.get('allowed_categories', [])
+            cats_cn = _format_category_list(cats)
+            cats_formula = ','.join(cats)
+            return (
+                f"计算申请时间前{window}天内，{cats_cn}安装量占全部安装APP数量的比例。"
+                f"公式：COUNT(appList WHERE inTime ∈ (applyTime-{window}天, applyTime] AND category(packageX) IN [{cats_formula}]) / "
+                f"COUNT(appList WHERE inTime ∈ (applyTime-{window}天, applyTime])"
+            )
+        source = params['source']
+        window = params['window']
+        cond = _format_cond(params.get('target_cond'))
+        cond_formula = _format_formula_cond(params.get('target_cond'), source)
+        return (
+            f"计算申请时间前{window}天内，{_source_label(source)}中满足 {cond} 的记录占全部记录的比例。"
+            f"公式：COUNT({_source_path(source)} WHERE 时间 ∈ (applyTime-{window}天, applyTime] AND {cond_formula}) / "
+            f"COUNT({_source_path(source)} WHERE 时间 ∈ (applyTime-{window}天, applyTime])"
+        )
+    if tid == 'T005':
+        if params.get('use_by_category'):
+            return (
+                f"衡量申请时间前{params['window']}天内APP分类分布的集中度。"
+                f"公式：{params['method']}(category(packageX) distribution of appList in last {params['window']} days)"
+            )
+        source = params['source']
+        field = params['category_field']
+        return (
+            f"衡量申请时间前{params['window']}天内{_source_label(source)}按{_field_label(field)}分布的集中度。"
+            f"公式：{params['method']}({_field_ref(source, field)} distribution in last {params['window']} days)"
+        )
+    if tid == 'T006':
+        source_a = params['source_a']
+        source_b = params['source_b']
+        return (
+            f"计算申请时间前{params['window']}天内两个数据源指定字段集合的重叠度。"
+            f"公式：JACCARD(SET({_field_ref(source_a, params['field_a'])}), SET({_field_ref(source_b, params['field_b'])}))"
+        )
+    if tid == 'T007':
+        src = params['source']
+        s = params['short_window']
+        l = params['long_window']
+        return (
+            f"比较{_source_label(src)}短窗口{s}天与长窗口{l}天的日均数量变化，识别近期加速。"
+            f"公式：(COUNT({s}天)/{s}) / (COUNT({l}天)/{l}) - 1"
+        )
+    if tid == 'T008':
+        src = params['source']
+        wins = ','.join(f"{w}d" for w in params['windows'])
+        return (
+            f"用多个时间窗口的日均数量拟合趋势斜率，衡量{_source_label(src)}近期变化方向。"
+            f"公式：SLOPE([COUNT(w)/w for w in {wins}])"
+        )
+    if tid == 'T009':
+        src = params['source']
+        return (
+            f"检测申请时间前{params['window']}天内{_source_label(src)}是否存在单日突增。"
+            f"公式：MAX_DAILY_COUNT({params['window']}天) / AVG_DAILY_COUNT({params['window']}天)，低于阈值{params['threshold']}则记0"
+        )
+    if tid == 'T010':
+        return f"计算当前样本 {params['target_metric']} 在训练集参考分布中的百分位。公式：PERCENT_RANK(value, reference_distribution)"
+    if tid == 'T011':
+        return f"计算当前样本 {params['target_metric']} 相对训练集均值的标准差偏离。公式：(value - reference_mean) / reference_std"
+    if tid == 'T012':
+        return f"计算当前样本 {params['target_metric']} 向量相对训练集参考矩阵的异常度。公式：ANOMALY_SCORE(vector, reference_matrix, method={params.get('method', 'mahalanobis')})"
+    if tid == 'T013':
+        return (
+            f"比较用户申报字段与FDC实际字段的一致性。"
+            f"公式：{params['method']}({params['declared_field']}, {params['actual_field']})"
+        )
+    if tid == 'T014':
+        pairs = params.get('field_pairs_config', [])
+        fields = ', '.join(f"{p.get('src')}.{p.get('field')}" for p in pairs)
+        return f"计算跨数据源字段不一致程度。公式：CROSS_SOURCE_DISCREPANCY({fields})"
+    if tid == 'T015':
+        return (
+            f"统计同一{_field_label(params['identity_field'])}关联的{_field_label(params['shared_field'])}去重数量。"
+            f"公式：COUNT_DISTINCT({params['shared_field']} GROUP BY {params['identity_field']})"
+        )
+    if _is_dynamic_template_params(params):
+        template = params.get('__template_name') or tid
+        formula = params.get('__formula_template') or ''
+        for key, value in params.items():
+            if key.startswith('__') or value is None:
+                continue
+            formula = formula.replace('{' + key + '}', str(value))
+        visible_params = {
+            key: value
+            for key, value in params.items()
+            if not key.startswith('__') and key != 'window' and value is not None
+        }
+        if formula:
+            return f"按项目启用模板 {template} 计算。公式：{formula}"
+        return f"按项目启用模板 {template} 调用 {params.get('__python_function')}，参数：{visible_params}"
+    if tid == 'T016':
+        dtype = params.get('derived_type', '')
+        if dtype == 'ratio_density':
+            return f"把上游计数特征换算为日均密度。公式：{params['ref_feature_name']} / {params['window']}"
+        if dtype == 'ratio_cross':
+            return f"计算两个上游特征的比值。公式：{params['ref_feature_a']} / {params['ref_feature_b']}"
+        if dtype == 'weighted_combo':
+            label = params.get('label', 'weighted_combo')
+            return (
+                f"加权组合 = Σ(w_i × feature_i)，各维度权重由风险重要性确定（如{label}的综合评分）。"
+                f"当前实现使用两个上游风险信号构造风险暴露交互项：{params['ref_feature_a']} × {params['ref_feature_b']}"
+            )
+        if dtype == 'extended_velocity':
+            return (
+                f"比较短窗口和长窗口的日均变化速度。公式：({params['ref_feature_short']} / {params['short_window']}) / "
+                f"({params['ref_feature_long']} / {params['long_window']}) - 1"
+            )
+        if dtype == 'squared':
+            return f"放大上游特征的非线性高值影响。公式：{params['ref_feature_name']} ** 2"
+        if dtype == 'log_transform':
+            return f"对上游特征做对数平滑，降低极端值影响。公式：LOG({params['ref_feature_name']} + 1)"
+        if dtype == 'difference':
+            return f"计算两个上游特征的差值。公式：{params['ref_feature_a']} - {params['ref_feature_b']}"
+        if dtype == 'is_high':
+            return f"把上游特征转为高风险命中标记。公式：1 if {params['ref_feature_name']} > 0 else 0"
+    return tid
+
+
+def get_feature_metadata_map(param_combos: Dict[str, List[Dict]] = None) -> Dict[str, Dict[str, str]]:
+    """Build feature-name metadata for report/CSV export.
+
+    The mass-production path is deterministic, so the generated feature name can
+    be mapped back to its template ID, data source, and calculation logic without
+    calling an LLM.
+    """
+    param_combos = param_combos or PARAM_COMBOS
+    metadata = {}
+    derived_refs = {}
+    for tid, combos_list in param_combos.items():
+        for params in combos_list:
+            name = _generate_feature_name(tid, params)
+            metadata[name] = {
+                'feature_name': name,
+                'template_id': tid,
+                'data_source': _feature_data_source(tid, params),
+                'calculation_logic': _feature_formula(tid, params),
+            }
+            if tid == 'T016':
+                refs = [
+                    params.get('ref_feature_name'),
+                    params.get('ref_feature_a'),
+                    params.get('ref_feature_b'),
+                    params.get('ref_feature_short'),
+                    params.get('ref_feature_long'),
+                ]
+                refs = [r for r in refs if r]
+                if refs:
+                    derived_refs[name] = refs
+
+    for name, refs in derived_refs.items():
+        upstream_sources = []
+        for ref in refs:
+            ref_source = metadata.get(ref, {}).get('data_source')
+            if ref_source:
+                upstream_sources.append(f"{ref}：{ref_source}")
+            else:
+                upstream_sources.append(ref)
+        metadata[name]['data_source'] = (
+            f"衍生特征；涉及上游特征：{', '.join(refs)}；"
+            f"上游字段来源：{'；'.join(upstream_sources)}"
+        )
+    return metadata
+
+
+def get_feature_metadata(feature_name: str) -> Dict[str, str]:
+    """Return metadata for one generated feature name."""
+    return get_feature_metadata_map().get(feature_name, {})
+
+
+def save_feature_metadata(output_path: str = None, param_combos: Dict[str, List[Dict]] = None) -> str:
+    """Persist feature metadata generated from the same template combos as code.
+
+    This file is the stable handoff between feature generation, evaluation, and
+    report export. Downstream CSV/report code should prefer this artifact over
+    importing the generator directly.
+    """
+    if output_path is None:
+        output_path = 'outputs/feature_code/feature_metadata.json'
+    metadata = get_feature_metadata_map(param_combos=param_combos)
+    payload = {
+        'total_features': len(metadata),
+        'features': metadata,
+    }
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+    return output_path
 
 
 # ============================================================
@@ -939,6 +1577,9 @@ def precompute_references(train_data: List[Dict]) -> Dict:
     Returns:
         包含参考分布的字典
     """
+    if np is None:
+        raise RuntimeError("numpy is required to precompute reference distributions")
+
     salaries = []
     loan_amounts = []
     inquiry_counts = []
@@ -1015,6 +1656,8 @@ def _get_gen_func_name(tid: str, params: Dict) -> str:
         'T013': 'calc_declared_vs_actual', 'T014': 'calc_cross_discrepancy',
         'T015': 'calc_identity_cluster',
     }
+    if _is_dynamic_template_params(params):
+        return params.get('__python_function', 'calc_count')
     if tid == 'T004':
         return 'calc_proportion_by_category' if params.get('use_by_category') else 'calc_proportion'
     if tid == 'T005':
@@ -1024,10 +1667,11 @@ def _get_gen_func_name(tid: str, params: Dict) -> str:
     return tid_func_map.get(tid, 'calc_count')
 
 
-def _collect_func_names() -> List[str]:
+def _collect_func_names(param_combos: Dict[str, List[Dict]] = None) -> List[str]:
     """收集所有需要的计算函数名"""
+    param_combos = param_combos or PARAM_COMBOS
     names = set()
-    for tid, combos_list in PARAM_COMBOS.items():
+    for tid, combos_list in param_combos.items():
         if tid == 'T016':
             continue  # T016 is pure arithmetic, no channel1 imports needed
         for params in combos_list:
@@ -1168,6 +1812,11 @@ def _build_kwargs_code(tid: str, params: Dict) -> str:
     elif tid == 'T015':
         parts.append(f"identity_field={repr(params['identity_field'])}")
         parts.append(f"shared_field={repr(params['shared_field'])}")
+    elif _is_dynamic_template_params(params):
+        for key, value in params.items():
+            if key.startswith('__') or key == 'window' or value is None:
+                continue
+            parts.append(f"{key}={repr(value)}")
     return ', '.join(parts)
 
 
@@ -1219,9 +1868,10 @@ def _compose_T016(t016_params: Dict) -> str:
     return f"        {fname} = 0.0  # unknown derived type: {dtype}"
 
 
-def _compose_code(total_features: int) -> str:
+def _compose_code(total_features: int, param_combos: Dict[str, List[Dict]] = None) -> str:
     """组合生成完整的FeatureCalculator类代码"""
-    func_names = _collect_func_names()
+    param_combos = param_combos or PARAM_COMBOS
+    func_names = _collect_func_names(param_combos)
 
     lines = []
     lines.append('"""')
@@ -1278,10 +1928,10 @@ def _compose_code(total_features: int) -> str:
     lines.append('')
 
     # 特征计算（T001-T015 主特征）
-    for tid in sorted(PARAM_COMBOS.keys()):
+    for tid in sorted(param_combos.keys()):
         if tid == 'T016':
             continue  # T016 derived features are computed in a separate block
-        combos_list = PARAM_COMBOS[tid]
+        combos_list = param_combos[tid]
         for params in combos_list:
             fname = _generate_feature_name(tid, params)
             func_name = _get_gen_func_name(tid, params)
@@ -1299,9 +1949,9 @@ def _compose_code(total_features: int) -> str:
 
     # ===== Derived Features (T016) =====
     # These combine primary features above to capture ratio/velocity/nonlinear signals
-    if 'T016' in PARAM_COMBOS:
+    if 'T016' in param_combos:
         lines.append('        # ===== Derived Features (T016) =====')
-        for params in PARAM_COMBOS['T016']:
+        for params in param_combos['T016']:
             fname = _generate_feature_name('T016', params)
             code_line = _compose_T016(params)
             lines.append(f'        # {fname}')
@@ -1309,10 +1959,10 @@ def _compose_code(total_features: int) -> str:
             lines.append('')
 
     # return语句
-    last_tid = sorted(PARAM_COMBOS.keys())[-1]
+    last_tid = sorted(param_combos.keys())[-1]
     lines.append('        return {')
-    for tid in sorted(PARAM_COMBOS.keys()):
-        combos_list = PARAM_COMBOS[tid]
+    for tid in sorted(param_combos.keys()):
+        combos_list = param_combos[tid]
         for i, params in enumerate(combos_list):
             fname = _generate_feature_name(tid, params)
             is_last = tid == last_tid and i == len(combos_list) - 1
@@ -1323,7 +1973,7 @@ def _compose_code(total_features: int) -> str:
     return '\n'.join(lines)
 
 
-def produce_all_features(ref_distributions: Dict = None) -> str:
+def produce_all_features(ref_distributions: Dict = None, param_combos: Dict[str, List[Dict]] = None) -> str:
     """生成完整的特征计算代码
 
     Args:
@@ -1332,18 +1982,20 @@ def produce_all_features(ref_distributions: Dict = None) -> str:
     Returns:
         完整的Python代码
     """
-    total = sum(len(combos) for combos in PARAM_COMBOS.values())
-    code = _compose_code(total)
+    param_combos = param_combos or PARAM_COMBOS
+    total = sum(len(combos) for combos in param_combos.values())
+    code = _compose_code(total, param_combos)
     return code
 
 
-def save_feature_calculator(code: str, output_path: str = None) -> str:
+def save_feature_calculator(code: str, output_path: str = None, param_combos: Dict[str, List[Dict]] = None) -> str:
     """将生成的代码写入文件"""
     if output_path is None:
         output_path = 'outputs/feature_code/features_calculator_v2.py'
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(code)
+    save_feature_metadata(param_combos=param_combos)
     return output_path
 
 
@@ -1354,18 +2006,18 @@ def save_reference_distributions(refs: Dict, output_path: str = None) -> str:
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     clean = {}
     for k, v in refs.items():
-        if isinstance(v, np.ndarray):
+        if np is not None and isinstance(v, np.ndarray):
             clean[k] = v.tolist()
-        elif isinstance(v, (np.floating,)):
+        elif np is not None and isinstance(v, (np.floating,)):
             clean[k] = float(v)
-        elif isinstance(v, (np.integer,)):
+        elif np is not None and isinstance(v, (np.integer,)):
             clean[k] = int(v)
         elif isinstance(v, list):
             vals = []
             for item in v:
-                if isinstance(item, np.ndarray):
+                if np is not None and isinstance(item, np.ndarray):
                     vals.append(item.tolist())
-                elif isinstance(item, (np.floating, np.integer)):
+                elif np is not None and isinstance(item, (np.floating, np.integer)):
                     vals.append(float(item))
                 else:
                     vals.append(item)
@@ -1405,4 +2057,3 @@ if __name__ == '__main__':
     except ValueError as e:
         print(f'T016 reference validation: FAILED')
         print(e)
-

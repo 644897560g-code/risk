@@ -38,7 +38,12 @@ def _add_step_log(db, task_id: int, step: str, status: str, message: str = ""):
     add_task_log(db, task_id, "step", msg)
 
 
-def _run_mass_production_background(task_id: int, short_url_path: str = None, label_path: str = None):
+def _run_mass_production_background(
+    task_id: int,
+    short_url_path: str = None,
+    label_path: str = None,
+    project_id: int = None,
+):
     """在后台线程中执行批量生产，使用独立 DB session"""
     db = SessionLocal()
     try:
@@ -238,7 +243,11 @@ def _run_mass_production_background(task_id: int, short_url_path: str = None, la
         _monitor_thread.start()
 
         try:
-            orch.run_mass_production(short_url_file=short_url_path, labels_excel=label_path)
+            orch.run_mass_production(
+                short_url_file=short_url_path,
+                labels_excel=label_path,
+                project_id=project_id,
+            )
         finally:
             _stop_monitor.set()
             _monitor_thread.join(timeout=5)
@@ -382,7 +391,7 @@ def _scheduler_loop():
                     cfg = t.config or {}
                     t_ = threading.Thread(
                         target=_run_mass_production_background,
-                        args=(t.id, cfg.get("url_path"), cfg.get("label_path")),
+                        args=(t.id, cfg.get("url_path"), cfg.get("label_path"), t.project_id),
                         daemon=True,
                     )
                     t_.start()
@@ -407,6 +416,7 @@ async def api_create_task(
     label_file: Optional[UploadFile] = File(None),
     url_path: Optional[str] = Form(None),
     label_path: Optional[str] = Form(None),
+    project_id: Optional[int] = Form(None),
     scheduled_at: Optional[str] = Form(None),
     recurring_cron: Optional[str] = Form(None),
     db: Session = Depends(get_db),
@@ -431,8 +441,14 @@ async def api_create_task(
         if recurring_cron:
             config["recurring_cron"] = recurring_cron
 
-        task = create_task(db, name, mode="template_task", config=config,
-                           scheduled_at=parsed_scheduled_at)
+        task = create_task(
+            db,
+            name,
+            mode="template_task",
+            config=config,
+            scheduled_at=parsed_scheduled_at,
+            project_id=project_id,
+        )
 
         update_task_status(db, task.id, status="running", progress=5.0)
         add_task_log(db, task.id, "info", "模板生成任务已创建，开始LLM生成...")
@@ -477,7 +493,14 @@ async def api_create_task(
         except ValueError:
             pass
 
-    task = create_task(db, name, mode="normal", config=config, scheduled_at=parsed_scheduled_at)
+    task = create_task(
+        db,
+        name,
+        mode="normal",
+        config=config,
+        scheduled_at=parsed_scheduled_at,
+        project_id=project_id,
+    )
 
     # 判断是否计划未来执行
     now = datetime.now(timezone.utc)
@@ -498,7 +521,7 @@ async def api_create_task(
     if not is_testing:
         t = threading.Thread(
             target=_run_mass_production_background,
-            args=(task.id, config.get("url_path"), config.get("label_path")),
+            args=(task.id, config.get("url_path"), config.get("label_path"), task.project_id),
             daemon=True,
         )
         t.start()
@@ -511,18 +534,22 @@ def api_list_tasks(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     mode: str = Query(None),
+    project_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
     """获取任务列表（按创建时间倒序）。可传 mode=normal 或 mode=template_task 过滤。"""
-    items, total = get_task_list(db, skip=skip, limit=limit, mode=mode)
+    items, total = get_task_list(db, skip=skip, limit=limit, mode=mode, project_id=project_id)
     return {"items": [t.to_dict(include_logs=False) for t in items], "total": total}
 
 
 @router.delete("")
-def api_clear_tasks(db: Session = Depends(get_db)):
-    """清空所有任务记录。如有正在执行的任务则拒绝。"""
+def api_clear_tasks(
+    project_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+):
+    """清空任务记录。如传 project_id，则只清空当前项目任务。"""
     try:
-        deleted = clear_all_tasks(db)
+        deleted = clear_all_tasks(db, project_id=project_id)
         return {"status": "ok", "deleted": deleted}
     except RuntimeError as e:
         raise HTTPException(status_code=409, detail=str(e))
@@ -615,14 +642,32 @@ def api_get_task_result_csv(task_id: int, db: Session = Depends(get_db)):
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["特征中文描述", "特征名", "IV", "PSI", "覆盖率", "排序(IV降序)", "状态"])
+    writer.writerow([
+        "特征中文描述",
+        "特征名",
+        "计算公式/逻辑",
+        "数据来源",
+        "IV",
+        "PSI",
+        "覆盖率",
+        "排序(IV降序)",
+        "状态",
+    ])
 
     for i, f in enumerate(all_features, 1):
         name = f.get("feature_name", "")
         desc = _feature_desc(name)
+        calculation_logic = _metadata_field(
+            f, "calculation_logic", "formula_template", "formula"
+        )
+        data_source = _metadata_field(
+            f, "data_source", "data_sources", "source"
+        )
         writer.writerow([
             desc,
             name,
+            calculation_logic,
+            data_source,
             round(_clean_val(f.get("iv", 0)), 6),
             round(_clean_val(f.get("psi", 0)), 6),
             f"{_clean_val(f.get('coverage', 0)):.2f}",
@@ -1263,6 +1308,50 @@ def _clean_val(v):
     return v or 0
 
 
+_FEATURE_METADATA_CACHE = None
+
+
+def _get_feature_export_metadata(feature_name: str) -> dict:
+    """Best-effort metadata lookup for CSV/report exports.
+
+    New evaluation results persist these fields directly. For older results,
+    prefer the metadata artifact generated alongside features_calculator_v2.py;
+    import the generator only as a last-ditch compatibility fallback.
+    """
+    global _FEATURE_METADATA_CACHE
+    if _FEATURE_METADATA_CACHE is None:
+        _FEATURE_METADATA_CACHE = {}
+        settings = get_settings()
+        metadata_path = os.path.join(settings.output_dir, "feature_code", "feature_metadata.json")
+        if os.path.exists(metadata_path):
+            try:
+                with open(metadata_path, "r", encoding="utf-8") as f:
+                    payload = json.load(f)
+                _FEATURE_METADATA_CACHE = payload.get("features", payload)
+            except Exception:
+                _FEATURE_METADATA_CACHE = {}
+        if not _FEATURE_METADATA_CACHE:
+            try:
+                from agents.feature_mass_producer import get_feature_metadata_map
+                _FEATURE_METADATA_CACHE = get_feature_metadata_map()
+            except Exception:
+                _FEATURE_METADATA_CACHE = {}
+    return _FEATURE_METADATA_CACHE.get(feature_name, {})
+
+
+def _metadata_field(feature: dict, key: str, *aliases: str) -> str:
+    metadata = _get_feature_export_metadata(feature.get("feature_name", ""))
+    sources = (feature, metadata)
+    for source in sources:
+        for field in (key, *aliases):
+            value = source.get(field)
+            if isinstance(value, list):
+                return ", ".join(str(v) for v in value)
+            if value not in (None, ""):
+                return str(value)
+    return ""
+
+
 @router.get("/{task_id}/result/report")
 def api_get_task_result_report(task_id: int, db: Session = Depends(get_db)):
     """获取任务特征评估 HTML 报告下载
@@ -1446,7 +1535,7 @@ def api_resume_task(task_id: int, db: Session = Depends(get_db)):
     if not is_testing:
         t = threading.Thread(
             target=_run_orchestrator_only_background,
-            args=(task_id, short_url_path, label_path),
+            args=(task_id, short_url_path, label_path, task.project_id),
             daemon=True,
         )
         t.start()
@@ -1504,7 +1593,7 @@ def api_rerun_task(task_id: int, db: Session = Depends(get_db)):
     if not is_testing:
         t = threading.Thread(
             target=_run_mass_production_background,
-            args=(task_id, short_url_path, label_path),
+            args=(task_id, short_url_path, label_path, task.project_id),
             daemon=True,
         )
         t.start()
@@ -1573,7 +1662,12 @@ def api_get_task_samples(
     return {"items": result, "total": len(result)}
 
 
-def _run_orchestrator_only_background(task_id: int, short_url_path: str = None, label_path: str = None):
+def _run_orchestrator_only_background(
+    task_id: int,
+    short_url_path: str = None,
+    label_path: str = None,
+    project_id: int = None,
+):
     """后台线程：跳过下载，直接执行特征生产 + 评估 + 部署"""
     db = SessionLocal()
     try:
@@ -1647,7 +1741,11 @@ def _run_orchestrator_only_background(task_id: int, short_url_path: str = None, 
         _monitor_thread.start()
 
         try:
-            orch.run_mass_production(short_url_file=short_url_path, labels_excel=label_path)
+            orch.run_mass_production(
+                short_url_file=short_url_path,
+                labels_excel=label_path,
+                project_id=project_id,
+            )
         finally:
             _stop_monitor.set()
             _monitor_thread.join(timeout=5)

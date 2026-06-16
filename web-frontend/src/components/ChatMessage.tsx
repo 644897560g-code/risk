@@ -18,50 +18,17 @@ const toolCallColors: Record<string, string> = {
 const ChatMessage: React.FC<Props> = ({ message }) => {
   const isUser = message.role === 'user';
   const isSystem = message.role === 'system';
+  const roleClass = isUser ? 'user' : isSystem ? 'system' : 'assistant';
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: isUser ? 'row-reverse' : 'row',
-        alignItems: 'flex-start',
-        gap: 10,
-        marginBottom: 16,
-      }}
-    >
+    <div className={`chat-message-row ${roleClass}`}>
       {/* Avatar */}
-      <div
-        style={{
-          width: 32,
-          height: 32,
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          background: isUser ? '#1677ff' : isSystem ? '#722ed1' : '#f0f0f0',
-          color: isUser || isSystem ? '#fff' : '#333',
-          fontSize: 16,
-        }}
-      >
+      <div className="chat-avatar">
         {isUser ? <UserOutlined /> : isSystem ? 'S' : <RobotOutlined />}
       </div>
 
       {/* Bubble */}
-      <div
-        style={{
-          maxWidth: '75%',
-          padding: '10px 14px',
-          borderRadius: 12,
-          background: isUser ? '#1677ff' : isSystem ? '#f9f0ff' : '#fff',
-          color: isUser ? '#fff' : '#333',
-          border: isUser ? 'none' : '1px solid #e8e8e8',
-          fontSize: 14,
-          lineHeight: 1.6,
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-        }}
-      >
+      <div className="chat-bubble">
         <Paragraph style={{ margin: 0, color: 'inherit', whiteSpace: 'pre-wrap' }}>
           {message.content}
         </Paragraph>
@@ -90,33 +57,12 @@ const ChatMessage: React.FC<Props> = ({ message }) => {
 
 /** Loading indicator (typing animation) */
 export const ChatLoading: React.FC = () => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 10,
-      marginBottom: 16,
-    }}
-  >
-    <div
-      style={{
-        width: 32, height: 32, borderRadius: '50%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#f0f0f0', fontSize: 16,
-      }}
-    >
+  <div className="chat-message-row assistant">
+    <div className="chat-avatar">
       <RobotOutlined />
     </div>
-    <div
-      style={{
-        padding: '10px 16px',
-        borderRadius: 12,
-        background: '#fff',
-        border: '1px solid #e8e8e8',
-      }}
-    >
-      <span style={{ fontSize: 20, lineHeight: 1, color: '#999' }}>
+    <div className="chat-bubble">
+      <span style={{ fontSize: 20, lineHeight: 1, color: 'rgba(226,232,240,0.58)' }}>
         <span style={{ animation: 'pulse 1.4s infinite' }}>.</span>
         <span style={{ animation: 'pulse 1.4s infinite 0.2s' }}>.</span>
         <span style={{ animation: 'pulse 1.4s infinite 0.4s' }}>.</span>
@@ -149,14 +95,15 @@ export const ChatError: React.FC<{ message: string; onRetry?: () => void }> = ({
 
 /** Welcome message (empty state) */
 export const ChatWelcome: React.FC = () => (
-  <div style={{ textAlign: 'center', padding: '60px 20px', color: '#999' }}>
-    <RobotOutlined style={{ fontSize: 48, color: '#d9d9d9', marginBottom: 16 }} />
-    <h3 style={{ color: '#666', marginBottom: 8 }}>Agent Chat</h3>
-    <p style={{ fontSize: 13, lineHeight: 1.8 }}>
-      向 AI 助手咨询特征设计问题，或直接要求创建新特征模板。
-      <br />
-      系统已内置 15 个通道1模板作为参考上下文。
-    </p>
+  <div className="chat-welcome">
+    <div className="chat-welcome-core"><RobotOutlined /></div>
+    <h3>RiskForge Copilot</h3>
+    <p>围绕项目、模板、任务和评估结果进行对话式分析，也可以直接发起模板评审建议。</p>
+    <div className="chat-prompt-grid">
+      <span>解释一个特征为什么通过</span>
+      <span>检查模板是否有业务含义污染</span>
+      <span>总结本轮任务失败原因</span>
+    </div>
   </div>
 );
 

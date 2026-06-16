@@ -1,7 +1,7 @@
 """Feature version and metric SQLAlchemy models"""
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, JSON, ForeignKey
 
 from backend.app.database import Base
 
@@ -13,6 +13,7 @@ class FeatureVersion(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     version = Column(String(50), nullable=False, unique=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
     task_id = Column(Integer, nullable=True)  # 关联的Task ID
     total_features = Column(Integer, nullable=False, default=0)
     passed_features = Column(Integer, nullable=False, default=0)
@@ -22,6 +23,7 @@ class FeatureVersion(Base):
         return {
             "id": self.id,
             "version": self.version,
+            "project_id": self.project_id,
             "task_id": self.task_id,
             "total_features": self.total_features,
             "passed_features": self.passed_features,
@@ -36,6 +38,7 @@ class FeatureMetric(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     version = Column(String(50), nullable=False, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
     task_id = Column(Integer, nullable=True)
     feature_name = Column(String(255), nullable=False)
     iv = Column(Float, nullable=True)
@@ -48,6 +51,7 @@ class FeatureMetric(Base):
         return {
             "id": self.id,
             "version": self.version,
+            "project_id": self.project_id,
             "feature_name": self.feature_name,
             "iv": self.iv,
             "psi": self.psi,

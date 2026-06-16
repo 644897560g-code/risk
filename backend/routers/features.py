@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -16,18 +16,29 @@ router = APIRouter()
 
 
 @router.get("/versions")
-def api_feature_versions(db: Session = Depends(get_db)):
+def api_feature_versions(
+    project_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
     """获取所有特征版本列表"""
-    items = db.query(FeatureVersion).order_by(desc(FeatureVersion.id)).all()
+    query = db.query(FeatureVersion)
+    if project_id is not None:
+        query = query.filter(FeatureVersion.project_id == project_id)
+    items = query.order_by(desc(FeatureVersion.id)).all()
     return {"items": [v.to_dict() for v in items]}
 
 
 @router.get("/versions/{version}")
-def api_feature_version_detail(version: str, db: Session = Depends(get_db)):
+def api_feature_version_detail(
+    version: str,
+    project_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
     """获取某个版本的详细特征指标"""
-    items = db.query(FeatureMetric).filter(
-        FeatureMetric.version == version
-    ).order_by(desc(FeatureMetric.iv)).all()
+    query = db.query(FeatureMetric).filter(FeatureMetric.version == version)
+    if project_id is not None:
+        query = query.filter(FeatureMetric.project_id == project_id)
+    items = query.order_by(desc(FeatureMetric.iv)).all()
 
     if not items:
         raise HTTPException(status_code=404, detail=f"版本 {version} 不存在或没有评估数据")
@@ -95,9 +106,16 @@ def api_feature_stats():
 
 
 @router.get("/top")
-def api_feature_top(n: int = 20, db: Session = Depends(get_db)):
+def api_feature_top(
+    n: int = 20,
+    project_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+):
     """获取所有版本中IV最高的Top N特征"""
-    items = db.query(FeatureMetric).order_by(desc(FeatureMetric.iv)).limit(n).all()
+    query = db.query(FeatureMetric)
+    if project_id is not None:
+        query = query.filter(FeatureMetric.project_id == project_id)
+    items = query.order_by(desc(FeatureMetric.iv)).limit(n).all()
     return {"items": [i.to_dict() for i in items]}
 
 

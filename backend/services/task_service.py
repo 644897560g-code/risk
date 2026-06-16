@@ -9,17 +9,22 @@ from sqlalchemy.orm import Session
 from backend.app.config import get_settings
 from backend.models.task import Task, TaskLog
 from backend.models.feature import FeatureVersion, FeatureMetric
+from backend.services.project_service import get_default_project
 from backend.services.template_library import PENDING_STATUS, list_templates
 
 
 def create_task(db: Session, name: str, mode: str, config: dict = None,
-                linked_task_id: int = None, scheduled_at: datetime = None) -> Task:
+                linked_task_id: int = None, scheduled_at: datetime = None,
+                project_id: int = None) -> Task:
     """创建新任务。"""
+    if project_id is None:
+        project_id = get_default_project(db).id
     task = Task(
         name=name or f"{mode} 任务",
         mode=mode,
         status="pending",
         progress=0.0,
+        project_id=project_id,
         config=config,
         linked_task_id=linked_task_id,
         scheduled_at=scheduled_at,
@@ -35,8 +40,10 @@ def get_task(db: Session, task_id: int) -> Optional[Task]:
 
 
 def get_task_list(db: Session, skip: int = 0, limit: int = 50,
-                  mode: str = None) -> tuple[List[Task], int]:
+                  mode: str = None, project_id: int = None) -> tuple[List[Task], int]:
     q = db.query(Task)
+    if project_id is not None:
+        q = q.filter(Task.project_id == project_id)
     if mode:
         q = q.filter(Task.mode == mode)
     else:
@@ -67,6 +74,8 @@ def save_task_result(db: Session, task_id: int, result: Dict):
 
     passed = result.get("passed", 0)
     total = result.get("total", 0)
+    task = get_task(db, task_id)
+    project_id = task.project_id if task and task.project_id else get_default_project(db).id
 
     # 读取 passed_features.json 获取版本信息
     passed_path = os.path.join(settings.evaluation_dir, "passed_features.json")
@@ -93,11 +102,13 @@ def save_task_result(db: Session, task_id: int, result: Dict):
             ).first()
             if existing_fv:
                 existing_fv.task_id = task_id
+                existing_fv.project_id = project_id
                 existing_fv.total_features = total
                 existing_fv.passed_features = passed
             else:
                 fv = FeatureVersion(
                     version=deployed_version,
+                    project_id=project_id,
                     task_id=task_id,
                     total_features=total,
                     passed_features=passed,
@@ -108,6 +119,7 @@ def save_task_result(db: Session, task_id: int, result: Dict):
         for feat in passed_features + failed_features:
             fm = FeatureMetric(
                 version=deployed_version or f"task_{task_id}",
+                project_id=project_id,
                 task_id=task_id,
                 feature_name=feat.get("feature_name", ""),
                 iv=feat.get("iv", 0),
@@ -131,19 +143,29 @@ def save_task_result(db: Session, task_id: int, result: Dict):
     db.commit()
 
 
-def clear_all_tasks(db: Session) -> int:
-    """清空所有任务记录（含日志）。
+def clear_all_tasks(db: Session, project_id: int = None) -> int:
+    """清空任务记录（含日志）。
     如果存在 running/pending 状态的任务则抛出异常。"""
-    running = db.query(Task).filter(Task.status.in_(["running", "pending"])).count()
+    query = db.query(Task)
+    if project_id is not None:
+        query = query.filter(Task.project_id == project_id)
+
+    running = query.filter(Task.status.in_(["running", "pending"])).count()
     if running > 0:
         raise RuntimeError(f"有 {running} 个任务正在执行中，请等待完成后重试")
 
     # 先清除 linked_task_id 自引用外键
-    db.query(Task).update({"linked_task_id": None})
+    update_query = db.query(Task)
+    if project_id is not None:
+        update_query = update_query.filter(Task.project_id == project_id)
+    update_query.update({"linked_task_id": None})
     db.commit()
 
-    count = db.query(Task).count()
-    db.query(Task).delete()
+    delete_query = db.query(Task)
+    if project_id is not None:
+        delete_query = delete_query.filter(Task.project_id == project_id)
+    count = delete_query.count()
+    delete_query.delete()
     db.commit()
     return count
 

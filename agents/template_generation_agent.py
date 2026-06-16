@@ -399,8 +399,8 @@ class TemplateGenerationAgent:
     "dsl": "DSL表达式，如 count(field_set, window, cond)",
     "dsl_description": "DSL的计算逻辑说明",
     "parameter_space": {{
-      "source": {{"type": "string", "description": "数据源标识"}},
-      "window": {{"type": "int", "description": "回溯窗口天数"}},
+      "source": {{"type": "string", "description": "数据源标识", "values": ["applist", "fdc_pinjaman"]}},
+      "window": {{"type": "int", "description": "回溯窗口天数", "values": [7, 30, 90]}},
       ...其他参数
     }},
     "python_function": "Python函数名",
@@ -420,7 +420,7 @@ class TemplateGenerationAgent:
 4. **数据源**：支持的数据源包括 applist（应用列表）、fdc_inquiry（FDC查询记录）、fdc_pinjaman（FDC贷款记录）、base（用户基础信息）
 5. **代码风格**：Python函数代码应与 channel1_calculators.py 中的风格一致，使用同样的辅助函数（_filter_by_time, _get_event_time 等）
 6. **DSL风格**：DSL表达式应与已有模板风格一致，清晰表达计算逻辑
-7. **parameter_space**：参数空间应设计合理的取值范围，供后续确定性参数展开使用
+7. **parameter_space**：参数空间必须尽量提供可执行取值列表 `values`（或 `enum/options/choices`），供后续确定性参数展开使用；不要只写 type/description
 8. **仅生成1-3个模板**：除非用户明确要求更多，每次生成1-3个最相关的模板
 9. **输出仅包含JSON数组**，不要额外说明文字
 10. **模板必须剥离业务含义**：从用户需求中识别出的风险信号（如"赌博应用占比高"、"现金贷多头借贷"）应该抽象为通用计算结构，把具体的业务值（赌博、现金贷等）放到 parameter_space 中。模板名、描述、DSL 中不能包含具体业务词（如 high_risk、gambling、loan）。parameter_space 中可包含 category 参数用于传递具体业务值。

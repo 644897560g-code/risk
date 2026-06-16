@@ -123,7 +123,7 @@ const TemplateSidebar: React.FC = () => {
   const channel1Columns = [
     { title: '名称', dataIndex: 'template_name', key: 'template_name', ellipsis: true, render: (v: string, r: Channel1Template) => v || r.name || '-' },
     {
-      title: '维度', dataIndex: 'dimension', key: 'dimension',
+      title: '类型', dataIndex: 'dimension', key: 'dimension',
       render: (d: string) => <Tag style={{ fontSize: 11 }}>{d}</Tag>,
     },
     {
@@ -147,7 +147,7 @@ const TemplateSidebar: React.FC = () => {
   const channel2Columns = [
     { title: '名称', dataIndex: 'template_name', key: 'template_name', ellipsis: true, render: (v: string, r: PendingTemplateItem) => v || r.name || '-' },
     {
-      title: '维度', dataIndex: 'dimension', key: 'dimension',
+      title: '类型', dataIndex: 'dimension', key: 'dimension',
       render: (d: string) => <Tag style={{ fontSize: 11 }}>{d}</Tag>,
     },
     {

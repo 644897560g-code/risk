@@ -58,7 +58,7 @@ const ReviewPanel: React.FC = () => {
   const columns = [
     { title: 'ID', dataIndex: 'template_id', key: 'template_id', width: 80 },
     { title: '名称', dataIndex: 'template_name', key: 'template_name', ellipsis: true },
-    { title: '维度', dataIndex: 'dimension', key: 'dimension', width: 70 },
+    { title: '模板类型', dataIndex: 'dimension', key: 'dimension', width: 100 },
     {
       title: '操作', key: 'actions', width: 150,
       render: (_: any, r: PendingTemplate) => (
@@ -100,7 +100,7 @@ const ReviewPanel: React.FC = () => {
           }}
         />
       ) : (
-        <Empty description="暂无待审批的通道2模板" />
+        <Empty description="暂无待审批模板" />
       )}
 
       <Modal

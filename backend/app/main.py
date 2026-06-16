@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import get_settings
 from backend.app.database import init_db
 from backend.auth.deps import get_current_user
-from backend.routers import tasks, agents, features, knowledge, templates, agent_chat, auth
+from backend.routers import tasks, agents, features, knowledge, templates, agent_chat, auth, projects
 
 
 @asynccontextmanager
@@ -50,6 +50,7 @@ def create_app() -> FastAPI:
 
     # JWT-protected routes
     app.include_router(tasks.router, prefix="/api/tasks", tags=["任务管理"], dependencies=[Depends(get_current_user)])
+    app.include_router(projects.router, prefix="/api/projects", tags=["项目管理"], dependencies=[Depends(get_current_user)])
     app.include_router(agents.router, prefix="/api/agents", tags=["Agent状态"], dependencies=[Depends(get_current_user)])
     app.include_router(features.router, prefix="/api/features", tags=["特征管理"], dependencies=[Depends(get_current_user)])
     app.include_router(knowledge.router, prefix="/api/knowledge", tags=["知识管理"], dependencies=[Depends(get_current_user)])
@@ -60,3 +61,16 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+
+if __name__ == "__main__":
+
+    # 本地 debug
+    import uvicorn
+
+    uvicorn.run(
+        "backend.app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,
+    )

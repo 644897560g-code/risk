@@ -283,12 +283,13 @@ def _build_system_prompt() -> str:
 当用户要求创建新特征模板时，在回复末尾输出以下JSON：
 
 ```json
-{{"tool": "trigger_channel2", "template_name": "特征名称（snake_case，不含具体业务值）", "dimension": "维度", "description": "特征描述（抽象计算逻辑，不含具体业务值）", "dsl": "DSL表达式", "python_function": "Python函数签名", "python_code": "完整Python计算代码"}}
+{{"tool": "trigger_channel2", "template_name": "特征名称（snake_case，不含具体业务值）", "dimension": "维度", "description": "特征描述（抽象计算逻辑，不含具体业务值）", "dsl": "DSL表达式", "parameter_space": {{"source": {{"type": "string", "values": ["applist", "fdc_pinjaman"]}}, "window": {{"type": "int", "values": [7, 30, 90]}}}}, "python_function": "Python函数签名", "python_code": "完整Python计算代码"}}
 ```
 
 请确保：
 - template_name 使用英文，snake_case，**必须剥离业务含义**（如用 category_count 代替 gambling_app_count）
 - description 描述计算逻辑，**不含具体业务值**，把业务值放到 parameter_space 中
+- parameter_space 中每个可枚举参数尽量提供 values/enum/options/choices，供项目启用后自动展开参数组合
 - dimension 可选值: applist, fdc, base, behavior
 - **DSL 不能与已生效模板重复**：创建前对照已生效模板列表，确保 DSL 的计算模式未被覆盖
 - 不输出 tool call 格式以外的JSON

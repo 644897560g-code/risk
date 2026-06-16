@@ -6,6 +6,7 @@ export interface Task {
   mode: string;
   status: 'pending' | 'running' | 'completed' | 'failed';
   progress: number;
+  project_id?: number;
   linked_task_id?: number;
   total_features?: number;
   passed_features?: number;
@@ -34,6 +35,7 @@ export interface CreateTaskRequest {
   label_file?: File;
   url_path?: string;
   label_path?: string;
+  project_id?: number;
   scheduled_at?: string;
   recurring_cron?: string;
 }

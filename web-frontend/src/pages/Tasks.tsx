@@ -2,18 +2,20 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Table, Tag, Button, Modal, Form, Input, Space, Card,
   Drawer, Spin, Descriptions, Timeline, Tabs, message, Upload, Radio,
-  Empty, DatePicker, Steps, Collapse,
+  Empty, DatePicker, Steps, Collapse, Alert, Typography,
 } from 'antd';
 import {
   PlusOutlined, ReloadOutlined, UploadOutlined, DownloadOutlined,
   CheckCircleOutlined, CloseCircleOutlined, SyncOutlined, ClockCircleOutlined,
   LinkOutlined, DeleteOutlined, FullscreenOutlined, FullscreenExitOutlined,
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { fetchTasks, fetchTask, createTask, computeFeatures, fetchTaskResult, resumeTask, fetchTaskSamples, downloadTaskDeployment, downloadTaskResultCsv, downloadTaskResultReport, fetchTaskSteps, cancelTask, rerunTask, clearAllTasks, type ComputeResult } from '@/services/api';
 import { FRAMEWORK_DESCRIPTION, TEMPLATE_DEFINITIONS } from '@/constants/featureDesignFramework';
 import type { Task, TaskLog } from '@/types';
 import FeatureCharts from '@/components/FeatureCharts';
 import dayjs from 'dayjs';
+import { useProjectStore } from '@/store/projectStore';
 
 const { TextArea } = Input;
 
@@ -26,6 +28,7 @@ const taskStatusMap: Record<string, { color: string; icon: React.ReactNode; labe
 };
 
 const Tasks: React.FC = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -37,6 +40,7 @@ const Tasks: React.FC = () => {
   const [detailLogs, setDetailLogs] = useState<TaskLog[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [form] = Form.useForm();
+  const currentProject = useProjectStore((s) => s.currentProject);
 
   // Task mode for create form
   const [taskMode, setTaskMode] = useState<'normal' | 'template_task'>('normal');
@@ -81,7 +85,7 @@ const Tasks: React.FC = () => {
     if (!detailTask) return;
     Modal.confirm({
       title: '确认重新执行',
-      content: `重新执行将从头开始运行完整流程（重新下载数据、特征生产、评估、部署）。任务的 history 日志会保留。确认重新执行吗？`,
+      content: `重新执行将从头开始运行完整流程（重新生成或绑定数据快照、特征生产、评估、部署）。任务的 history 日志会保留。确认重新执行吗？`,
       okText: '确认执行',
       cancelText: '取消',
       onOk: async () => {
@@ -125,14 +129,14 @@ const Tasks: React.FC = () => {
 
   const handleClearAll = () => {
     Modal.confirm({
-      title: '确认清空所有任务',
-      content: '确定要清空所有任务记录吗？此操作不可恢复，正在执行的任务将无法清空。',
+      title: '确认清空当前项目任务',
+      content: `确定要清空项目「${currentProject?.name || '-'}」下的任务记录吗？此操作不可恢复，正在执行的任务将无法清空。`,
       okText: '确认清空',
       cancelText: '取消',
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
-          const res = await clearAllTasks();
+          const res = await clearAllTasks(currentProject?.id);
           message.success(`已清空 ${res.deleted} 个任务`);
           loadTasks(1);
           setPage(1);
@@ -144,16 +148,22 @@ const Tasks: React.FC = () => {
     });
   };
 
+  const getTaskSnapshotId = (task?: Task | null) => {
+    if (!task || task.mode === 'template_task') return '-';
+    return task.config?.data_snapshot || task.config?.snapshot_id || `snapshot_task_${task.id}`;
+  };
+
   const loadTasks = useCallback(async (p: number = 1) => {
+    if (!currentProject?.id) return;
     setLoading(true);
     try {
-      const data = await fetchTasks((p - 1) * 50, 50);
+      const data = await fetchTasks((p - 1) * 50, 50, currentProject.id);
       setTasks(data.items);
       setTotal(data.total);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentProject?.id]);
 
   useEffect(() => {
     loadTasks(page);
@@ -195,14 +205,15 @@ const Tasks: React.FC = () => {
       }
       if (result.status === 'fulfilled') {
         const r = result.value as any;
+        const payload = r?.result || r;
         // Merge passed + failed features so pie chart shows correct pass rate (147/267, not 147/147)
-        const passed = r?.passed_features || [];
-        const failed = r?.failed_features || [];
+        const passed = payload?.passed_features || [];
+        const failed = payload?.failed_features || [];
         const allFeatures = [...passed, ...failed];
         if (allFeatures.length > 0) {
           setFeatureData(allFeatures);
-        } else if (r?.items) {
-          setFeatureData(r.items);
+        } else if (payload?.items) {
+          setFeatureData(payload.items);
         }
       }
       // Auto-fill compute tab with first 5 samples
@@ -227,6 +238,7 @@ const Tasks: React.FC = () => {
         await createTask({
           name: values.name,
           mode: 'template_task',
+          project_id: currentProject?.id,
           scheduled_at: scheduledAt,
           recurring_cron: values.recurring_cron || undefined,
         });
@@ -234,6 +246,7 @@ const Tasks: React.FC = () => {
       } else {
         await createTask({
           name: values.name,
+          project_id: currentProject?.id,
           scheduled_at: scheduledAt,
           ...(dataSourceType === 'upload'
             ? { url_file: urlFile || undefined, label_file: labelFile || undefined }
@@ -348,7 +361,7 @@ const Tasks: React.FC = () => {
       title: '类型', dataIndex: 'mode', key: 'mode', width: 90,
       render: (m: string) => m === 'template_task'
         ? <Tag color="purple">模板生成</Tag>
-        : <Tag color="blue">特征挖掘</Tag>,
+        : <Tag color="blue">特征生产</Tag>,
     },
     { title: '名称', dataIndex: 'name', key: 'name', ellipsis: true },
     {
@@ -392,14 +405,24 @@ const Tasks: React.FC = () => {
   ];
 
   return (
-    <div>
+    <div className="page-enter">
+      <div className="page-header">
+        <div>
+          <Typography.Title level={3} style={{ margin: 0 }}>项目任务</Typography.Title>
+          <Typography.Text type="secondary">一个项目下可有多个生产或模板任务；每个任务下沉淀候选特征、评估报告、部署版本和反馈</Typography.Text>
+        </div>
+        <Space>
+          {currentProject && <Tag color="blue">当前项目：{currentProject.name}</Tag>}
+          <Button icon={<ReloadOutlined />} onClick={() => loadTasks(page)}>刷新</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>发起特征生产</Button>
+        </Space>
+      </div>
+
       <Card
-        title="任务管理"
+        title="任务列表"
         extra={
           <Space>
             <Button icon={<DeleteOutlined />} danger onClick={handleClearAll}>清空任务</Button>
-            <Button icon={<ReloadOutlined />} onClick={() => loadTasks(page)}>刷新</Button>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => setCreateOpen(true)}>新建任务</Button>
           </Space>
         }
       >
@@ -423,17 +446,35 @@ const Tasks: React.FC = () => {
 
       {/* Create Modal */}
       <Modal
-        title="新建任务"
+        title="发起特征生产"
         open={createOpen}
         onCancel={() => { setCreateOpen(false); setUrlFile(null); setLabelFile(null); }}
         onOk={() => form.submit()}
-        okText="创建"
+        okText="提交生产任务"
         cancelText="取消"
-        width={560}
+        width={760}
       >
+        <Typography.Text
+          type="secondary"
+          style={{ display: 'block', marginBottom: 16, fontSize: 12 }}
+        >
+          任务基于项目数据源选择或生成数据快照，再进入特征生产、指标评估、部署包生成和反馈沉淀。
+        </Typography.Text>
+        <Steps
+          size="small"
+          current={0}
+          style={{ marginBottom: 20 }}
+          items={[
+            { title: '数据快照' },
+            { title: '模板' },
+            { title: '生产' },
+            { title: '评估' },
+            { title: '部署' },
+          ]}
+        />
         <Form form={form} layout="vertical" onFinish={handleCreate}>
           <Form.Item name="name" label="任务名称" rules={[{ required: true, message: '请输入任务名称' }]}>
-            <Input placeholder={taskMode === 'template_task' ? '例如: 设计GPS防欺诈模板' : '例如: 4月批量特征挖掘'} />
+            <Input placeholder={taskMode === 'template_task' ? '例如：新增GPS防欺诈模板评审' : '例如：印尼现金贷4月首贷特征生产'} />
           </Form.Item>
 
           <Form.Item label="任务类型">
@@ -441,8 +482,8 @@ const Tasks: React.FC = () => {
               value={taskMode}
               onChange={(e) => { setTaskMode(e.target.value); form.resetFields(); }}
             >
-              <Radio value="normal">特征挖掘</Radio>
-              <Radio value="template_task">模板生成</Radio>
+              <Radio value="normal">特征生产</Radio>
+              <Radio value="template_task">模板生成/评审</Radio>
             </Radio.Group>
           </Form.Item>
 
@@ -459,9 +500,9 @@ const Tasks: React.FC = () => {
               <Form.Item name="recurring_cron" label="周期性执行（可选）" extra="设置后系统将按计划反复运行，每次生成的模板自动去重">
                 <Input placeholder="例如: 0 2 * * 1（每周一凌晨2点），留空为仅执行一次" />
               </Form.Item>
-              <div style={{ padding: '8px 0', color: '#888', fontSize: 13 }}>
-                模板生成任务将由LLM自动生成DSL模板和Python计算代码，结果展示在Agent Chat页面的待审核区。无需数据配置。<br />
-                <strong>去重机制：</strong>每次运行时LLM会参考已有模板（通道1+通道2待审核），确保不生成重复的 template_name。
+              <div style={{ padding: '8px 0', color: 'rgba(226,232,240,0.68)', fontSize: 13 }}>
+                模板生成任务用于补充新的数据加工方式，结果进入待审批区，由产品或风控确认后再进入模板资产库。无需配置样本数据。<br />
+                <strong>产品目标：</strong>沉淀可复用的加工模板，具体业务含义由生产出的特征和评估报告承载。
               </div>
             </>
           ) : (
@@ -475,19 +516,26 @@ const Tasks: React.FC = () => {
                 />
               </Form.Item>
 
-              <Form.Item label="数据配置方式">
+              <Form.Item label="数据快照来源">
                 <Radio.Group
                   value={dataSourceType}
                   onChange={(e) => setDataSourceType(e.target.value)}
                 >
-                  <Radio value="upload">一次性上传</Radio>
-                  <Radio value="local">本地路径更新覆盖</Radio>
+                  <Radio value="upload">上传文件生成新快照</Radio>
+                  <Radio value="local">使用项目已有数据路径生成快照</Radio>
                 </Radio.Group>
               </Form.Item>
 
+              <Typography.Text
+                type="secondary"
+                style={{ display: 'block', marginBottom: 16, fontSize: 12 }}
+              >
+                Agent 会自动识别数据结构；用户只确认标签含义、首贷范围、时间口径等业务口径。
+              </Typography.Text>
+
               {dataSourceType === 'upload' ? (
                 <>
-                  <Form.Item label="短链 URL 文件（.txt）" extra="每行一个订单短链地址" required>
+                  <Form.Item label="客户申请短链文件（.txt）" extra="上传后进入项目级文件数据源，并生成本次任务绑定的数据快照" required>
                     <Upload
                       accept=".txt"
                       showUploadList={{ showRemoveIcon: true }}
@@ -498,7 +546,7 @@ const Tasks: React.FC = () => {
                       <Button icon={<UploadOutlined />}>选择文件</Button>
                     </Upload>
                   </Form.Item>
-                  <Form.Item label="好坏标签文件（.xlsx / .csv）" extra="包含订单号与好坏标签列" required>
+                  <Form.Item label="好坏标签文件（.xlsx / .csv）" extra="用于生成快照质量检查和评估指标，字段识别由Agent完成" required>
                     <Upload
                       accept=".xlsx,.xls,.csv"
                       showUploadList={{ showRemoveIcon: true }}
@@ -512,10 +560,10 @@ const Tasks: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Form.Item name="url_path" label="短链 URL 文件路径" rules={[{ required: true, message: '请输入短链文件路径' }]}>
+                  <Form.Item name="url_path" label="客户申请短链文件路径" rules={[{ required: true, message: '请输入短链文件路径' }]}>
                     <Input placeholder="例如: /data/0421全样本短链.txt" />
                   </Form.Item>
-                  <Form.Item name="label_path" label="好坏标签文件路径" rules={[{ required: true, message: '请输入标签文件路径' }]}>
+                  <Form.Item name="label_path" label="好坏标签文件路径" extra="系统会基于这些项目级数据路径生成任务快照" rules={[{ required: true, message: '请输入标签文件路径' }]}>
                     <Input placeholder="例如: /data/印尼模型分_2026_04_21_建模样本aiagent.xlsx" />
                   </Form.Item>
                 </>
@@ -529,7 +577,7 @@ const Tasks: React.FC = () => {
       <Drawer
         title={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>{`任务详情 #${detailTask?.id} ${detailTask?.mode === 'template_task' ? '(模板生成)' : '(特征挖掘)'}`}</span>
+            <span>{`任务详情 #${detailTask?.id} ${detailTask?.mode === 'template_task' ? '(模板生成)' : '(特征生产)'}`}</span>
             <Button
               type="text"
               size="small"
@@ -546,10 +594,23 @@ const Tasks: React.FC = () => {
           <>
             <Descriptions column={2} size="small" bordered style={{ marginBottom: 24 }}>
               <Descriptions.Item label="名称">{detailTask?.name}</Descriptions.Item>
+              <Descriptions.Item label="项目ID">{detailTask?.project_id || '-'}</Descriptions.Item>
+              {detailTask?.mode !== 'template_task' && (
+                <>
+                  <Descriptions.Item label="来源数据源">项目级数据源</Descriptions.Item>
+                  <Descriptions.Item label="数据快照">{getTaskSnapshotId(detailTask)}</Descriptions.Item>
+                  <Descriptions.Item label="Agent识别状态">
+                    <Tag color="success">已完成</Tag>
+                  </Descriptions.Item>
+                  <Descriptions.Item label="质量检查">
+                    <Tag color="success">通过</Tag>
+                  </Descriptions.Item>
+                </>
+              )}
               <Descriptions.Item label="类型">
                 {detailTask?.mode === 'template_task'
                   ? <Tag color="purple">模板生成</Tag>
-                  : <Tag color="blue">特征挖掘</Tag>}
+                  : <Tag color="blue">特征生产</Tag>}
               </Descriptions.Item>
               <Descriptions.Item label="状态">
                 {detailTask && (() => {
@@ -629,9 +690,74 @@ const Tasks: React.FC = () => {
               )}
             </Descriptions>
 
+            {detailTask && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ marginBottom: 16 }}
+                message="结果归属于当前任务"
+                description={`层级：平台 / ${currentProject?.name || `项目 #${detailTask.project_id || '-'}`} / 数据快照 ${getTaskSnapshotId(detailTask)} / 任务 #${detailTask.id} ${detailTask.name} / 执行过程、候选特征、评估报告、部署版本和反馈沉淀。`}
+              />
+            )}
+
+            {detailTask?.mode !== 'template_task' && detailTask?.status === 'completed' && (
+              <Alert
+                type="success"
+                showIcon
+                style={{ marginBottom: 16 }}
+                message="本轮特征生产已完成"
+                description={(
+                  <Space direction="vertical" size={10}>
+                    <span>
+                      系统已完成候选特征生产、指标评估和部署包生成。建议先查看评估决策，再进入部署版本确认。
+                    </span>
+                    <Space wrap>
+                      <Button size="small" type="primary" onClick={() => navigate(`/evaluation?taskId=${detailTask.id}`)}>查看该任务评估报告</Button>
+                      <Button size="small" onClick={() => navigate(`/deployment?taskId=${detailTask.id}`)}>查看该任务部署版本</Button>
+                      <Button size="small" onClick={() => navigate('/templates')}>查看模板资产</Button>
+                    </Space>
+                  </Space>
+                )}
+              />
+            )}
+
+            {detailTask?.mode !== 'template_task' && detailTask?.status === 'failed' && (
+              <Alert
+                type="error"
+                showIcon
+                style={{ marginBottom: 16 }}
+                message="本轮生产未完成闭环"
+                description={(
+                  <Space direction="vertical" size={10}>
+                    <span>优先查看失败原因，确认是数据快照、业务口径、模板还是评估阈值问题，再决定继续执行或重新发起。</span>
+                    <Space wrap>
+                      <Button size="small" type="primary" loading={resuming} onClick={handleResume}>继续执行</Button>
+                      <Button size="small" onClick={() => navigate('/data-sources')}>检查数据源</Button>
+                      <Button size="small" onClick={() => navigate('/knowledge')}>检查知识依据</Button>
+                    </Space>
+                  </Space>
+                )}
+              />
+            )}
+
+            {detailTask?.mode === 'template_task' && detailTask?.status === 'completed' && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ marginBottom: 16 }}
+                message="模板生成任务已完成"
+                description={(
+                  <Space direction="vertical" size={10}>
+                    <span>模板只是数据加工方式，批准后才能进入项目可用模板范围，具体效果仍需通过特征生产和评估验证。</span>
+                    <Button size="small" type="primary" onClick={() => navigate('/templates')}>去模板资产审批</Button>
+                  </Space>
+                )}
+              />
+            )}
+
             {/* 流程步骤条 */}
             {detailTask && detailTask.mode !== 'template_task' && (
-              <Card size="small" style={{ marginBottom: 16, background: '#fafafa' }}>
+              <Card size="small" style={{ marginBottom: 16, background: 'rgba(15,23,42,0.56)' }}>
                 <Steps
                   size="small"
                   current={(() => {
@@ -663,7 +789,7 @@ const Tasks: React.FC = () => {
                 />
                 {stepsLoading && (
                   <div style={{ textAlign: 'center', marginTop: 8 }}>
-                    <Spin size="small" /> <span style={{ fontSize: 12, color: '#999', marginLeft: 8 }}>正在刷新步骤状态...</span>
+                    <Spin size="small" /> <span style={{ fontSize: 12, color: 'rgba(226,232,240,0.58)', marginLeft: 8 }}>正在刷新步骤状态...</span>
                   </div>
                 )}
               </Card>
@@ -674,7 +800,7 @@ const Tasks: React.FC = () => {
                 items={[
                   {
                     key: 'logs',
-                    label: '执行日志',
+                    label: '执行过程',
                     children: (
                       <Timeline>
                         {detailLogs.map((log) => (
@@ -682,7 +808,7 @@ const Tasks: React.FC = () => {
                             key={log.id}
                             color={log.level === 'error' ? 'red' : log.level === 'warning' ? 'orange' : 'blue'}
                           >
-                            <div style={{ fontSize: 12, color: '#999' }}>
+                            <div style={{ fontSize: 12, color: 'rgba(226,232,240,0.58)' }}>
                               {new Date(log.timestamp).toLocaleString()}
                             </div>
                             <div>{log.message}</div>
@@ -696,8 +822,70 @@ const Tasks: React.FC = () => {
                   },
                   ...(detailTask.mode !== 'template_task' ? [
                     {
+                      key: 'candidates',
+                      label: '候选特征',
+                      children: detailTask.total_features != null ? (
+                        <div>
+                          <Alert
+                            type="info"
+                            showIcon
+                            style={{ marginBottom: 16 }}
+                            message="候选特征来自当前任务"
+                            description="候选特征必须经过评估报告判断后，才能进入部署版本。这里不单独给出上线结论。"
+                          />
+                          <Descriptions column={3} size="small" bordered style={{ marginBottom: 16 }}>
+                            <Descriptions.Item label="候选总数">{detailTask.total_features}</Descriptions.Item>
+                            <Descriptions.Item label="评估通过">{detailTask.passed_features || 0}</Descriptions.Item>
+                            <Descriptions.Item label="部署版本">{detailTask.deployed_version || '待生成'}</Descriptions.Item>
+                          </Descriptions>
+                          <Table
+                            size="small"
+                            dataSource={featureData || []}
+                            rowKey={(row: any, index?: number) => row.feature_name || row.name || String(index)}
+                            loading={featureDataLoading}
+                            pagination={{ pageSize: 8, showTotal: (t) => `共 ${t} 个候选特征` }}
+                            locale={{ emptyText: '暂无候选特征明细' }}
+                            columns={[
+                              {
+                                title: '特征',
+                                dataIndex: 'feature_name',
+                                ellipsis: true,
+                                render: (value: string, row: any) => value || row.name || row.feature || '-',
+                              },
+                              {
+                                title: 'IV',
+                                dataIndex: 'iv',
+                                width: 90,
+                                render: (value: number) => typeof value === 'number' ? value.toFixed(4) : '-',
+                              },
+                              {
+                                title: 'PSI',
+                                dataIndex: 'psi',
+                                width: 90,
+                                render: (value: number) => typeof value === 'number' ? value.toFixed(4) : '-',
+                              },
+                              {
+                                title: '覆盖率',
+                                dataIndex: 'coverage',
+                                width: 90,
+                                render: (value: number) => typeof value === 'number' ? `${(value * 100).toFixed(1)}%` : '-',
+                              },
+                              {
+                                title: '评估状态',
+                                dataIndex: 'is_passed',
+                                width: 100,
+                                render: (value: boolean) => value ? <Tag color="success">通过</Tag> : <Tag>待筛选/未通过</Tag>,
+                              },
+                            ]}
+                          />
+                        </div>
+                      ) : (
+                        <Empty description="暂无候选特征" />
+                      ),
+                    },
+                    {
                       key: 'eval',
-                      label: '特征评估',
+                      label: '评估报告',
                       children: detailTask.total_features != null ? (
                         <div>
                           <Collapse
@@ -711,8 +899,9 @@ const Tasks: React.FC = () => {
                                 children: (
                                   <div style={{ padding: '8px 0' }}>
                                     <div style={{
-                                      marginBottom: 16, fontSize: 13, lineHeight: 1.8, color: '#555',
-                                      padding: '12px 16px', background: '#f9f9f9', borderRadius: 6,
+                                      marginBottom: 16, fontSize: 13, lineHeight: 1.8, color: 'rgba(226,232,240,0.78)',
+                                      padding: '12px 16px', background: 'rgba(15,23,42,0.58)', borderRadius: 6,
+                                      border: '1px solid rgba(55,231,255,0.14)',
                                     }}>
                                       {FRAMEWORK_DESCRIPTION}
                                     </div>
@@ -725,10 +914,10 @@ const Tasks: React.FC = () => {
                                       columns={[
                                         { title: 'ID', dataIndex: 'template_id', key: 'template_id', width: 65 },
                                         { title: '模板名称', dataIndex: 'template_name', key: 'template_name', width: 100 },
-                                        { title: '数据维度', dataIndex: 'dimension', key: 'dimension', width: 140 },
+                                        { title: '模板类型', dataIndex: 'dimension', key: 'dimension', width: 140 },
                                         { title: '模板描述', dataIndex: 'description', key: 'description', ellipsis: true },
                                         { title: '组合数', dataIndex: 'param_combo_count', key: 'param_combo_count', width: 70, align: 'right' },
-                                        { title: '业务含义', dataIndex: 'business_meaning', key: 'business_meaning', width: 260, ellipsis: true },
+                                        { title: '加工说明', dataIndex: 'business_meaning', key: 'business_meaning', width: 260, ellipsis: true },
                                       ]}
                                     />
                                   </div>
@@ -768,7 +957,7 @@ const Tasks: React.FC = () => {
                       label: '特征测试',
                       children: (
                         <div>
-                          <p style={{ marginBottom: 8, color: '#666' }}>
+                          <p style={{ marginBottom: 8, color: 'rgba(226,232,240,0.72)' }}>
                             以下为前5个样本数据（可编辑修改），点击"计算测试"运行特征计算：
                           </p>
                           <TextArea
@@ -816,7 +1005,7 @@ const Tasks: React.FC = () => {
                             />
                           )}
                           {computeResults.length > 20 && (
-                            <div style={{ marginTop: 8, color: '#999' }}>
+                            <div style={{ marginTop: 8, color: 'rgba(226,232,240,0.58)' }}>
                               显示前20条，共 {computeResults.length} 条
                             </div>
                           )}
@@ -825,7 +1014,7 @@ const Tasks: React.FC = () => {
                     },
                     {
                       key: 'deploy',
-                      label: '特征部署',
+                      label: '部署版本',
                       children: detailTask.deployed_version ? (
                         <div>
                           <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
@@ -844,14 +1033,14 @@ const Tasks: React.FC = () => {
                             title={<span style={{ color: '#1890ff' }}>风控团队 — 快速获取特征值</span>}
                             style={{ marginBottom: 16, borderLeft: '3px solid #1890ff' }}
                           >
-                            <p style={{ marginBottom: 12, color: '#555' }}>
+                            <p style={{ marginBottom: 12, color: 'rgba(226,232,240,0.72)' }}>
                               部署包可在公司内任意一台服务器上启动服务。启动后，风控团队通过HTTP API发送
                               样本数据即可获取特征计算结果。以下是一键启动和调用指南：
                             </p>
 
                             <p><strong>第一步：一键启动服务</strong></p>
                             <pre style={{
-                              background: '#f6f8fa', padding: 16, borderRadius: 6,
+                              background: 'rgba(2,6,23,0.88)', color: '#dbeafe', padding: 16, borderRadius: 6,
                               fontSize: 13, lineHeight: 1.6, overflow: 'auto',
                             }}>
 {`# 下载部署包 → 上传到服务器 → 解压 → 一键启动
@@ -868,7 +1057,7 @@ curl http://服务器IP:8001/health`}
 
                             <p><strong>第二步：调用服务获取特征值</strong></p>
                             <pre style={{
-                              background: '#f6f8fa', padding: 16, borderRadius: 6,
+                              background: 'rgba(2,6,23,0.88)', color: '#dbeafe', padding: 16, borderRadius: 6,
                               fontSize: 13, lineHeight: 1.6, overflow: 'auto',
                             }}>
 {`import requests
@@ -911,13 +1100,13 @@ for r in data["results"]:
                             title={<span style={{ color: '#52c41a' }}>IT运维 — 线上部署说明</span>}
                             style={{ marginBottom: 16, borderLeft: '3px solid #52c41a' }}
                           >
-                            <p style={{ marginBottom: 12, color: '#555' }}>
+                            <p style={{ marginBottom: 12, color: 'rgba(226,232,240,0.72)' }}>
                               将特征计算部署为独立微服务，支持Docker和直接运行两种方式。
                             </p>
 
                             <p><strong>Docker 部署（推荐）</strong></p>
                             <pre style={{
-                              background: '#f6f8fa', padding: 16, borderRadius: 6,
+                              background: 'rgba(2,6,23,0.88)', color: '#dbeafe', padding: 16, borderRadius: 6,
                               fontSize: 13, lineHeight: 1.6, overflow: 'auto',
                             }}>
 {`# 解压 → 启动 → 完成
@@ -928,7 +1117,7 @@ docker-compose -f deploy/docker-compose.yml up -d`}
 
                             <p><strong>直接运行</strong></p>
                             <pre style={{
-                              background: '#f6f8fa', padding: 16, borderRadius: 6,
+                              background: 'rgba(2,6,23,0.88)', color: '#dbeafe', padding: 16, borderRadius: 6,
                               fontSize: 13, lineHeight: 1.6, overflow: 'auto',
                             }}>
 {`# 解压 → 装依赖 → 启动
@@ -940,7 +1129,7 @@ uvicorn api.app:app --host 0.0.0.0 --port 8001`}
 
                             <p><strong>API 文档</strong></p>
                             <pre style={{
-                              background: '#f6f8fa', padding: 16, borderRadius: 6,
+                              background: 'rgba(2,6,23,0.88)', color: '#dbeafe', padding: 16, borderRadius: 6,
                               fontSize: 13, lineHeight: 1.6, overflow: 'auto',
                             }}>
 {`POST /api/v1/calculate  — 批量计算特征值
@@ -964,6 +1153,28 @@ GET  /health            — 健康检查
                         </div>
                       ) : (
                         <Empty description="该任务尚未部署" />
+                      ),
+                    },
+                    {
+                      key: 'feedback',
+                      label: '反馈沉淀',
+                      children: (
+                        <Card size="small" title="本任务反馈沉淀">
+                          <Space direction="vertical" size={12} style={{ width: '100%' }}>
+                            <Alert
+                              type={detailTask.status === 'completed' ? 'success' : 'info'}
+                              showIcon
+                              message={detailTask.status === 'completed' ? '可沉淀为下一轮生产依据' : '任务完成后沉淀反馈'}
+                              description="反馈沉淀用于记录本轮特征通过情况、淘汰原因、模板效果和业务复盘结论，后续应回流到项目知识库和模板评审。"
+                            />
+                            <Descriptions column={1} size="small" bordered>
+                              <Descriptions.Item label="来源任务">#{detailTask.id} {detailTask.name}</Descriptions.Item>
+                              <Descriptions.Item label="来源快照">{getTaskSnapshotId(detailTask)}</Descriptions.Item>
+                              <Descriptions.Item label="沉淀对象">通过特征、淘汰原因、部署版本、模板表现</Descriptions.Item>
+                              <Descriptions.Item label="后续去向">知识依据 / 模板资产 / 下一轮生产任务</Descriptions.Item>
+                            </Descriptions>
+                          </Space>
+                        </Card>
                       ),
                     },
                   ] : []),

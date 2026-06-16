@@ -309,7 +309,7 @@ def _build_extraction_prompt(filename: str, file_type: str, content: str) -> lis
   "dsl": "DSL表达式，描述计算公式，如 apply_time_dt - max(time_field, window)",
   "dsl_description": "DSL表达式的自然语言解释",
   "parameter_space": {{
-    "参数名": {{"type": "string|int|float", "description": "参数含义说明"}}
+    "参数名": {{"type": "string|int|float", "description": "参数含义说明", "values": ["可执行取值1", "可执行取值2"]}}
   }},
   "python_function": "函数签名，如 calc_recency_days(data, apply_time_dt, window_days=90, time_field='event_time')",
   "python_code": "完整的Python计算函数代码（包含防穿越逻辑，从订单数据中提取字段计算）",
@@ -327,7 +327,8 @@ def _build_extraction_prompt(filename: str, file_type: str, content: str) -> lis
 5. templates 数组为空表示没提取到任何模板。
 6. 输出必须是合法的 JSON，不要包含额外的markdown标记或说明文字。
 7. **模板必须剥离业务含义**：从文件中识别出的风险信号（如"赌博应用占比高"、"现金贷多头借贷"）应该抽象为通用计算结构（如 count(filter(source, category==target), window) / count(source, window)），把具体的业务值（赌博、现金贷等）放到 parameter_space 中。模板名和描述不能包含具体业务词（如 high_risk、gambling、loan）。
-8. **DSL 不能与已生效模板重复**：如果提取出的计算逻辑已经有一个通道1模板实现了，则跳过该模板。以下是已生效模板的 DSL 列表供参考：
+8. **parameter_space 必须可枚举**：每个会进入 Python 函数调用的参数尽量提供 `values`（或 `enum/options/choices`）列表；例如 source、window、method、decay_type、value_field 等都要写出可执行候选值。
+9. **DSL 不能与已生效模板重复**：如果提取出的计算逻辑已经有一个通道1模板实现了，则跳过该模板。以下是已生效模板的 DSL 列表供参考：
 
 {channel1_context}
 

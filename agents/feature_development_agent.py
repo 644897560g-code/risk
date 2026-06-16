@@ -754,6 +754,7 @@ class FeatureDevelopmentAgent:
                 logger.warning("  通道1未生成特征")
                 return False
 
+            features = self._ensure_feature_metadata(features, strict=False)
             self.features = features
             self.feature_doc = {'features': features}
             logger.info(f"  通道1生成 {len(features)} 个特征")
@@ -763,9 +764,11 @@ class FeatureDevelopmentAgent:
             channel2_features = self._channel2_supplement(fb_section)
             if channel2_features:
                 self.features.extend(channel2_features)
+                self.feature_doc = {'features': self.features}
                 logger.info(f"  通道2补充 {len(channel2_features)} 个特征")
 
             # ---- 保存特征设计文档 ----
+            self.feature_doc = {'features': self.features}
             os.makedirs(os.path.dirname(self.feature_design_doc_path), exist_ok=True)
             with open(self.feature_design_doc_path, 'w', encoding='utf-8') as f:
                 json.dump(self.feature_doc, f, ensure_ascii=False, indent=2)
@@ -910,6 +913,48 @@ class FeatureDevelopmentAgent:
         if dropped > 0:
             logger.info(f"  降级特征语义校验丢弃 {dropped} 个无意义特征")
         return features
+
+    def _ensure_feature_metadata(self, features: List[Dict], strict: bool = False) -> List[Dict]:
+        """Normalize and validate metadata needed by downstream reports.
+
+        strict=True is used for free-form Channel 2 features: if the LLM cannot
+        explain where the feature comes from and how it is calculated, the
+        feature is not reportable and should not enter the mining result.
+        """
+        normalized = []
+        required_fields = ['feature_name', 'data_source', 'calculation_logic']
+
+        for feat in features:
+            self._fix_feature_source(feat)
+            params = feat.get('params') or {}
+
+            if not feat.get('data_source'):
+                feat['data_source'] = (
+                    params.get('source')
+                    or params.get('source_a')
+                    or params.get('field_set')
+                    or ''
+                )
+
+            if not feat.get('calculation_logic'):
+                feat['calculation_logic'] = (
+                    feat.get('formula_template')
+                    or feat.get('dsl')
+                    or feat.get('formula')
+                    or ''
+                )
+
+            missing = [field for field in required_fields if not feat.get(field)]
+            if strict and missing:
+                logger.warning(
+                    f"  ⚠ 通道2特征 '{feat.get('feature_name', 'unknown')}' "
+                    f"缺少报告必需字段: {', '.join(missing)}，已丢弃"
+                )
+                continue
+
+            normalized.append(feat)
+
+        return normalized
 
     def _validate_feature_semantics(self, features: List[Dict]) -> List[Dict]:
         """语义校验：检测并丢弃无业务意义的特征定义
@@ -1088,6 +1133,9 @@ class FeatureDevelopmentAgent:
         )
 
         features = self._extract_json_array(response)
+        if features:
+            features = self._ensure_feature_metadata(features, strict=True)
+            features = self._validate_feature_semantics(features)
         return features or []
 
     def _extract_json_array(self, response: str) -> List[Dict]:

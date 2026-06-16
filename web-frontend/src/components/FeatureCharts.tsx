@@ -19,6 +19,13 @@ interface Props {
 
 const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, features, loading }) => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all');
+  const chartTextColor = '#cbd5e1';
+  const chartSubtleColor = 'rgba(148, 163, 184, 0.26)';
+  const tooltipStyle = {
+    backgroundColor: 'rgba(8, 13, 21, 0.94)',
+    borderColor: 'rgba(55, 231, 255, 0.26)',
+    textStyle: { color: '#e5f6ff' },
+  };
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: 40 }}><Spin /></div>;
@@ -56,16 +63,25 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
 
   const ivTotal = filteredFeatures.length;
   const ivOption = {
-    title: { text: 'IV 分布', textStyle: { fontSize: 14 } },
+    title: { text: 'IV 分布', textStyle: { fontSize: 14, color: chartTextColor } },
     tooltip: { trigger: 'axis' as const, formatter: (params: any) => {
       const p = Array.isArray(params) ? params[0] : params;
       const val = p.value;
       const pct = ((val / ivTotal) * 100).toFixed(1);
       return `${p.axisValue}<br/>数量: ${val}<br/>占比: ${pct}%`;
-    }},
+    }, ...tooltipStyle },
     grid: { left: 50, right: 20, top: 40, bottom: 60 },
-    xAxis: { type: 'category' as const, data: ivLabels, axisLabel: { rotate: 30, fontSize: 11, margin: 8 } },
-    yAxis: { type: 'value' as const },
+    xAxis: {
+      type: 'category' as const,
+      data: ivLabels,
+      axisLine: { lineStyle: { color: chartSubtleColor } },
+      axisLabel: { rotate: 30, fontSize: 11, margin: 8, color: chartTextColor },
+    },
+    yAxis: {
+      type: 'value' as const,
+      axisLabel: { color: chartTextColor },
+      splitLine: { lineStyle: { color: chartSubtleColor } },
+    },
     series: [
       {
         type: 'bar',
@@ -91,16 +107,25 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
   );
 
   const psiOption = {
-    title: { text: 'PSI 分布', textStyle: { fontSize: 14 } },
+    title: { text: 'PSI 分布', textStyle: { fontSize: 14, color: chartTextColor } },
     tooltip: { trigger: 'axis' as const, formatter: (params: any) => {
       const p = Array.isArray(params) ? params[0] : params;
       const val = p.value;
       const pct = ((val / psiTotal) * 100).toFixed(1);
       return `${p.axisValue}<br/>数量: ${val}<br/>占比: ${pct}%`;
-    }},
+    }, ...tooltipStyle },
     grid: { left: 50, right: 20, top: 40, bottom: 60 },
-    xAxis: { type: 'category' as const, data: psiLabels, axisLabel: { rotate: 30, fontSize: 11, margin: 8 } },
-    yAxis: { type: 'value' as const },
+    xAxis: {
+      type: 'category' as const,
+      data: psiLabels,
+      axisLine: { lineStyle: { color: chartSubtleColor } },
+      axisLabel: { rotate: 30, fontSize: 11, margin: 8, color: chartTextColor },
+    },
+    yAxis: {
+      type: 'value' as const,
+      axisLabel: { color: chartTextColor },
+      splitLine: { lineStyle: { color: chartSubtleColor } },
+    },
     series: [
       {
         type: 'bar',
@@ -117,8 +142,8 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
   const filteredPassed = filteredFeatures.filter((f) => f.iv >= 0.02 && f.psi <= 0.25 && f.coverage > 0.05).length;
   const filteredFailed = filteredFeatures.length - filteredPassed;
   const pieOption = {
-    title: { text: `通过率 (${filteredPassed}/${filteredFeatures.length})`, textStyle: { fontSize: 14 }, left: 'center' },
-    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)' },
+    title: { text: `通过率 (${filteredPassed}/${filteredFeatures.length})`, textStyle: { fontSize: 14, color: chartTextColor }, left: 'center' },
+    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)', ...tooltipStyle },
     series: [
       {
         type: 'pie',
@@ -128,7 +153,7 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
           { value: filteredPassed, name: '通过', itemStyle: { color: '#52c41a' } },
           { value: filteredFailed, name: '未通过', itemStyle: { color: '#ff4d4f' } },
         ],
-        label: { show: true, formatter: '{b}\n{d}%' },
+        label: { show: true, formatter: '{b}\n{d}%', color: chartTextColor },
       },
     ],
   };
@@ -169,13 +194,13 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
               />
             </div>
           }>
-            <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
+            <table className="feature-top-table">
               <thead>
-                <tr style={{ background: '#fafafa' }}>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', borderBottom: '1px solid #f0f0f0' }}>特征名</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>IV</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>PSI</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>覆盖率</th>
+                <tr>
+                  <th style={{ textAlign: 'left' }}>特征名</th>
+                  <th style={{ textAlign: 'right' }}>IV</th>
+                  <th style={{ textAlign: 'right' }}>PSI</th>
+                  <th style={{ textAlign: 'right' }}>覆盖率</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,14 +209,14 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
                   .slice(0, 10)
                   .map((f) => (
                     <tr key={f.feature_name}>
-                      <td style={{ padding: '4px 8px', borderBottom: '1px solid #f0f0f0' }}>{f.feature_name}</td>
-                      <td style={{ padding: '4px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0', color: f.iv >= 0.02 ? '#52c41a' : '#ff4d4f' }}>
+                      <td>{f.feature_name}</td>
+                      <td style={{ textAlign: 'right', color: f.iv >= 0.02 ? '#34d399' : '#fb7185' }}>
                         {f.iv.toFixed(4)}
                       </td>
-                      <td style={{ padding: '4px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0', color: f.psi <= 0.25 ? '#52c41a' : '#ff4d4f' }}>
+                      <td style={{ textAlign: 'right', color: f.psi <= 0.25 ? '#34d399' : '#fb7185' }}>
                         {f.psi.toFixed(4)}
                       </td>
-                      <td style={{ padding: '4px 8px', textAlign: 'right', borderBottom: '1px solid #f0f0f0' }}>
+                      <td style={{ textAlign: 'right' }}>
                         {(f.coverage * 100).toFixed(1)}%
                       </td>
                     </tr>
@@ -208,9 +233,14 @@ const FeatureCharts: React.FC<Props> = ({ totalFeatures, passedFeatures, feature
 /** Fallback when only counts are available */
 const renderSimpleStats = (total: number, passed: number) => {
   const failed = total - passed;
+  const tooltipStyle = {
+    backgroundColor: 'rgba(8, 13, 21, 0.94)',
+    borderColor: 'rgba(55, 231, 255, 0.26)',
+    textStyle: { color: '#e5f6ff' },
+  };
   const pieOption = {
-    title: { text: '通过率', textStyle: { fontSize: 14 }, left: 'center' },
-    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)' },
+    title: { text: '通过率', textStyle: { fontSize: 14, color: '#cbd5e1' }, left: 'center' },
+    tooltip: { trigger: 'item' as const, formatter: '{b}: {c} ({d}%)', ...tooltipStyle },
     series: [
       {
         type: 'pie',
@@ -220,7 +250,7 @@ const renderSimpleStats = (total: number, passed: number) => {
           { value: passed, name: '通过', itemStyle: { color: '#52c41a' } },
           { value: failed, name: '未通过', itemStyle: { color: '#ff4d4f' } },
         ],
-        label: { show: true, formatter: '{b}\n{d}%' },
+        label: { show: true, formatter: '{b}\n{d}%', color: '#cbd5e1' },
       },
     ],
   };

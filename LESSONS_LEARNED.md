@@ -1765,3 +1765,357 @@ DATABASE_URL=postgresql+psycopg://riskforge:123456@127.0.0.1:5432/riskforge_ai p
 - 修改文件: `scripts/init_project_data.py`
 - 修改文件: `scripts/seeds/seed_template_library.py`
 - 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-10: 项目关联使用默认项目承载历史数据
+
+### 问题描述
+
+模板库已经迁移到 PostgreSQL 后，下一步需要支持多个业务项目。用户明确模板应该是平台级资产，项目中只选择启用哪些模板；知识库后续需要拆分为平台级和项目级。现有历史任务、结果和模板选择需要有一个默认归属，否则引入项目后旧数据会变成无项目数据。
+
+### 解决方案
+
+新增项目建模和默认项目:
+
+1. 新增 `projects` 表，初始化 `id=1` 的 `默认项目`。
+2. 新增 `project_templates` 表，表示项目启用哪些平台模板。
+3. 给 `tasks`、`feature_versions`、`feature_metrics` 增加 `project_id`。
+4. migration 将已有历史任务和结果挂到默认项目。
+5. `scripts/init_project_data.py` 保证默认项目存在，并为默认项目启用所有 active 平台模板。
+6. 新增 `/api/projects` 项目管理接口，任务列表和特征版本接口支持 `project_id` 过滤。
+
+### 验证结果
+
+- `alembic upgrade head` 成功升级到 `20260610_0004`。
+- `python scripts/init_project_data.py` 成功输出默认项目:
+  - `id: 1`
+  - `name: 默认项目`
+- 本机 PostgreSQL 验证:
+  - `projects`: 1 条默认项目
+  - 历史 `tasks`: 已归属 `project_id=1`
+  - `project_templates`: 默认项目启用 16 个 active 平台模板
+- Python 编译检查和 `git diff --check` 通过。
+
+### 设计原则
+
+模板本身保持平台级，不直接加 `project_id`。项目通过关联表选择启用模板，这样模板审批、拒绝记忆、模板代码和版本生命周期仍然只有一份平台事实来源。项目级差异应该放在 `project_templates.config_override` 或后续项目配置中。
+
+### 影响范围
+
+- 新增文件: `backend/models/project.py`
+- 新增文件: `backend/services/project_service.py`
+- 新增文件: `backend/routers/projects.py`
+- 新增文件: `backend/migrations/versions/20260610_0004_project_scoping.py`
+- 修改文件: `backend/models/task.py`
+- 修改文件: `backend/models/feature.py`
+- 修改文件: `backend/models/__init__.py`
+- 修改文件: `backend/app/main.py`
+- 修改文件: `backend/services/task_service.py`
+- 修改文件: `backend/routers/tasks.py`
+- 修改文件: `backend/routers/features.py`
+- 修改文件: `scripts/init_project_data.py`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-10: 前端先接项目上下文主干
+
+### 问题描述
+
+后端新增项目关联后，旧前端仍然按全局任务运行。如果不接入当前项目选择，用户创建任务、查看任务列表、清空任务时仍会混用全局上下文，违背项目隔离目标。
+
+### 解决方案
+
+前端先接最小主干:
+
+1. 新增项目类型和 API:
+   - `web-frontend/src/types/project.ts`
+   - `/api/projects`
+   - `/api/projects/default`
+2. 新增 `projectStore`，从后端加载项目并把当前项目 ID 存入 `localStorage`。
+3. 顶部 Header 增加当前项目选择器和新建项目弹窗。
+4. 任务列表调用 `/api/tasks?project_id=...`。
+5. 创建任务时提交当前 `project_id`。
+6. 清空任务改为只清当前项目任务。
+
+### 验证结果
+
+- 后端相关文件 Python 编译通过。
+- `git diff --check` 通过。
+- 当前 worktree 没有 `web-frontend/node_modules`，未执行前端 `npm run build`；需要在安装依赖后补跑。
+
+### 设计原则
+
+先把“当前项目上下文”贯穿任务主链路，再扩展专门的项目管理页面和项目模板勾选页面。这样旧页面不会被一次性重构过大，同时后端默认项目仍能兼容未传 `project_id` 的旧调用。
+
+### 影响范围
+
+- 新增文件: `web-frontend/src/types/project.ts`
+- 新增文件: `web-frontend/src/store/projectStore.ts`
+- 修改文件: `web-frontend/src/services/api.ts`
+- 修改文件: `web-frontend/src/components/Layout.tsx`
+- 修改文件: `web-frontend/src/pages/Tasks.tsx`
+- 修改文件: `web-frontend/src/types/task.ts`
+- 修改文件: `web-frontend/src/types/index.ts`
+- 修改文件: `backend/services/task_service.py`
+- 修改文件: `backend/routers/tasks.py`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-10: 创建项目时必须选择启用模板
+
+### 问题描述
+
+用户指出项目管理不能只创建项目基础信息，还应该在创建项目时选择哪些平台模板加入项目。项目模板是平台级资产，项目通过关联表选择启用范围。
+
+### 解决方案
+
+1. 后端新增批量设置项目模板选择接口:
+   - `PUT /api/projects/{project_id}/templates`
+   - 请求体: `{ "template_ids": ["T001", "T002"] }`
+2. 创建项目接口支持 `template_ids`，不传时兼容旧行为，默认启用所有 active 模板。
+3. 项目管理页创建/编辑弹窗加载 active 平台模板，提供勾选。
+4. 编辑项目时读取当前项目已启用模板，并可重新保存选择。
+
+### 验证结果
+
+- 后端 Python 编译通过。
+- 原项目前端 `npm run build` 通过。
+
+### 设计原则
+
+模板仍然是平台级，项目只保存选择关系。项目创建是模板启用范围的自然入口，不能把模板选择藏到后续隐式默认行为里。
+
+### 影响范围
+
+- 修改文件: `backend/services/project_service.py`
+- 修改文件: `backend/routers/projects.py`
+- 修改文件: `web-frontend/src/pages/Projects.tsx`
+- 修改文件: `web-frontend/src/services/api.ts`
+- 修改文件: `web-frontend/src/types/project.ts`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-11: 项目模板批量选择使用三态全选
+
+### 问题描述
+
+用户指出项目编辑里的模板选择不应该拆成“全选”和“全部取消”两个按钮，而应该合并成一个全选控件：全部选择时方框显示对号，全部未选时方框为空，部分选择时方框显示横线。
+
+### 解决方案
+
+在项目管理页的“启用模板”标题旁使用 Ant Design `Checkbox` 的三态能力：
+
+1. `checked=true`：当前项目已选择全部 active 模板。
+2. `checked=false`：当前项目没有选择 active 模板。
+3. `indeterminate=true`：当前项目只选择了部分 active 模板。
+4. 点击控件时根据 checkbox 状态切换为全选或清空。
+
+### 验证结果
+
+- 原项目目录执行 `npm run build` 通过。
+
+### 设计原则
+
+批量选择应优先使用用户熟悉的三态 checkbox 语义，而不是拆成多个文字按钮。这样可以同时表达当前选择状态和批量操作意图。
+
+### 影响范围
+
+- 修改文件: `web-frontend/src/pages/Projects.tsx`
+
+---
+
+## 2026-06-11: 模板列表排序以后端统一为准
+
+### 问题描述
+
+用户指出项目模板列表需要优先按照创建时间排序，其次按照 `template_id` 排序。原后端模板查询按维度顺序和 `template_id` 排序，不符合项目编辑时模板选择的预期顺序。
+
+### 解决方案
+
+1. `list_templates()` 统一改为 `created_at asc, template_id asc, id asc`。
+2. `template_to_channel1_item()` 响应补出 `created_at` 字段。
+3. 项目已关联模板 `list_project_templates()` 同步按模板创建时间和 `template_id` 排序。
+4. 前端 `Channel1Template` 类型补充 `created_at`。
+5. 前端模板列表接口 `fetchChannel1Templates()` 和 `fetchChannel2PendingTemplates()` 使用同一排序函数兜底，确保“已生效”和“待审核”两个 tab 顺序一致。
+
+### 验证结果
+
+- `python -m py_compile backend/services/template_library.py backend/services/project_service.py` 通过。
+- 原项目目录执行 `npm run build` 通过。
+
+### 设计原则
+
+模板排序属于后端列表契约，应在服务层统一处理，避免项目编辑页、模板侧边栏和项目模板接口各自维护不同排序逻辑。
+
+### 影响范围
+
+- 修改文件: `backend/services/template_library.py`
+- 修改文件: `backend/services/project_service.py`
+- 修改文件: `web-frontend/src/services/api.ts`
+
+---
+
+## 2026-06-15: 前端产品层级与模板资产语义修正
+
+### 问题描述
+
+用户指出前端产品设计存在两类语义偏差：
+
+1. 所有菜单平铺在一个层级上，无法表达“项目是平台维度管理对象、任务属于项目、结果交付对应任务”的层次关系。
+2. 模板库把模板当成有业务含义的特征来呈现，出现“历史表现”、IV/PSI/覆盖率等特征效果信息；但模板本质是数据加工方式，审批对象也是模板本身。
+
+### 解决方案
+
+1. 左侧导航改为分组信息架构：
+   - 平台管理：项目管理、模板资产
+   - 当前项目：项目工作台、数据与知识、生产任务
+   - 任务结果：评估报告、部署版本
+   - 辅助工具：智能助理
+2. 模板页改为“模板资产”，字段围绕模板类型、加工方式说明、执行方式、审批状态组织。
+3. 移除模板列表中的历史表现信息，避免把模板的加工口径和特征评估结果混在一起。
+4. 工作台、评估报告、部署版本页面文案补充当前项目和任务结果关系。
+
+### 验证结果
+
+- `npm run build` 通过。
+- 产品语义检查：菜单层级、模板字段、任务结果页面名称均已按用户反馈修正。
+
+### 设计原则
+
+平台级资产、项目级生产、任务级结果必须在信息架构中分层表达。模板只负责定义数据加工方法，不承载具体业务含义和历史表现；业务含义与效果应由生产出的特征及其评估报告承载。
+
+### 影响范围
+
+- 修改文件: `web-frontend/src/components/Layout.tsx`
+- 修改文件: `web-frontend/src/pages/Dashboard.tsx`
+- 修改文件: `web-frontend/src/pages/Projects.tsx`
+- 修改文件: `web-frontend/src/pages/Templates.tsx`
+- 修改文件: `web-frontend/src/pages/Evaluation.tsx`
+- 修改文件: `web-frontend/src/pages/Deployment.tsx`
+- 修改文件: `web-frontend/src/pages/Tasks.tsx`
+- 修改文件: `web-frontend/src/services/mockData.ts`
+- 修改文件: `web-frontend/src/components/ReviewPanel.tsx`
+- 修改文件: `web-frontend/src/components/TemplateSidebar.tsx`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-15: 评估报告必须展示特征逻辑
+
+### 问题描述
+
+用户指出评估报告只展示 IV、PSI、覆盖率等结果指标还不够，产品经理和风控评审需要看到每个特征的加工逻辑。没有特征逻辑时，评估页无法解释“这个指标到底怎么算出来”，也不利于判断特征是否符合业务口径。
+
+### 解决方案
+
+1. `FeatureMetric` 前端类型补充 `feature_logic`、`template_type`、`source_fields`。
+2. mock 评估数据补齐每个特征的加工口径、输入字段和模板类型。
+3. 评估报告表格新增“特征逻辑”列，并提供“查看口径”抽屉展示完整说明、输入字段和评估结果。
+
+### 验证结果
+
+- `npm run build` 通过。
+- 评估报告已能在特征明细中直接看到加工逻辑，并可打开详情查看完整口径。
+
+### 设计原则
+
+评估报告不能只做指标看板，还要承载特征可解释性。特征评审链路中，“怎么算”应与“效果如何”并列展示，避免指标脱离业务口径。
+
+### 影响范围
+
+- 修改文件: `web-frontend/src/pages/Evaluation.tsx`
+- 修改文件: `web-frontend/src/types/feature.ts`
+- 修改文件: `web-frontend/src/services/mockData.ts`
+
+---
+
+## 2026-06-15: 前端原型需要更强科技感视觉
+
+### 问题描述
+
+用户希望整体页面风格更炫酷、科技感更强，尤其是智能助理部分。原有页面偏传统后台系统，智能助理只是普通聊天框，缺少 AI 产品的控制台感和识别度。
+
+### 解决方案
+
+1. 全局应用壳升级为暗色科技风格：
+   - 网格背景
+   - 玻璃质感卡片
+   - 霓虹边线
+   - 暗色表格和输入控件
+   - 高亮渐变主按钮
+2. 智能助理页改为 Copilot 控制台：
+   - 顶部展示智能助理定位和能力标签
+   - 消息流使用暗色网格背景
+   - 用户和助手气泡使用不同高亮色
+   - 欢迎态提供常用提问入口
+   - 右侧会话和模板区保持联动但视觉更像工作台侧轨
+
+### 验证结果
+
+- `npm run build` 通过。
+- 视觉范围覆盖 Layout、通用卡片/表格、评估报告、智能助理对话区和输入区。
+
+### 设计原则
+
+科技感不应只靠装饰图，而应该体现在信息层级、材质、动效、色彩和交互状态的统一系统里。智能助理作为 AI 产品入口，需要比普通后台页面更强的主视觉和能力感。
+
+### 影响范围
+
+- 修改文件: `web-frontend/src/components/Layout.tsx`
+- 修改文件: `web-frontend/src/pages/AgentChat.tsx`
+- 修改文件: `web-frontend/src/components/ChatMessage.tsx`
+- 修改文件: `web-frontend/src/components/ChatInput.tsx`
+- 修改文件: `web-frontend/src/index.css`
+- 修改文档: `DEV_PLAN.md`
+
+---
+
+## 2026-06-15: 暗色主题不能只覆盖页面主体
+
+### 问题描述
+
+用户指出虽然整体做了暗色主题，但一些细节配色仍有问题。排查后发现主要问题来自 Ant Design 的弹层和局部组件：Select 下拉、Modal、Drawer、Popover、Tag、分页、空状态、Descriptions、Steps、图表 tooltip/坐标轴等没有完全继承主页面暗色样式，导致局部白底、黑字或低对比。
+
+### 解决方案
+
+1. 在全局 CSS 中补充暗色主题变量，统一背景、边框、主文本、弱文本、高亮色。
+2. 对页面内组件补齐暗色覆盖：
+   - Table
+   - Tag
+   - Button
+   - Descriptions
+   - Steps
+   - Empty
+   - Pagination
+   - Segmented
+3. 对挂载到 body 的弹层单独覆盖：
+   - Select Dropdown
+   - Modal
+   - Drawer
+   - Popover
+   - Tooltip
+   - Message
+4. 调整评估图表的 axis、legend、label、tooltip 和 Top 特征表格，避免图表仍使用浅色主题默认黑字。
+
+### 验证结果
+
+- `npm run build` 通过。
+- 针对本次文件执行 `git diff --check` 通过。
+- 搜索本次重点页面和组件，已移除明显浅底/低对比残留。
+
+### 设计原则
+
+暗色主题必须覆盖“页面主体 + 弹层容器 + 图表系统 + 内嵌表格”四个层面。Ant Design 的弹层默认挂在 body 上，不能只依赖页面容器选择器，否则会出现局部视觉断层。
+
+### 影响范围
+
+- 修改文件: `web-frontend/src/index.css`
+- 修改文件: `web-frontend/src/components/FeatureCharts.tsx`
+- 修改文件: `web-frontend/src/pages/Dashboard.tsx`
+- 修改文件: `web-frontend/src/pages/Templates.tsx`
+- 修改文件: `web-frontend/src/pages/Deployment.tsx`
+- 修改文档: `DEV_PLAN.md`

@@ -83,6 +83,50 @@
 - 初始化导入: 7 个模板维度、16 个 `active` 模板
 - 重复执行初始化脚本验证幂等: 第二次执行为 0 新增、7 个维度更新、16 个模板更新
 
+### 前端产品设计闭环优化（2026-06-15）
+
+**状态**: ✅ 已完成
+
+本轮面向产品经理视角调整前端页面，不新增接口和后端逻辑，优先级按“核心流程闭环 ＞ 逻辑合理性 ＞ 用户体验”执行。
+
+- [x] 工作台改为项目闭环视角，突出“项目 → 知识/数据 → 模板 → 生产 → 评估决策 → 部署交付”
+- [x] 任务页改为“特征生产”语义，并在完成、失败、模板任务完成后给出下一步产品动作
+- [x] 评估页改为上线决策页，增加推荐上线、谨慎观察、不建议上线的分层判断
+- [x] 部署页改为版本生命周期视角，明确待业务确认、待技术部署、已发布、回滚/废弃
+- [x] 模板页弱化模板审批边界说明，改为副标题口径，不再使用独立提示卡片
+- [x] 知识库页明确数据/知识是生产依据，并按样本标签、业务规则、历史反馈组织信息层级
+- [x] 导航信息架构改为“平台 → 当前项目 → 项目任务 → 任务结果”层级，评估/部署不再作为侧栏平级菜单
+- [x] 任务详情改为结果闭环承载页，包含执行过程、候选特征、评估报告、部署版本、反馈沉淀
+- [x] 评估页和部署页改为“结果库”语义，补充所属平台、所属项目、来源任务和结果类型
+- [x] 将“数据与知识”拆为“数据源管理”和“知识依据”，明确数据是项目级输入，知识是业务依据
+- [x] 新增数据源管理前端原型，展示数据源、Agent数据识别、业务口径确认、质量检查和数据快照
+- [x] 补齐数据源管理承接页面：上传文件数据源、新增数据库连接、生成数据快照
+- [x] 任务创建改为“选择/生成数据快照”语义，保留文件上传兼容但不再表达为临时任务上传
+- [x] 任务、评估、部署补充来源数据快照追溯，字段识别由Agent完成，不向用户展示底层结构对齐细节
+- [x] 弱化解释性提示，不再用独立卡片展示模板/知识/数据源边界说明，改为页面副标题、小号文字或状态标签
+
+**交付物**:
+- `web-frontend/src/pages/Dashboard.tsx`
+- `web-frontend/src/pages/Tasks.tsx`
+- `web-frontend/src/pages/Evaluation.tsx`
+- `web-frontend/src/pages/Deployment.tsx`
+- `web-frontend/src/pages/Templates.tsx`
+- `web-frontend/src/pages/Knowledge.tsx`
+- `web-frontend/src/pages/DataSources.tsx`
+- `web-frontend/src/components/Layout.tsx`
+- `web-frontend/src/index.css`
+- `web-frontend/src/App.tsx`
+
+**验证结果**:
+- `npm run build` 通过
+- 本地 `http://127.0.0.1:5174` 已验证工作台、任务、评估、部署、模板、知识库核心页面可渲染
+- 已重启旧的 `5173` Vite 进程，确认 `http://127.0.0.1:5173/tasks` 可看到“平台/项目/项目任务”面包屑和新侧栏层级
+- 已验证任务详情可看到“结果归属于当前任务”和执行过程、候选特征、评估报告、部署版本、反馈沉淀 tabs
+- 已验证 `http://127.0.0.1:5173/data-sources` 可看到数据源管理、Agent数据识别、质量检查和数据快照
+- 已验证数据源管理页三个入口可打开：上传文件数据源、新增数据库连接、生成数据快照
+- 已验证任务创建弹窗显示“数据快照来源”“上传文件生成新快照”“使用项目已有数据路径生成快照”
+- `npm run build` 通过；源码中已无“模板是加工方式”“这里管理业务依据”“字段识别由 Agent”“当前可启动任务”等独立提示文案
+
 ---
 
 ## 第一阶段：基础设施与数据准备（Week 1）
@@ -499,6 +543,58 @@
 - 历史通道2待审批 seed 已归档到 `scripts/seeds/fixtures/channel2_pending.seed.json`，只作为一次性迁移输入。
 - 通道2待审批、审批通过、拒绝记忆、知识抽取入库、AgentChat 触发模板创建，均统一写入 PostgreSQL。
 - 不再维护运行时 `channel2_pending.json` / `promoted_templates.json` 这类模板生命周期双写文件。
+
+### Week 6.6: 项目关联与项目模板选择 ✅ 已完成 (2026-06-10)
+
+| 模块 | 状态 | 交付物 |
+|------|------|--------|
+| 项目表结构 | ✅ | `backend/models/project.py`, `backend/migrations/versions/20260610_0004_project_scoping.py` |
+| 默认项目初始化 | ✅ | `scripts/init_project_data.py`, `backend/services/project_service.py` |
+| 任务/结果项目关联 | ✅ | `tasks.project_id`, `feature_versions.project_id`, `feature_metrics.project_id` |
+| 项目模板选择 | ✅ | `project_templates` 表，`backend/routers/projects.py` |
+| API 接入 | ✅ | `/api/projects`, `/api/tasks?project_id=`, `/api/features/versions?project_id=` |
+| 前端项目上下文 | ✅ | `web-frontend/src/store/projectStore.ts`, 顶部项目选择器，任务创建/列表绑定当前项目 |
+| 项目模板前端配置 | ✅ | `web-frontend/src/pages/Projects.tsx` 创建/编辑项目时选择启用模板 |
+
+**说明**:
+- 现有历史数据统一挂到 `默认项目(id=1)`。
+- 模板库仍是平台级资产，项目通过 `project_templates` 选择启用哪些 active 模板。
+- 任务创建未传 `project_id` 时自动归属默认项目，兼容旧前端。
+- 前端当前已完成项目选择、新建/编辑/软删除项目、任务按项目过滤、项目创建/编辑时选择启用模板。
+- 知识库 scope 尚未拆分为 platform/project，下一步需要单独建模和接入前端。
+
+### Week 6.7: 内置模板与项目动态模板生成边界 ✅ 已完成 (2026-06-11)
+
+| 模块 | 状态 | 交付物 |
+|------|------|--------|
+| 内置模板边界 | ✅ | `agents/feature_mass_producer.py`；`T001-T016` 固定作为内置模板组合 |
+| 项目动态模板接入 | ✅ | `agents/feature_orchestrator.py`；项目启用的 active `T017+` 模板按 `parameter_space` 进入本次生成组合 |
+| 任务项目传参 | ✅ | `backend/routers/tasks.py`, `backend/celery_tasks/agent_tasks.py` |
+| 动态模板元数据 | ✅ | `outputs/feature_code/feature_metadata.json` 随本次组合表同源生成 |
+
+**说明**:
+- `PARAM_COMBOS` 不再作为所有模板的唯一事实来源，只承载内置 `T001-T016`。
+- 通道2晋升后的模板仍先成为平台 active 模板，只有项目在 `project_templates` 启用后才进入该项目的批量挖掘。
+- 当前动态模板不再按模板名写死适配；优先使用 `parameter_space.values/enum/options/choices` 展开，缺少显式取值时使用参数名级安全默认值。其他 `T017+` 模板仍建议在 `parameter_space` 中沉淀可执行取值规范。
+
+### Week 6.8: 前端产品化页面优化 ✅ 已完成 (2026-06-12)
+
+| 模块 | 状态 | 交付物 |
+|------|------|--------|
+| 信息架构升级 | ✅ | `web-frontend/src/components/Layout.tsx`, `web-frontend/src/App.tsx`；导航按平台管理、当前项目、任务结果、辅助工具分组，明确项目是平台级管理对象，任务属于项目，评估和部署是任务结果 |
+| 工作台 | ✅ | `web-frontend/src/pages/Dashboard.tsx`；展示项目、模板、通过特征、最新版本、业务流程和最近任务 |
+| 模板资产 | ✅ | `web-frontend/src/pages/Templates.tsx`；支持 active/pending 模板列表、模板类型分布、详情、批准/拒绝入口，模板只表达数据加工方式，不展示历史表现指标 |
+| 评估报告 | ✅ | `web-frontend/src/pages/Evaluation.tsx`, `web-frontend/src/types/feature.ts`, `web-frontend/src/services/mockData.ts`；按版本展示 IV/PSI/覆盖率图表、特征明细、特征逻辑、输入字段和加工口径 |
+| 部署版本 | ✅ | `web-frontend/src/pages/Deployment.tsx`；展示推荐版本、交付检查、历史版本和部署包下载入口 |
+| 生产任务体验 | ✅ | `web-frontend/src/pages/Tasks.tsx`；新建任务改为“发起特征生产”产品向导，强化数据、模板、生产、评估、部署流程 |
+| 全局样式 | ✅ | `web-frontend/src/index.css`, `web-frontend/src/components/Layout.tsx`；升级为暗色科技风格，新增网格背景、玻璃卡片、霓虹边线、暗色表格、高亮按钮，并修正弹层、抽屉、下拉、分页、Tag、空状态、图表文字等暗色细节配色 |
+| 智能助理体验 | ✅ | `web-frontend/src/pages/AgentChat.tsx`, `web-frontend/src/components/ChatMessage.tsx`, `web-frontend/src/components/ChatInput.tsx`；升级为 Copilot 控制台视觉，强化实时推理、模板联动和对话工作区 |
+| 前端原型剥离 | ✅ | `web-frontend/src/store/authStore.ts`, `web-frontend/src/services/mockData.ts`, `web-frontend/src/services/api.ts`；取消登录阻断，后端不可用时使用本地演示数据 |
+
+**验证结果**:
+- `npm run build` 通过，已生成新的 `web-frontend/dist/` 产物。
+- `lsof -nP -iTCP:5174 -sTCP:LISTEN` 确认前端服务正在监听 `127.0.0.1:5174`。
+- 本地浏览器插件本次因安全策略拒绝访问 `http://127.0.0.1:5174`，未进行浏览器截图验证。
 
 ---
 

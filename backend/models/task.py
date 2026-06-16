@@ -18,6 +18,7 @@ class Task(Base):
     mode = Column(String(50), nullable=False, default="normal")  # normal | template_task
     status = Column(String(50), nullable=False, default="pending")  # pending | running | completed | failed | cancelled
     progress = Column(Float, nullable=False, default=0.0)  # 0.0 ~ 100.0
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
 
     # 任务配置（JSON 格式存储数据路径等）
     config = Column(JSON, nullable=True)
@@ -44,6 +45,7 @@ class Task(Base):
     # 关联
     logs = relationship("TaskLog", back_populates="task", cascade="all, delete-orphan",
                         order_by="TaskLog.timestamp")
+    project = relationship("Project", back_populates="tasks")
 
     def _iso_z(self, dt) -> str | None:
         """序列化为 ISO 格式并标记 UTC（+Z 后缀）"""
@@ -58,6 +60,7 @@ class Task(Base):
             "mode": self.mode,
             "status": self.status,
             "progress": self.progress,
+            "project_id": self.project_id,
             "linked_task_id": self.linked_task_id,
             "total_features": self.total_features,
             "passed_features": self.passed_features,

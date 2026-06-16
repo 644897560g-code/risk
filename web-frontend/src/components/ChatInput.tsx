@@ -36,13 +36,7 @@ const ChatInput: React.FC<Props> = ({ onSend, loading = false, disabled = false 
 
   return (
     <div
-      style={{
-        display: 'flex',
-        gap: 8,
-        padding: '12px 16px',
-        borderTop: '1px solid #f0f0f0',
-        background: '#fff',
-      }}
+      className="chat-input-bar"
     >
       <TextArea
         ref={textAreaRef as any}

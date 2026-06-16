@@ -61,6 +61,7 @@ def template_to_channel1_item(template: Template) -> dict:
         "examples": data.get("examples") or [],
         "status": data.get("status", ""),
         "source_channel": data.get("source_channel"),
+        "created_at": data.get("created_at", ""),
         "execution_mode": metadata.get("execution_mode", "function"),
         "requires_external_function": metadata.get("requires_external_function", True),
         "inline_generator": metadata.get("inline_generator", ""),
@@ -117,7 +118,7 @@ def list_templates(
             )
         )
     return (
-        query.order_by(TemplateDimension.sort_order, Template.template_id, Template.id)
+        query.order_by(Template.created_at.asc(), Template.template_id.asc(), Template.id.asc())
         .all()
     )
 

@@ -14,6 +14,9 @@ export interface FeatureMetric {
   version: string;
   task_id: number;
   feature_name: string;
+  feature_logic?: string;
+  template_type?: string;
+  source_fields?: string[];
   iv: number;
   psi: number;
   coverage: number;

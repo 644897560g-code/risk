@@ -8,6 +8,8 @@ venv/
 # Environment
 .env
 .env.local
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -20,12 +22,18 @@ venv/
 data/*.txt
 data/*.xlsx
 data/*.pdf
+data/task_uploads/
 
 # Node
 web-frontend/node_modules/
+web-frontend/*.tsbuildinfo
 
 # Build artifacts
 web-frontend/dist/
+frontend-static-demo/
+outputs/deployment/v*/
+outputs/deployment/*.tar.gz
+outputs/feature_code/feature_metadata.json
 
 # IDE
 .DS_Store

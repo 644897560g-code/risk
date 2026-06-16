@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { login as apiLogin, fetchMe } from '@/services/api';
 
 interface AuthState {
   token: string | null;
@@ -12,42 +11,32 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem('auth_token'),
-  username: localStorage.getItem('auth_username'),
-  isAuthenticated: !!localStorage.getItem('auth_token'),
-  isLoading: !!localStorage.getItem('auth_token'),
+  token: 'frontend-demo-token',
+  username: localStorage.getItem('auth_username') || '产品经理',
+  isAuthenticated: true,
+  isLoading: false,
 
   login: async (username: string, password: string) => {
-    const res = await apiLogin(username, password);
-    localStorage.setItem('auth_token', res.access_token);
-    localStorage.setItem('auth_username', res.username);
+    const displayName = username || '产品经理';
+    localStorage.setItem('auth_token', 'frontend-demo-token');
+    localStorage.setItem('auth_username', displayName);
     set({
-      token: res.access_token,
-      username: res.username,
+      token: 'frontend-demo-token',
+      username: displayName,
       isAuthenticated: true,
       isLoading: false,
     });
   },
 
   logout: () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_username');
-    set({ token: null, username: null, isAuthenticated: false, isLoading: false });
+    localStorage.setItem('auth_token', 'frontend-demo-token');
+    localStorage.setItem('auth_username', '产品经理');
+    set({ token: 'frontend-demo-token', username: '产品经理', isAuthenticated: true, isLoading: false });
   },
 
   validateToken: async () => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-      set({ isLoading: false, isAuthenticated: false });
-      return;
-    }
-    try {
-      const user = await fetchMe();
-      set({ username: user.username, isAuthenticated: true, isLoading: false });
-    } catch {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_username');
-      set({ token: null, username: null, isAuthenticated: false, isLoading: false });
-    }
+    const username = localStorage.getItem('auth_username') || '产品经理';
+    localStorage.setItem('auth_token', 'frontend-demo-token');
+    set({ token: 'frontend-demo-token', username, isAuthenticated: true, isLoading: false });
   },
 }));
