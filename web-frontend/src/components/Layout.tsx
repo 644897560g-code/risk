@@ -5,6 +5,7 @@ import {
   MessageOutlined,
   DatabaseOutlined,
   FileTextOutlined,
+  FolderOpenOutlined,
   UserOutlined,
   LogoutOutlined,
   RocketOutlined,
@@ -21,6 +22,7 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 
 const menuItems = [
+  { key: 'projects', icon: <FolderOpenOutlined />, label: '项目列表' },
   { key: '/home', icon: <HomeOutlined />, label: '工作台' },
   {
     key: 'mine',
@@ -60,6 +62,7 @@ const AppLayout: React.FC = () => {
 
   const pathname = location.pathname;
   const selectedKey = (() => {
+    if (pathname.startsWith('/projects')) return 'projects';
     if (pathname.startsWith('/mine/report')) return '/mine/report';
     if (pathname.startsWith('/mine/experiments')) return '/mine/experiments';
     if (pathname.startsWith('/assets/data')) return '/assets/data';
@@ -70,9 +73,12 @@ const AppLayout: React.FC = () => {
     if (pathname.startsWith('/copilot')) return '/copilot';
     return '/home';
   })();
+  const isProjectListPage = selectedKey === 'projects';
   const projectName = currentProject?.name || '当前项目';
   const routeContext = (() => {
     switch (selectedKey) {
+      case 'projects':
+        return { title: '项目列表', breadcrumb: ['项目', '项目列表'] };
       case '/home':
         return { title: '工作台', breadcrumb: ['工作台'] };
       case '/mine/experiments':
@@ -176,7 +182,11 @@ const AppLayout: React.FC = () => {
           defaultOpenKeys={['mine', 'assets', 'ship']}
           items={menuItems}
           onClick={({ key }) => {
-            if (String(key).startsWith('/')) navigate(key);
+            if (key === 'projects') {
+              navigate('/projects');
+            } else if (String(key).startsWith('/')) {
+              navigate(key);
+            }
           }}
           style={{
             background: 'transparent',
@@ -240,11 +250,15 @@ const AppLayout: React.FC = () => {
             <Select
               value={currentProject?.id}
               loading={isLoading}
-              style={{ width: 220 }}
-              placeholder="选择项目"
+              style={{ width: isProjectListPage ? 260 : 220 }}
+              placeholder={isProjectListPage ? '当前项目，可在列表中管理' : '选择项目'}
               options={projects.map((p) => ({
                 value: p.id,
-                label: p.is_default ? `${p.name}（默认）` : p.name,
+                label: p.is_default
+                  ? `${p.name}（默认）`
+                  : isProjectListPage && p.id === currentProject?.id
+                    ? `${p.name}（当前）`
+                    : p.name,
               }))}
               onChange={selectProject}
             />
