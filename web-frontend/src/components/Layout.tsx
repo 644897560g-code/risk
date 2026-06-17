@@ -22,8 +22,15 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 
 const menuItems = [
-  { key: 'projects', icon: <FolderOpenOutlined />, label: '项目列表' },
   { key: '/home', icon: <HomeOutlined />, label: '工作台' },
+  {
+    key: 'platform',
+    label: '平台',
+    children: [
+      { key: 'projects', icon: <FolderOpenOutlined />, label: '项目列表' },
+      { key: '/assets/templates', icon: <ExperimentOutlined />, label: '模板库' },
+    ],
+  },
   {
     key: 'mine',
     label: '探索',
@@ -37,7 +44,6 @@ const menuItems = [
     label: '资产',
     children: [
       { key: '/assets/data', icon: <DatabaseOutlined />, label: '数据版本' },
-      { key: '/assets/templates', icon: <ExperimentOutlined />, label: '模板库' },
       { key: '/assets/knowledge', icon: <BulbOutlined />, label: '知识库' },
     ],
   },
@@ -78,7 +84,7 @@ const AppLayout: React.FC = () => {
   const routeContext = (() => {
     switch (selectedKey) {
       case 'projects':
-        return { title: '项目列表', breadcrumb: ['项目', '项目列表'] };
+        return { title: '项目列表', breadcrumb: ['平台', '项目列表'] };
       case '/home':
         return { title: '工作台', breadcrumb: ['工作台'] };
       case '/mine/experiments':
@@ -88,7 +94,7 @@ const AppLayout: React.FC = () => {
       case '/assets/data':
         return { title: '数据版本', breadcrumb: ['资产', projectName, '数据版本'] };
       case '/assets/templates':
-        return { title: '模板库', breadcrumb: ['资产', '模板库'] };
+        return { title: '模板库', breadcrumb: ['平台', '模板库'] };
       case '/assets/knowledge':
         return { title: '知识库', breadcrumb: ['资产', projectName, '知识库'] };
       case '/ship/candidates':
@@ -179,7 +185,7 @@ const AppLayout: React.FC = () => {
         <Menu
           mode="inline"
           selectedKeys={[selectedKey]}
-          defaultOpenKeys={['mine', 'assets', 'ship']}
+          defaultOpenKeys={['platform', 'mine', 'assets', 'ship']}
           items={menuItems}
           onClick={({ key }) => {
             if (key === 'projects') {

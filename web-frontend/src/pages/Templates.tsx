@@ -359,7 +359,9 @@ const Templates: React.FC = () => {
       <div className="page-header">
         <div>
           <Title level={3} style={{ margin: 0 }}>模板库</Title>
-          <Text type="secondary">从代码仓库改为效果目录，展示每种特征加工方式的业务含义、适用场景和历史表现。</Text>
+          <Text type="secondary">
+            公共模板是平台级通用计算框架，跨项目复用；项目模板需脱敏、泛化并通过平台审核后，才可升级进入这里。
+          </Text>
         </div>
         <Button icon={<ReloadOutlined />} onClick={load} loading={loading}>刷新</Button>
       </div>
